@@ -17,7 +17,7 @@
 
 public W3ONLY(){} //unload this?
 new thisRaceID;
-new Handle:ultCooldownCvar;
+new Float:ultCooldownCvar=30.0;
 
 new SKILL_TIDE, SKILL_CONDUIT, SKILL_STATIC, ULT_OVERLOAD;
 
@@ -58,12 +58,12 @@ new ConduitBy[MAXPLAYERSCUSTOM]; //[VICTIM]
 new UltimateZapsRemaining[MAXPLAYERSCUSTOM];
 new Float:PlayerDamageIncrease[MAXPLAYERSCUSTOM];
 
-new String:taunt1[256]; //="war3source/cd/feeltheburn2.mp3";
-new String:taunt2[256]; //="war3source/cd/feeltheburn3.mp3";
+new String:taunt1[]="war3source/cd/feeltheburn2.mp3";
+new String:taunt2[]="war3source/cd/feeltheburn3.mp3";
 
-new String:overload1[256]; //="war3source/cd/overload2.mp3";
-new String:overloadzap[256]; //="war3source/cd/overloadzap.mp3";
-new String:overloadstate[256]; //="war3source/cd/ultstate.mp3";
+new String:overload1[]="war3source/cd/overload2.mp3";
+new String:overloadzap[]="war3source/cd/overloadzap.mp3";
+new String:overloadstate[]="war3source/cd/ultstate.mp3";
 
 // Effects
 new BeamSprite,HaloSprite; 
@@ -80,7 +80,7 @@ public Plugin:myinfo =
 public OnPluginStart()
 {
 	HookEvent("player_hurt",PlayerHurtEvent);
-	ultCooldownCvar=CreateConVar("war3_cd_ult_cooldown","30","Cooldown time for CD ult overload.");
+	//ultCooldownCvar=CreateConVar("war3_cd_ult_cooldown","30","Cooldown time for CD ult overload.");
 	CreateTimer(0.2,CalcConduit,_,TIMER_REPEAT);
 	
 	LoadTranslations("w3s.race.cd.phrases");
@@ -104,24 +104,6 @@ public OnWar3LoadRaceOrItemOrdered(num)
 
 public OnMapStart()
 {
-	if(GAMECSGO)
-	{
-		strcopy(taunt1,sizeof(taunt1),"music/war3source/cd/feeltheburn2.mp3");
-		strcopy(taunt2,sizeof(taunt2),"music/war3source/cd/feeltheburn3.mp3");
-		strcopy(overload1,sizeof(overload1),"music/war3source/cd/overload2.mp3");
-		strcopy(overloadzap,sizeof(overloadzap),"music/war3source/cd/overloadzap.mp3");
-		strcopy(overloadstate,sizeof(overloadstate),"music/war3source/cd/ultstate.mp3");
-	}
-	else
-	{
-		strcopy(taunt1,sizeof(taunt1),"war3source/cd/feeltheburn2.mp3");
-		strcopy(taunt2,sizeof(taunt2),"war3source/cd/feeltheburn3.mp3");
-		strcopy(overload1,sizeof(overload1),"war3source/cd/overload2.mp3");
-		strcopy(overloadzap,sizeof(overloadzap),"war3source/cd/overloadzap.mp3");
-		strcopy(overloadstate,sizeof(overloadstate),"war3source/cd/ultstate.mp3");
-	}
-
-
 	BeamSprite=War3_PrecacheBeamSprite();
 	HaloSprite=War3_PrecacheHaloSprite();
 	
@@ -131,8 +113,6 @@ public OnMapStart()
 	War3_PrecacheSound(overloadzap);
 	War3_PrecacheSound(overloadstate);
 }
-
-
 
 public OnAbilityCommand(client,ability,bool:pressed)
 {
@@ -250,7 +230,7 @@ public OnUltimateCommand(client,race,bool:pressed)
 				UltimateZapsRemaining[client]=OverloadDuration;
 			
 				PlayerDamageIncrease[client]=1.0;
-				War3_CooldownMGR(client,GetConVarFloat(ultCooldownCvar),thisRaceID,ULT_OVERLOAD,_,_);
+				War3_CooldownMGR(client,ultCooldownCvar,thisRaceID,ULT_OVERLOAD,_,_);
 				
 				CreateTimer(0.25,UltimateLoop,GetClientUserId(client)); //damage
 				
@@ -286,9 +266,6 @@ public Action:UltimateLoop(Handle:timer,any:userid)
 				
 				if(GetClientTeam(i)!=team&&!W3HasImmunity(i,Immunity_Ultimates)){
 					GetClientAbsOrigin(i,otherpos);
-					//if(War3_GetGame()==Game_CS){
-					//	otherpos[2]-=20.0;
-					//}
 					//PrintToChatAll("%d distance %f",i,GetVectorDistance(pos,otherpos));
 					if(GetVectorDistance(pos,otherpos)<OverloadRadius){
 						
@@ -390,11 +367,9 @@ public PlayerHurtEvent(Handle:event,const String:name[],bool:dontBroadcast)
 	new attacker_userid=GetEventInt(event,"attacker");
 	new dmg=GetEventInt(event,"dmg_health");
 	//new weaponidTF;
-	if(War3_GetGame()==Game_TF){
-		dmg=GetEventInt(event,"damageamount");
-		//weaponidTF=GetEventInt(event,"weaponid");
-		//PrintToChatAll("weaponid %d",weaponidTF);
-	}
+	dmg=GetEventInt(event,"damageamount");
+	//weaponidTF=GetEventInt(event,"weaponid");
+	//PrintToChatAll("weaponid %d",weaponidTF);
 	if(userid&&attacker_userid&&userid!=attacker_userid)
 	{
 		new victim=GetClientOfUserId(userid);
@@ -439,12 +414,10 @@ public PlayerHurtEvent(Handle:event,const String:name[],bool:dontBroadcast)
 					}
 					War3_HealToBuffHP(victim,ConduitSubtractDamage[attacker]);
 					if(heal>=0){
-						if(War3_GetGame()==Game_TF){
-							decl Float:pos[3];
-							GetClientEyePosition(victim, pos);
-							pos[2] += 4.0;
-							War3_TF_ParticleToClient(0, "miss_text", pos); //to the attacker at the enemy pos
-						}
+						decl Float:pos[3];
+						GetClientEyePosition(victim, pos);
+						pos[2] += 4.0;
+						War3_TF_ParticleToClient(0, "miss_text", pos); //to the attacker at the enemy pos
 					}
 				}
 			}

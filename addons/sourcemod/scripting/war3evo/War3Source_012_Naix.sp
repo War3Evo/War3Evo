@@ -37,8 +37,8 @@ new Handle:ultCooldownCvar;
 
 new thisRaceID, SKILL_INFEST, SKILL_BLOODBATH, SKILL_FEAST, ULT_RAGE;
 
-new String:skill1snd[256]; //="war3source/naix/predskill1.mp3";
-new String:ultsnd[256]; //="war3source/naix/predult.mp3";
+new String:skill1snd[]="war3source/naix/predskill1.mp3";
+new String:ultsnd[]="war3source/naix/predult.mp3";
 
 public Plugin:myinfo = 
 {
@@ -81,18 +81,6 @@ stock bool:IsOurRace(client) {
 
 public OnMapStart() { //some precaches
   //PrecacheSound("npc/zombie/zombie_pain2.wav");
-	if(GAMECSGO)
-	{
-		strcopy(skill1snd,sizeof(skill1snd),"music/war3source/naix/predskill1.mp3");
-		strcopy(ultsnd,sizeof(ultsnd),"music/war3source/naix/predult.mp3");
-	}
-	else
-	{
-		strcopy(skill1snd,sizeof(skill1snd),"war3source/naix/predskill1.mp3");
-		strcopy(ultsnd,sizeof(ultsnd),"war3source/naix/predult.mp3");
-	}
-
-
 	War3_PrecacheSound(skill1snd);
 	War3_PrecacheSound(ultsnd);
 }
@@ -189,11 +177,11 @@ public Action:setlocation(Handle:t,any:attacker){
 
 public OnUltimateCommand(client,race,bool:pressed)
 {
-    if(race==thisRaceID && pressed && ValidPlayer(client,true))
-    {
-        new ultLevel=War3_GetSkillLevel(client,thisRaceID,ULT_RAGE);
-        if(ultLevel>0)
-        {	
+	if(race==thisRaceID && pressed && ValidPlayer(client,true))
+	{
+		new ultLevel=War3_GetSkillLevel(client,thisRaceID,ULT_RAGE);
+		if(ultLevel>0)
+		{
 			//PrintToChatAll("level %d %f %f",ultLevel,RageDuration[ultLevel],RageAttackSpeed[ultLevel]);
 			if(!Silenced(client)&&War3_SkillNotInCooldown(client,thisRaceID,ULT_RAGE,true ))
 			{
@@ -216,12 +204,12 @@ public OnUltimateCommand(client,race,bool:pressed)
 			}
 			
 			
-        }
-		else{
+		}
+		else
+		{
 			PrintHintText(client,"%T","No Ultimate Leveled",client);
 		}
-
-    }
+	}
 }
 public Action:stopRage(Handle:t,any:client){
 	War3_SetBuff(client,fAttackSpeed,thisRaceID,1.0);

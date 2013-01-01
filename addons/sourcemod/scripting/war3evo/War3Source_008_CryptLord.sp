@@ -22,20 +22,19 @@ new Float:ImpaleChanceArr[]={0.0,0.05,0.09,0.12,0.15};
 
 //skill 2
 new Float:SpikeDamageRecieve[]={1.0,0.95,0.9,0.85,0.80}; //TEST
-new Float:SpikeArmorGainArr[]={0.0,0.1,0.20,0.3,0.40}; 
-new Float:SpikeReturnDmgArr[]={0.0,0.05,0.10,0.15,0.2}; 
+new Float:SpikeReturnDmgArr[]={0.0,0.05,0.10,0.15,0.2};
 
 //skill 3
 new const BeetleDamage=10;
 new Float:BeetleChanceArr[]={0.0,0.05,0.1,0.15,0.20};
 
 //ultimate
-new Handle:ultCooldownCvar;
-new Handle:ultRangeCvar;
+new Float:ultCooldownCvar=20.0;
+new Float:ultRangeCvar;
 new Float:LocustDamagePercent[]={0.0,0.1,0.2,0.3,0.4};
 
 //new String:ultimateSound[]="war3source/locustswarmloop.wav";
-new String:ultimateSound[256]; //="war3source/locustswarmloop.mp3";
+new String:ultimateSound[]="war3source/locustswarmloop.mp3";
 
 
 public Plugin:myinfo = 
@@ -50,8 +49,8 @@ public Plugin:myinfo =
 public OnPluginStart()
 {
 	
-	ultCooldownCvar=CreateConVar("war3_crypt_locust_cooldown","20","Cooldown between ultimate usage");
-	ultRangeCvar=CreateConVar("war3_crypt_locust_range","800","Range of locust ultimate");
+	//ultCooldownCvar=CreateConVar("war3_crypt_locust_cooldown","20","Cooldown between ultimate usage");
+	//ultRangeCvar=CreateConVar("war3_crypt_locust_range","800","Range of locust ultimate");
 	
 	LoadTranslations("w3s.race.crypt.phrases");
 }
@@ -62,7 +61,7 @@ public OnWar3LoadRaceOrItemOrdered(num)
 	{						
 		thisRaceID=War3_CreateNewRaceT("crypt");
 		SKILL_IMPALE=War3_AddRaceSkillT(thisRaceID,"Impale",false,4);
-		SKILL_SPIKE=War3_AddRaceSkillT(thisRaceID,War3_GetGame()==Game_CS?"SpikedCarapaceCS":"SpikedCarapaceTF",false,4);
+		SKILL_SPIKE=War3_AddRaceSkillT(thisRaceID,"SpikedCarapaceTF",false,4);
 		SKILL_BEETLES=War3_AddRaceSkillT(thisRaceID,"CarrionBeetles",false,4);
 		ULT_LOCUST=War3_AddRaceSkillT(thisRaceID,"LocustSwarm",true,4); 
 		War3_CreateRaceEnd(thisRaceID);	
@@ -72,14 +71,6 @@ public OnWar3LoadRaceOrItemOrdered(num)
 
 public OnMapStart()
 {
-	if(GAMECSGO){
-		strcopy(ultimateSound,sizeof(ultimateSound),"music/war3source/locustswarmloop.mp3");
-	}
-	else
-	{
-		strcopy(ultimateSound,sizeof(ultimateSound),"war3source/locustswarmloop.mp3");
-	}
-
 	War3_PrecacheSound(ultimateSound);
 }
 
@@ -101,7 +92,7 @@ public OnUltimateCommand(client,race,bool:pressed)
 				new team = GetClientTeam(client);
 				new bestTarget=0;
 				
-				new Float:ultmaxdistance=GetConVarFloat(ultRangeCvar);
+				new Float:ultmaxdistance=ultRangeCvar;
 				for(new i=1;i<=MaxClients;i++)
 				{
 					if(ValidPlayer(i,true)&&GetClientTeam(i)!=team&&!W3HasImmunity(i,Immunity_Ultimates))
@@ -132,7 +123,7 @@ public OnUltimateCommand(client,race,bool:pressed)
 							W3FlashScreen(bestTarget,RGBA_COLOR_RED);
 							
 							W3EmitSoundToAll(ultimateSound,client);
-							War3_CooldownMGR(client,GetConVarFloat(ultCooldownCvar),thisRaceID,ULT_LOCUST,false,true);
+							War3_CooldownMGR(client,ultCooldownCvar,thisRaceID,ULT_LOCUST,false,true);
 						}
 					}
 				}
@@ -171,29 +162,14 @@ public OnWar3EventPostHurt(victim,attacker,damage)
 			new skill_level=War3_GetSkillLevel(victim,thisRaceID,SKILL_SPIKE);
 			if(skill_level>0&&!Hexed(victim,false))
 			{
-				if(!W3HasImmunity(attacker,Immunity_Skills)){
-					if(War3_GetGame()==Game_CS)
-					{
-						new armor=War3_GetCSArmor(victim);
-						new armor_add=RoundFloat(damage*SpikeArmorGainArr[skill_level]);
-						if(armor_add>20) armor_add=20;
-						War3_SetCSArmor(victim,armor+armor_add);
-						
-						
-					}
+				if(!W3HasImmunity(attacker,Immunity_Skills))
+				{
 					new returndmg=RoundFloat(FloatMul(SpikeReturnDmgArr[skill_level],float(damage)));
 					returndmg=returndmg<40?returndmg:40;
-					if(GAMETF)  // Team Fortress 2 is stable with code below:
-					{
 					if(War3_DealDamage(attacker,returndmg,victim,_,"spiked_carapace",W3DMGORIGIN_SKILL,W3DMGTYPE_PHYSICAL))
 						{
 							W3PrintSkillDmgConsole(attacker,victim,War3_GetWar3DamageDealt(),SKILL_SPIKE);
 						}
-					}
-					else // Code for CS STuff or others:
-					{
-					War3_DealDamageDelayed(attacker,victim,returndmg,"spiked_carapace",0.1,true,SKILL_SPIKE);
-					}
 				}
 			}
 			

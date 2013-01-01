@@ -2,6 +2,8 @@
 * File: War3Source_BloodMage.sp
 * Description: The Blood Mage race for War3Source.
 * Author(s): Anthony Iacono & Ownage | Ownz (DarkEnergy)
+*
+*  REWRITTEN FOR TF2 ONLY - el diablo
 */
 
 
@@ -35,16 +37,13 @@ new bool:Can_Player_Revive[MAXPLAYERSCUSTOM+1];
 new Float:BanishChance[MAXPLAYERSCUSTOM];
 new Float:BanishChancesArr[5]={0.00,0.05,0.10,0.15,0.20};
 
-//skill 3
-new Float:MoneyStealPercent[MAXPLAYERSCUSTOM];
-new Float:MoneyStealPercentArr[]={0.00,0.0025,0.0050,0.0075,0.01};  //how much is stolen
 //for TF only:
 new Float:CreditStealChanceTF[]={0.00,0.02,0.04,0.06,0.08};   //what are the chances of stealing
 // instead of a percent we now base it on the attacker level
 //new Float:TFCreditStealPercent=0.02;  //how much to steal
 
 //ultimate
-new Handle:ultCooldownCvar;
+new Float:ultCooldownCvar=20.0;
 new Handle:hrevivalDelayCvar;
 
 new Float:UltimateMaxDistance[]={0.0,500.0,500.0,500.0,500.0}; //max distance u can target your ultimate
@@ -54,23 +53,14 @@ new BurnsRemaining[MAXPLAYERSCUSTOM]; //burn count for victims
 new BeingBurnedBy[MAXPLAYERSCUSTOM];
 new UltimateUsed[MAXPLAYERSCUSTOM];
 
-new ULT_DAMAGE_CS = 5;
 new ULT_DAMAGE_TF = 10;
 
-
-
-new MyWeaponsOffset,AmmoOffset;
-//Clip1Offset,; //cs stuff?
-
-new String:reviveSound[256];
+new String:reviveSound[]="war3source/reincarnation.mp3";
 
 new BeamSprite,HaloSprite,FireSprite;
 new BloodSpray,BloodDrop;
 
-// CS specific money offset
-new MoneyOffsetCS;
-
-public Plugin:myinfo = 
+public Plugin:myinfo =
 {
 	name = "Race - Blood Mage",
 	author = "PimpinJuice & Ownz (DarkEnergy)",
@@ -83,13 +73,10 @@ public OnPluginStart()
 {
 	HookEvent("player_spawn",PlayerSpawnEvent);
 	HookEvent("round_start",RoundStartEvent);
-	ultCooldownCvar=CreateConVar("war3_mage_fire_strike_cooldown","20","Cooldown between fire strikes (ultimate)");
+	// removed cooldown because its a common factor that should be changed in sourcecode.
+	// no need to 'test run this during game play'.
+	//ultCooldownCvar=CreateConVar("war3_mage_fire_strike_cooldown","20","Cooldown between fire strikes (ultimate)");
 	hrevivalDelayCvar=CreateConVar("war3_mage_revive_delay","2.0","Delay when reviving a teammate (since death)");
-	
-	MoneyOffsetCS=FindSendPropInfo("CCSPlayer","m_iAccount");
-	MyWeaponsOffset=FindSendPropOffs("CBaseCombatCharacter","m_hMyWeapons");
-//	Clip1Offset=FindSendPropOffs("CBaseCombatWeapon","m_iClip1");
-	AmmoOffset=FindSendPropOffs("CBasePlayer","m_iAmmo");
 	
 	HookEvent("player_death",PlayerDeathEvent);
 	HookEvent("player_team",PlayerTeamEvent);
@@ -113,10 +100,6 @@ public OnWar3LoadRaceOrItemOrdered(num)
 
 public OnMapStart()
 {
-	if(GAMECSGO){
-		strcopy(reviveSound,sizeof(reviveSound),"music/war3source/reincarnation.mp3");
-	}
-	else
 	{
 		strcopy(reviveSound,sizeof(reviveSound),"war3source/reincarnation.mp3");
 	}
@@ -124,17 +107,9 @@ public OnMapStart()
 	HaloSprite=War3_PrecacheHaloSprite();
 	//we gonna use theese bloodsprite as "money blood"(change color)
 	BloodSpray = PrecacheModel("sprites/bloodspray.vmt");
-	if(War3_GetGame() == Game_CSGO) {
-		BloodDrop = PrecacheModel("decals/blood1.vmt");
-		FireSprite	 = PrecacheModel("materials/sprites/glow07.vmt");
-		War3_PrecacheParticle("weapon_molotov_thrown_glow");
-		War3_PrecacheParticle("burning_character");
-	}
-	else {
-		BloodDrop = PrecacheModel("sprites/blood.vmt");
-		FireSprite	 = PrecacheModel("materials/sprites/fireburst.vmt");
-	}
-	
+	BloodDrop = PrecacheModel("sprites/blood.vmt");
+	FireSprite	 = PrecacheModel("materials/sprites/fireburst.vmt");
+
 	War3_PrecacheSound(reviveSound);
 
 	// Reset Can Player Revive
@@ -193,7 +168,7 @@ public OnUltimateCommand(client,race,bool:pressed)
 					BeingBurnedBy[target]=GetClientUserId(client);
 					BurnsRemaining[target]=UltimateDamageDuration[ult_level];
 					CreateTimer(1.0,BurnLoop,GetClientUserId(target));
-					War3_CooldownMGR(client,GetConVarFloat(ultCooldownCvar),thisRaceID,ULT_FLAMESTRIKE,_,_);
+					War3_CooldownMGR(client,ultCooldownCvar,thisRaceID,ULT_FLAMESTRIKE,_,_);
 					PrintHintText(client,"%T","Flame Strike!",client);
 					PrintHintText(target,"%T","You have been struck with Flame Strike!",target);
 					W3SetPlayerColor(target,thisRaceID,255,128,0,_,GLOW_ULTIMATE);
@@ -202,22 +177,10 @@ public OnUltimateCommand(client,race,bool:pressed)
 					effect_vec[2]+=150.0;
 					TE_SetupGlowSprite(effect_vec, FireSprite, 2.0, 4.0, 255);
 					TE_SendToAll();
-					if(War3_GetGame()!=Game_CSGO) {
-						TE_SetupGlowSprite(effect_vec, FireSprite, 4.0, 3.0, 255);
-						TE_SendToAll();
-					}
-					else {
-						effect_vec[2]-=180;
-						ThrowAwayParticle("weapon_molotov_thrown_glow", effect_vec, 3.5);
-						AttachParticle(target, "burning_character", effect_vec, "rfoot");
-						effect_vec[2]+=180;
-					}
-					if(War3_GetGame()==Game_CS) {
-						//I'm unsure about how it works in other games than cs:source
-						effect_vec[2]-180;
-						new ent = AttachParticle(target, "env_fire_medium_smoke", effect_vec, "rfoot");
-						FireEntityEffect[target]=ent;
-					}
+					effect_vec[2]-=180;
+					ThrowAwayParticle("weapon_molotov_thrown_glow", effect_vec, 3.5);
+					AttachParticle(target, "burning_character", effect_vec, "rfoot");
+					effect_vec[2]+=180;
 				}
 				else
 				{
@@ -243,7 +206,7 @@ public Action:BurnLoop(Handle:timer,any:userid)
 	if(victim>0 && attacker>0 && BurnsRemaining[victim]>0 && IsClientInGame(victim) && IsClientInGame(attacker) && IsPlayerAlive(victim))
 	{
 		BurnsRemaining[victim]--;
-		new damage = War3_GetGame()==Game_TF? ULT_DAMAGE_TF:ULT_DAMAGE_CS;
+		new damage = ULT_DAMAGE_TF;
 		War3_DealDamage(victim,damage,attacker,DMG_BURN,"flamestrike",_,W3DMGTYPE_MAGIC);
 		CreateTimer(1.0,BurnLoop,userid);
 		W3FlashScreen(victim,RGBA_COLOR_ORANGE);
@@ -275,24 +238,8 @@ public OnSkillLevelChanged(client,race,skill,newskilllevel)
 			{
 				BanishChance[client]=BanishChancesArr[newskilllevel];
 			}
-			if(skill==SKILL_MONEYSTEAL) //3
-			{
-				//cs only
-				MoneyStealPercent[client]=MoneyStealPercentArr[newskilllevel];
-			}
 		}
 	}
-}
-
-
-stock GetMoney(player)
-{
-	return GetEntData(player,MoneyOffsetCS);
-}
-
-stock SetMoney(player,money)
-{
-	SetEntData(player,MoneyOffsetCS,money);
 }
 
 public OnW3TakeDmgBullet(victim,attacker,Float:damage)
@@ -345,60 +292,31 @@ public OnW3TakeDmgBullet(victim,attacker,Float:damage)
 					skill_level=War3_GetSkillLevel(attacker,thisRaceID,SKILL_MONEYSTEAL);
 					if(skill_level>0&&!Hexed(attacker,false))
 					{
-						if(War3_GetGame()==Game_CS)
+						if(GetRandomFloat(0.0,1.0) <= CreditStealChanceTF[skill_level]*chance_mod)
 						{
-							if(GetRandomFloat(0.0,1.0)<=chance_mod) //normally this is always true in cs
+							if(W3HasImmunity(victim,Immunity_Skills))
 							{
-								if(W3HasImmunity(victim,Immunity_Skills))
-								{
-									W3MsgSkillBlocked(victim,attacker,"Siphon Mana");
-								}
-								else 
-								{
-									new stolen=RoundToCeil(float(GetMoney(victim))*MoneyStealPercent[attacker]);
-									new new_money=GetMoney(attacker)+stolen;
-									if(new_money>16000) new_money=16000;
-									SetMoney(attacker,new_money);
-									new_money=GetMoney(victim)-stolen;
-									if(new_money<0) new_money=0; 
-									SetMoney(victim,new_money);
-									if(stolen>0)
-									{
-										W3FlashScreen(attacker,{0,0,128,80});
-										W3MsgStoleMoney(victim,attacker,stolen);
-										siphonsfx(victim);
-									}
-								}
+								W3MsgSkillBlocked(victim,attacker,"Siphon Mana");
 							}
-						}
-						else if(War3_GetGame()==Game_TF)
-						{
-							if(GetRandomFloat(0.0,1.0) <= CreditStealChanceTF[skill_level]*chance_mod)
+							else
 							{
-								if(W3HasImmunity(victim,Immunity_Skills))
+								//new stolen=RoundFloat(float(War3_GetGold(victim))*TFCreditStealPercent);
+								new stolen=War3_GetLevel(victim, War3_GetRace(victim));
+								if(stolen>20)
 								{
-									W3MsgSkillBlocked(victim,attacker,"Siphon Mana");
+									stolen=20;
 								}
-								else 
+								if(stolen<=0&&War3_GetGold(victim)>0)
 								{
-									//new stolen=RoundFloat(float(War3_GetGold(victim))*TFCreditStealPercent);
-									new stolen=War3_GetLevel(victim, War3_GetRace(victim));
-									if(stolen>20)
-									{
-										stolen=20;
-									}
-									if(stolen<=0&&War3_GetGold(victim)>0)
-									{
-										stolen=1;
-									}
-									if(stolen>0) // no need to do anything otherwise
-									{
-										War3_SetGold(attacker,War3_GetGold(attacker)+stolen);
-										War3_SetGold(victim,War3_GetGold(victim)-stolen);
-										W3MsgStoleGold(victim,attacker,stolen);
-										W3FlashScreen(attacker,RGBA_COLOR_BLUE);
-										siphonsfx(victim);
-									}
+									stolen=1;
+								}
+								if(stolen>0) // no need to do anything otherwise
+								{
+									War3_SetGold(attacker,War3_GetGold(attacker)+stolen);
+									War3_SetGold(victim,War3_GetGold(victim)-stolen);
+									W3MsgStoleGold(victim,attacker,stolen);
+									W3FlashScreen(attacker,RGBA_COLOR_BLUE);
+									siphonsfx(victim);
 								}
 							}
 						}
@@ -444,14 +362,10 @@ public PlayerSpawnEvent(Handle:event,const String:name[],bool:dontBroadcast)
 		UltimateUsed[client]=0;
 		if(War3_GetRace(client)==thisRaceID)
 		{
-			if(War3_GetGame()==Game_TF)
+			new skill_level_revive=War3_GetSkillLevel(client,thisRaceID,SKILL_REVIVE);
+			if(!bRevived[client]&&skill_level_revive)
 			{
-				new skill_level_revive=War3_GetSkillLevel(client,thisRaceID,SKILL_REVIVE);
-				if(!bRevived[client]&&skill_level_revive)
-				{
-					CurrentRevivalChance[client]=RevivalChancesArr[skill_level_revive];
-				}
-				
+				CurrentRevivalChance[client]=RevivalChancesArr[skill_level_revive];
 			}
 		}
 		bRevived[client]=false;
@@ -506,48 +420,7 @@ public Action:DoRevival(Handle:timer,any:userid)
 				
 				
 				TeleportEntity(client, VecPos, Angles, NULL_VECTOR);
-				if(War3_GetGame()==Game_CS){
-					//give weapons CS
-					for(new s=0;s<10;s++)
-					{
-						new ent=GetEntDataEnt2(client,MyWeaponsOffset+(s*4));
-						if(ent>0 && IsValidEdict(ent))
-						{
-							new String:ename[64];
-							GetEdictClassname(ent,ename,64);
-							if(StrEqual(ename,"weapon_c4") || StrEqual(ename,"weapon_knife"))
-							{
-								continue; // don't think we need to delete these
-							}
-							W3DropWeapon(client,ent);
-							UTIL_Remove(ent);
-						}
-					}
-					// restore iAmmo
-					for(new s=0;s<32;s++)
-					{
-						SetEntData(client,AmmoOffset+(s*4),War3_CachedDeadAmmo(client,s),4);
-					}
-					// give them their weapons
-					for(new s=0;s<10;s++)
-					{
-						new String:wep_check[64];
-						War3_CachedDeadWeaponName(client,s,wep_check,64);
-						if(!StrEqual(wep_check,"") && !StrEqual(wep_check,"",false) && !StrEqual(wep_check,"weapon_c4") && !StrEqual(wep_check,"weapon_knife"))
-						{
-							new wep_ent=GivePlayerItem(client,wep_check);
-							if(wep_ent>0)
-							{
-								//dont reduce ammo
-								//SetEntData(wep_ent,Clip1Offset,War3_CachedDeadClip1(client,s),4);
-							}
-						}
-					}
-					SetEntProp(client,Prop_Send,"m_ArmorValue",100); //give full armor
-				}
-				
-				
-				
+
 				testhull(client);
 				
 				
@@ -626,7 +499,7 @@ public PlayerDeathEvent(Handle:event,const String:name[],bool:dontBroadcast)
 		
 		new deathFlags = GetEventInt(event, "death_flags");
 		
-		if (War3_GetGame()==Game_TF&&deathFlags & 32)
+		if (deathFlags & 32)
 		{
 			//PrintToChat(client,"war3 debug: dead ringer kill");
 		}
@@ -754,7 +627,7 @@ public bool:CanHitThis(entityhit, mask, any:data)
 	{// Check if the TraceRay hit the itself.
 		return false; // Don't allow self to be hit, skip this result
 	}
-	if(ValidPlayer(entityhit)&&ValidPlayer(data)&&War3_GetGame()==Game_TF&&GetClientTeam(entityhit)==GetClientTeam(data)){
+	if(ValidPlayer(entityhit)&&ValidPlayer(data)&&GetClientTeam(entityhit)==GetClientTeam(data)){
 		return false; //skip result, prend this space is not taken cuz they on same team
 	}
 	return true; // It didn't hit itself

@@ -29,14 +29,13 @@ new Float:BloodSense[5]={0.0,0.1,0.15,0.2,0.25};
 
 new Float:ultRange=300.0;
 new Float:ultiDamageMultiPerDistance[5]={0.0,0.06,0.073,0.086,0.10}; 
-new Float:ultiDamageMultiPerDistanceCS[5]={0.0,0.09,0.11,0.13,0.15}; 
 new Float:lastRuptureLocation[MAXPLAYERSCUSTOM][3];
 new Float:RuptureDuration=8.0;
 new Float:RuptureUntil[MAXPLAYERSCUSTOM];
 new bool:bRuptured[MAXPLAYERSCUSTOM];
 new RupturedBy[MAXPLAYERSCUSTOM];
 
-new String:ultsnd[256]; //="war3source/bh/ult.mp3";
+new String:ultsnd[]="war3source/bh/ult.mp3";
 
 
 public Plugin:myinfo = 
@@ -81,14 +80,6 @@ public OnWar3LoadRaceOrItemOrdered(num)
 
 public OnMapStart()
 {
-	if(GAMECSGO){
-		strcopy(ultsnd,sizeof(ultsnd),"music/war3source/bh/ult.mp3");
-	}
-	else
-	{
-		strcopy(ultsnd,sizeof(ultsnd),"war3source/bh/ult.mp3");
-	}
-
 	War3_PrecacheSound(ultsnd);
 }
 
@@ -152,81 +143,65 @@ public OnWar3EventDeath(victim,attacker){
 	}
 }
 
-public Action:RuptureCheckLoop(Handle:h,any:data){
+public Action:RuptureCheckLoop(Handle:h,any:data)
+{
 	new Float:origin[3];
 	new attacker;
 	new skilllevel;
 	new Float:dist;
 	for(new i=1;i<=MaxClients;i++){
-		if(ValidPlayer(i,true)){
-			if(bRuptured[i]){
+
+		if(ValidPlayer(i,true))
+		{
+			if(bRuptured[i])
+			{
 				attacker=RupturedBy[i];
-				if(ValidPlayer(attacker)){
+				if(ValidPlayer(attacker))
+				{
 					
-					if(War3_GetGame()==Game_TF){
-						Gore(i);
-					}
+					Gore(i);
 					skilllevel=War3_GetSkillLevel(attacker,thisRaceID,ULT_RUPTURE);
 					GetClientAbsOrigin(i,origin);
 					dist=GetVectorDistance(origin,lastRuptureLocation[i]);
 					
-					new damage=RoundFloat(FloatMul(dist,War3_GetGame()==CS?ultiDamageMultiPerDistanceCS[skilllevel]:ultiDamageMultiPerDistance[skilllevel]));
-					if(damage>0){
-						if(War3_GetGame()==Game_TF){
-							War3_DealDamage(i,damage,attacker,_,"rupture",_,W3DMGTYPE_TRUEDMG);
-							War3_TF_ParticleToClient(0, GetClientTeam(i)==2?"healthlost_red":"healthlost_blu", origin);
-						}
-						else{
-							if(GetClientHealth(i)>damage){
-								War3_DecreaseHP(i,damage);
-							}
-							else{
-								War3_DealDamage(i,damage,attacker,_,"rupture",_,W3DMGTYPE_TRUEDMG);
-							}
-						}
-						lastRuptureLocation[i][0]=origin[0];
-						lastRuptureLocation[i][1]=origin[1];
-						lastRuptureLocation[i][2]=origin[2];
-						W3FlashScreen(i,RGBA_COLOR_RED,1.0,_,FFADE_IN);
+					new damage=RoundFloat(FloatMul(dist,ultiDamageMultiPerDistance[skilllevel]));
+					if(damage>0)
+					{
+						War3_DealDamage(i,damage,attacker,_,"rupture",_,W3DMGTYPE_TRUEDMG);
+						War3_TF_ParticleToClient(0, GetClientTeam(i)==2?"healthlost_red":"healthlost_blu", origin);
 					}
+					lastRuptureLocation[i][0]=origin[0];
+					lastRuptureLocation[i][1]=origin[1];
+					lastRuptureLocation[i][2]=origin[2];
+					W3FlashScreen(i,RGBA_COLOR_RED,1.0,_,FFADE_IN);
 				}
-				
-				if(GetGameTime()>RuptureUntil[i]){
-					bRuptured[i]=false;
-				}
+			}
+			if(GetGameTime()>RuptureUntil[i])
+			{
+				bRuptured[i]=false;
 			}
 		}
 	}
 }
-public Action:BloodCrazyDOTLoop(Handle:h,any:data){
+public Action:BloodCrazyDOTLoop(Handle:h,any:data)
+{
 	new attacker;
-	for(new i=1;i<=MaxClients;i++){
-		if(ValidPlayer(i,true)){
-			if(bCrazyDot[i]){
+	for(new i=1;i<=MaxClients;i++)
+	{
+		if(ValidPlayer(i,true))
+		{
+			if(bCrazyDot[i])
+			{
 				attacker=CrazyBy[i];
-				if(ValidPlayer(attacker)){
-					if(War3_GetGame()==Game_TF){
-						War3_DealDamage(i,1,attacker,_,"bleed_kill");
-						
-						new Float:pos[3];
-						GetClientAbsOrigin(i,pos);
-						War3_TF_ParticleToClient(0, GetClientTeam(i)==2?"healthlost_red":"healthlost_blu", pos);
-						    
-					}
-					else{
-						if(War3_GetGame()==Game_CS&&GetClientHealth(i)>1){
-						    War3_DecreaseHP(i,1);
-						}
-						else{
-						    War3_DealDamage(i,1,attacker,_,"bloodcrazy");
-						    
-						   
-						}
-						
-					}
+				if(ValidPlayer(attacker))
+				{
+					War3_DealDamage(i,1,attacker,_,"bleed_kill");
+					new Float:pos[3];
+					GetClientAbsOrigin(i,pos);
+					War3_TF_ParticleToClient(0, GetClientTeam(i)==2?"healthlost_red":"healthlost_blu", pos);
 				}
-				
-				if(GetGameTime()>CrazyUntil[i]){
+				if(GetGameTime()>CrazyUntil[i])
+				{
 					bCrazyDot[i]=false;
 				}
 			}
