@@ -80,11 +80,10 @@ public OnWar3LoadRaceOrItemOrdered(num)
 	{
 		thisRaceID=War3_CreateNewRaceT("nightelf");
 		//SKILL_EVADE=War3_UseGenericSkill(thisRaceID,"Evasion");//War3_AddRaceSkillT(thisRaceID,"Evasion",false,4);
-		new Handle:evasiondata=CreateArray(5,1);
-		SetArrayArray(evasiondata,0,EvadeChance,sizeof(EvadeChance));
-		SKILL_EVADE=War3_UseGenericSkill(thisRaceID,"g_evasion",evasiondata,"Evasion",_,true,_,_);
-
-		
+		//new Handle:evasiondata=CreateArray(5,1);
+		//SetArrayArray(evasiondata,0,EvadeChance,sizeof(EvadeChance));
+		//SKILL_EVADE=War3_UseGenericSkill(thisRaceID,"g_evasion",evasiondata,"Evasion",_,true,_,_);
+		SKILL_EVADE=War3_AddRaceSkillT(thisRaceID,"Evasion",false,4);
 		SKILL_THORNS=War3_AddRaceSkillT(thisRaceID,"ThornsAura",false,4);
 		SKILL_TRUESHOT=War3_AddRaceSkillT(thisRaceID,"TrueshotAura",false,4);
 		ULT_ENTANGLE=War3_AddRaceSkillT(thisRaceID,"EntanglingRoots",true,4); //TEST
@@ -128,55 +127,63 @@ public OnUltimateCommand(client,race,bool:pressed)
 	{
 		new skill_level=War3_GetSkillLevel(client,race,ULT_ENTANGLE);
 		// Spys should be visible to use this ultimate
-		if(skill_level>0 && !Spying(client))
+		if(skill_level>0)
 		{
-			
-			if(!Silenced(client)&&War3_SkillNotInCooldown(client,thisRaceID,ULT_ENTANGLE,true)){
-				
-				new Float:distance=EntangleDistance;
-				new target; // easy support for both
-				
-				new Float:our_pos[3];
-				GetClientAbsOrigin(client,our_pos);
-			
-				target=War3_GetTargetInViewCone(client,distance,false,23.0,ImmunityCheck);
-				if(ValidPlayer(target,true))
+			if(!IsSpying(client))
+			{
+
+				if(!Silenced(client)&&War3_SkillNotInCooldown(client,thisRaceID,ULT_ENTANGLE,true))
 				{
 				
-					bIsEntangled[target]=true;
+					new Float:distance=EntangleDistance;
+					new target; // easy support for both
+
+					new Float:our_pos[3];
+					GetClientAbsOrigin(client,our_pos);
+			
+					target=War3_GetTargetInViewCone(client,distance,false,23.0,ImmunityCheck);
+					if(ValidPlayer(target,true))
+					{
 				
-					War3_SetBuff(target,bNoMoveMode,thisRaceID,true);
-					new Float:entangle_time=EntangleDuration[skill_level];
-					CreateTimer(entangle_time,StopEntangle,target);
-					new Float:effect_vec[3];
-					GetClientAbsOrigin(target,effect_vec);
-					effect_vec[2]+=15.0;
-					TE_SetupBeamRingPoint(effect_vec,45.0,44.0,BeamSprite,HaloSprite,0,15,entangle_time,5.0,0.0,{0,255,0,255},10,0);
-					TE_SendToAll();
-					effect_vec[2]+=15.0;
-					TE_SetupBeamRingPoint(effect_vec,45.0,44.0,BeamSprite,HaloSprite,0,15,entangle_time,5.0,0.0,{0,255,0,255},10,0);
-					TE_SendToAll();
-					effect_vec[2]+=15.0;
-					TE_SetupBeamRingPoint(effect_vec,45.0,44.0,BeamSprite,HaloSprite,0,15,entangle_time,5.0,0.0,{0,255,0,255},10,0);
-					TE_SendToAll();
-					our_pos[2]+=25.0;
-					TE_SetupBeamPoints(our_pos,effect_vec,BeamSprite,HaloSprite,0,50,4.0,6.0,25.0,0,12.0,{80,255,90,255},40);
-					TE_SendToAll();
-					new String:name[64];
-					GetClientName(target,name,64);
-					//War3_ChatMessage(target,"You have been entangled");//%s!")//,(War3_GetGame()==Game_TF)?", your weapons are POWERLESS until you are released":"");
-					W3EmitSoundToAll(entangleSound,target);
-					W3EmitSoundToAll(entangleSound,target);
+						bIsEntangled[target]=true;
+				
+						War3_SetBuff(target,bNoMoveMode,thisRaceID,true);
+						new Float:entangle_time=EntangleDuration[skill_level];
+						CreateTimer(entangle_time,StopEntangle,target);
+						new Float:effect_vec[3];
+						GetClientAbsOrigin(target,effect_vec);
+						effect_vec[2]+=15.0;
+						TE_SetupBeamRingPoint(effect_vec,45.0,44.0,BeamSprite,HaloSprite,0,15,entangle_time,5.0,0.0,{0,255,0,255},10,0);
+						TE_SendToAll();
+						effect_vec[2]+=15.0;
+						TE_SetupBeamRingPoint(effect_vec,45.0,44.0,BeamSprite,HaloSprite,0,15,entangle_time,5.0,0.0,{0,255,0,255},10,0);
+						TE_SendToAll();
+						effect_vec[2]+=15.0;
+						TE_SetupBeamRingPoint(effect_vec,45.0,44.0,BeamSprite,HaloSprite,0,15,entangle_time,5.0,0.0,{0,255,0,255},10,0);
+						TE_SendToAll();
+						our_pos[2]+=25.0;
+						TE_SetupBeamPoints(our_pos,effect_vec,BeamSprite,HaloSprite,0,50,4.0,6.0,25.0,0,12.0,{80,255,90,255},40);
+						TE_SendToAll();
+						new String:name[64];
+						GetClientName(target,name,64);
+						//War3_ChatMessage(target,"You have been entangled");//%s!")//,(War3_GetGame()==Game_TF)?", your weapons are POWERLESS until you are released":"");
+						W3EmitSoundToAll(entangleSound,target);
+						W3EmitSoundToAll(entangleSound,target);
 					
-					W3MsgEntangle(target,client);
+						W3MsgEntangle(target,client);
 				
 					
-					War3_CooldownMGR(client,GetConVarFloat(EntangleCooldownCvar),thisRaceID,ULT_ENTANGLE,_,_);
+						War3_CooldownMGR(client,GetConVarFloat(EntangleCooldownCvar),thisRaceID,ULT_ENTANGLE,_,_);
+					}
+					else
+					{
+						W3MsgNoTargetFound(client,distance);
+					}
 				}
-				else
-				{
-					W3MsgNoTargetFound(client,distance);
-				}
+			}
+			else
+			{
+				PrintHintText(client,"You must not be disguised/cloaked!");
 			}
 		}
 		else
@@ -184,6 +191,15 @@ public OnUltimateCommand(client,race,bool:pressed)
 			W3MsgUltNotLeveled(client);
 		}
 	}
+}
+
+stock bool:IsSpying(client)
+{
+	if(TF2_GetPlayerClass(client)==TFClass_Spy)
+	{
+		return Spying(client);
+	}
+	return false;
 }
 
 public Action:StopEntangle(Handle:timer,any:client)
