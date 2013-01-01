@@ -129,7 +129,7 @@ public OnUltimateCommand(client,race,bool:pressed)
 		// Spys should be visible to use this ultimate
 		if(skill_level>0)
 		{
-			if(!IsSpying(client))
+			if(!Spying(client))
 			{
 
 				if(!Silenced(client)&&War3_SkillNotInCooldown(client,thisRaceID,ULT_ENTANGLE,true))
@@ -191,15 +191,6 @@ public OnUltimateCommand(client,race,bool:pressed)
 			W3MsgUltNotLeveled(client);
 		}
 	}
-}
-
-stock bool:IsSpying(client)
-{
-	if(TF2_GetPlayerClass(client)==TFClass_Spy)
-	{
-		return Spying(client);
-	}
-	return false;
 }
 
 public Action:StopEntangle(Handle:timer,any:client)
