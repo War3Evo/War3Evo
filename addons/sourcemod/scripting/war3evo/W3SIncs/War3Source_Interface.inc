@@ -3021,8 +3021,14 @@ stock W3MsgVengenceWasBlocked(client,String:reason[]) {
 	War3_ChatMessage(client,"%T","Vengence blocked ({reason})",client,reason);
 }
 
-stock bool:Spying(client) {
-	return GameTF()&&( TF2_IsPlayerInCondition(client,TFCond_Disguising)||TF2_IsPlayerInCondition(client,TFCond_Disguised) || TF2_IsPlayerInCondition(client,TFCond_Cloaked));
+stock bool:Spying(client)
+{
+	// Can a class really be disguised if not SPY?  or cloaked if not spy??
+	if(TF2_GetPlayerClass(client)==TFClass_Spy)
+	{
+		return (TF2_IsPlayerInCondition(client,TFCond_Disguising)||TF2_IsPlayerInCondition(client,TFCond_Disguised) || TF2_IsPlayerInCondition(client,TFCond_Cloaked));
+	}
+	return false;
 }
 //team 2 3 swapped if spying
 stock GetApparentTeam(client) {
