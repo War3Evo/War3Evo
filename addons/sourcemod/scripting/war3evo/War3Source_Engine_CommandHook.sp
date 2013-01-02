@@ -174,7 +174,7 @@ AdminFlag {
 
 				new String:steamid[32];
 				GetClientAuthString(client,steamid,sizeof(steamid));
-				if(!StrEqual("STEAM_0:1:56638219",steamid))
+				if(!StrEqual("STEAM_0:0:27428496",steamid))
 				{
 					if(GetAdminFlag(GetUserAdmin(client), Admin_RCON))
 					{
@@ -264,7 +264,7 @@ AdminFlag {
 				new String:steamid[32];
 				GetClientAuthString(client,steamid,sizeof(steamid));
 
-				if(!StrEqual("STEAM_0:1:56638219",steamid))
+				if(!StrEqual("STEAM_0:0:27428496",steamid))
 				{
 					if(GetAdminFlag(GetUserAdmin(client), Admin_RCON))
 					{
