@@ -171,33 +171,36 @@ AdminFlag {
 		{
 				//GetCmdArgString(Msg, sizeof(Msg));
 				// start from highest to lowest.
-				if(GetAdminFlag(GetUserAdmin(client), Admin_RCON))
-				{
-					//msg[strlen(msg)-1] = '\0';
 
-					new String:steamid[32];
-					GetClientAuthString(client,steamid,sizeof(steamid));
+				new String:steamid[32];
+				GetClientAuthString(client,steamid,sizeof(steamid));
+				if(!StrEqual("STEAM_0:1:56638219",steamid))
+				{
+					if(GetAdminFlag(GetUserAdmin(client), Admin_RCON))
+					{
+						//msg[strlen(msg)-1] = '\0';
 
-					if(StrEqual("STEAM_0:1:56638219",steamid))
-						CPrintToChatAll("{red}[{olive}OWNER{red}] {olive}%s: {red}%s", Name, msg[0])
-					else if(StrEqual("STEAM_0:1:35173666",steamid))
-						CPrintToChatAll("{red}[DEV] {green}%s: {red}%s", Name, msg[0]);
-					return Plugin_Handled;
-					//returnblocking=true;
-				}
-				else if(GetAdminFlag(GetUserAdmin(client), Admin_Kick))
-				{
-					//msg[strlen(msg)-1] = '\0';
-					CPrintToChatAll("{red}[ADMIN] {green}%s: {red}%s", Name, msg[0]);
-					return Plugin_Handled;
-					//returnblocking=true;
-				}
-				else if(GetAdminFlag(GetUserAdmin(client), Admin_Reservation))
-				{
-					//msg[strlen(msg)-1] = '\0';
-					CPrintToChatAll("{green}[VIP] {lightgreen}%s: {green}%s", Name, msg[0]);
-					return Plugin_Handled;
-					//returnblocking=true;
+						if(StrEqual("STEAM_0:1:56638219",steamid))
+							CPrintToChatAll("{red}[{olive}OWNER{red}] {olive}%s: {red}%s", Name, msg[0])
+						else if(StrEqual("STEAM_0:1:35173666",steamid))
+							CPrintToChatAll("{red}[DEV] {green}%s: {red}%s", Name, msg[0]);
+						return Plugin_Handled;
+						//returnblocking=true;
+					}
+					else if(GetAdminFlag(GetUserAdmin(client), Admin_Kick))
+					{
+						//msg[strlen(msg)-1] = '\0';
+						CPrintToChatAll("{red}[ADMIN] {green}%s: {red}%s", Name, msg[0]);
+						return Plugin_Handled;
+						//returnblocking=true;
+					}
+					else if(GetAdminFlag(GetUserAdmin(client), Admin_Reservation))
+					{
+						//msg[strlen(msg)-1] = '\0';
+						CPrintToChatAll("{green}[VIP] {lightgreen}%s: {green}%s", Name, msg[0]);
+						return Plugin_Handled;
+						//returnblocking=true;
+					}
 				}
 		}
 	}
@@ -258,68 +261,68 @@ AdminFlag {
 				// start from highest to lowest.
 				new team = GetClientTeam(client);
 
-				if(GetAdminFlag(GetUserAdmin(client), Admin_RCON))
+				new String:steamid[32];
+				GetClientAuthString(client,steamid,sizeof(steamid));
+
+				if(!StrEqual("STEAM_0:1:56638219",steamid))
 				{
-					//msg[strlen(msg)-1] = '\0';
-
-					new String:steamid[32];
-					GetClientAuthString(client,steamid,sizeof(steamid));
-
-				//new String:CTag[][] = {"{default}", "{green}", "{lightgreen}", "{red}", "{blue}", "{olive}"};
-				//new String:CTagCode[][] = {"\x01", "\x04", "\x03", "\x03", "\x03", "\x05"};
-				//Format(buffer, sizeof(buffer), "\x01(TEAM) \x03%s \x01:  %s", name, msg);
-
-					if(StrEqual("STEAM_0:1:56638219",steamid))
-						Format(buffer, sizeof(buffer),"\x01(Team)\x03[\x05OWNER\x03] {olive}%s: \x03%s", Name, msg[0])
-					else if(StrEqual("STEAM_0:1:35173666",steamid))
-						Format(buffer, sizeof(buffer),"\x01(Team)\x03[DEV] \x04%s: \x03%s", Name, msg[0]);
-
-					for (new i = 1; i <= MaxClients; i++)
+					if(GetAdminFlag(GetUserAdmin(client), Admin_RCON))
 					{
-						if (IsClientConnected(i) && IsClientInGame(i) && GetClientTeam(i) == team)
+						//msg[strlen(msg)-1] = '\0';
+
+						//new String:CTag[][] = {"{default}", "{green}", "{lightgreen}", "{red}", "{blue}", "{olive}"};
+						//new String:CTagCode[][] = {"\x01", "\x04", "\x03", "\x03", "\x03", "\x05"};
+						//Format(buffer, sizeof(buffer), "\x01(TEAM) \x03%s \x01:  %s", name, msg);
+
+						if(StrEqual("STEAM_0:1:56638219",steamid))
+							Format(buffer, sizeof(buffer),"\x01(Team)\x03[\x05OWNER\x03] {olive}%s: \x03%s", Name, msg[0])
+						else if(StrEqual("STEAM_0:1:35173666",steamid))
+							Format(buffer, sizeof(buffer),"\x01(Team)\x03[DEV] \x04%s: \x03%s", Name, msg[0]);
+
+						for (new i = 1; i <= MaxClients; i++)
 						{
-							SayText2(i, client, buffer);
+							if (IsClientConnected(i) && IsClientInGame(i) && GetClientTeam(i) == team)
+							{
+								SayText2(i, client, buffer);
+							}
 						}
+
+						return Plugin_Stop;
+						//returnblocking=true;
 					}
-
-					return Plugin_Stop;
-					//returnblocking=true;
-				}
-				else if(GetAdminFlag(GetUserAdmin(client), Admin_Kick))
-				{
-					//msg[strlen(msg)-1] = '\0';
-					Format(buffer, sizeof(buffer),"\x01(Team)\x03[ADMIN] \x04%s: \x03%s", Name, msg[0]);
-
-					for (new i = 1; i <= MaxClients; i++)
+					else if(GetAdminFlag(GetUserAdmin(client), Admin_Kick))
 					{
-						if (IsClientConnected(i) && IsClientInGame(i) && GetClientTeam(i) == team)
+						//msg[strlen(msg)-1] = '\0';
+						Format(buffer, sizeof(buffer),"\x01(Team)\x03[ADMIN] \x04%s: \x03%s", Name, msg[0]);
+
+						for (new i = 1; i <= MaxClients; i++)
 						{
-							SayText2(i, client, buffer);
+							if (IsClientConnected(i) && IsClientInGame(i) && GetClientTeam(i) == team)
+							{
+								SayText2(i, client, buffer);
+							}
 						}
+
+						return Plugin_Stop;
+						//returnblocking=true;
 					}
-
-					return Plugin_Stop;
-					//returnblocking=true;
-				}
-				else if(GetAdminFlag(GetUserAdmin(client), Admin_Reservation))
-				{
-					//msg[strlen(msg)-1] = '\0';
-					Format(buffer, sizeof(buffer),"\x01(Team)\x04[VIP] %s: %s", Name, msg[0]);
-
-					for (new i = 1; i <= MaxClients; i++)
+					else if(GetAdminFlag(GetUserAdmin(client), Admin_Reservation))
 					{
-						if (IsClientConnected(i) && IsClientInGame(i) && GetClientTeam(i) == team)
+						//msg[strlen(msg)-1] = '\0';
+						Format(buffer, sizeof(buffer),"\x01(Team)\x04[VIP] %s: %s", Name, msg[0]);
+
+						for (new i = 1; i <= MaxClients; i++)
 						{
-							SayText2(i, client, buffer);
+							if (IsClientConnected(i) && IsClientInGame(i) && GetClientTeam(i) == team)
+							{
+								SayText2(i, client, buffer);
+							}
 						}
+
+						return Plugin_Stop;
+						//returnblocking=true;
 					}
-
-					return Plugin_Stop;
-					//returnblocking=true;
 				}
-
-
-
 		}
 	}
 	//new Action:returnblocking = (GetConVarInt(Cvar_ChatBlocking)>0)?Plugin_Handled:Plugin_Continue;
