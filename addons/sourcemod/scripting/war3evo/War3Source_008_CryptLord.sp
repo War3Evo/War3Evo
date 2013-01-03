@@ -152,19 +152,18 @@ public OnW3TakeDmgBulletPre(victim,attacker,Float:damage){
 		}	
 	}
 }
-public OnWar3EventPostHurt(victim,attacker,damage)
+public OnW3TakeDmgAll(victim,attacker,Float:damage)
 {
 	if(W3GetDamageIsBullet()&&ValidPlayer(victim,true)&&ValidPlayer(attacker,true)&&GetClientTeam(victim)!=GetClientTeam(attacker))
 	{
-	
-		if(War3_GetRace(victim)==thisRaceID &&W3Chance(W3ChanceModifier(attacker)) )
+		if(War3_GetRace(victim)==thisRaceID && W3Chance(W3ChanceModifier(attacker)) )
 		{
 			new skill_level=War3_GetSkillLevel(victim,thisRaceID,SKILL_SPIKE);
 			if(skill_level>0&&!Hexed(victim,false))
 			{
 				if(!W3HasImmunity(attacker,Immunity_Skills))
 				{
-					new returndmg=RoundFloat(FloatMul(SpikeReturnDmgArr[skill_level],float(damage)));
+					new returndmg=RoundFloat(FloatMul(SpikeReturnDmgArr[skill_level],damage));
 					returndmg=returndmg<40?returndmg:40;
 					if(War3_DealDamage(attacker,returndmg,victim,_,"spiked_carapace",W3DMGORIGIN_SKILL,W3DMGTYPE_PHYSICAL))
 						{
@@ -213,7 +212,7 @@ public OnWar3EventPostHurt(victim,attacker,damage)
 			skill_level = War3_GetSkillLevel(attacker,thisRaceID,SKILL_IMPALE);
 			if(skill_level>0&&!Hexed(attacker,false)&&GetRandomFloat(0.0,1.0)<=ImpaleChanceArr[skill_level]) //spike always activates except chancemod reduction
 			{
-				if(W3HasImmunity(attacker,Immunity_Skills)){
+				if(W3HasImmunity(victim,Immunity_Skills)){
 					PrintHintText(victim,"%T","Blocked Impale",victim);
 					PrintHintText(attacker,"%T","Enemy Blocked Impale",attacker);
 				}
