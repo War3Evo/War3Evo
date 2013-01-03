@@ -62,17 +62,24 @@ public OnMapStart()
 
 public OnUltimateCommand(client,race,bool:pressed)
 {
-	if(pressed && War3_GetRace(client)==thisRaceID && IsPlayerAlive(client) && !Silenced(client) && !Spying(client))
+	if(pressed && War3_GetRace(client)==thisRaceID && IsPlayerAlive(client) && !Silenced(client))
 	{
-		new ult_level=War3_GetSkillLevel(client,race,SKILL_SUICIDE);
-		if(ult_level>0)
+		if(!Spying(client))
 		{
-			ForcePlayerSuicide(client);
+			new ult_level=War3_GetSkillLevel(client,race,SKILL_SUICIDE);
+			if(ult_level>0)
+			{
+				ForcePlayerSuicide(client);
+			}
+			else
+			{
+			//DP("undad ");
+				W3MsgUltNotLeveled(client);
+			}
 		}
-		else 
+		else
 		{
-		//DP("undad ");
-			W3MsgUltNotLeveled(client);
+			PrintHintText(client,"No cloaking/disguised to use ultimate");
 		}
 	}
 }
