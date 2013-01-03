@@ -181,7 +181,8 @@ public OnWar3EventSpawn(client)
 				
 				new old_credits=War3_GetGold(client);
 				//PrintToChat(client,"dollar %d",dollar);
-				dollar /= (max/10); // was dollar /= (max/6);
+				// orignal war3source was 100 gold max.. so.. 100/6 = 17 rounded up
+				dollar /= 16; // was dollar /= (max/6);
 				//PrintToChat(client,"dollar %d",dollar);
 				new new_credits = old_credits + dollar;
 				if (new_credits > max)
