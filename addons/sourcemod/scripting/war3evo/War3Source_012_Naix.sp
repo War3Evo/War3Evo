@@ -121,7 +121,6 @@ public OnRaceChanged(client,oldrace,newrace)
 }
 public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon)
 {
-	
 	bDucking[client]=(buttons & IN_DUCK)?true:false;
 	return Plugin_Continue;
 }
@@ -147,7 +146,7 @@ public OnWar3EventDeath(victim,attacker){
 			else{
 				
 				
-				if(bDucking[attacker]){
+				if(bDucking[attacker] && SkillAvailable(attacker,thisRaceID,SKILL_INFEST,true)){
 					decl Float:location[3];
 					GetClientAbsOrigin(victim,location);
 					//.PrintToChatAll("%f %f %f",teleportTo[attacker][0],teleportTo[attacker][1],teleportTo[attacker][2]);
@@ -158,6 +157,7 @@ public OnWar3EventDeath(victim,attacker){
 					//CreateTimer(0.1,setlocation,attacker);
 					
 					TeleportEntity(attacker, location, NULL_VECTOR, NULL_VECTOR);
+					War3_CooldownMGR(attacker,10.0,thisRaceID,SKILL_INFEST,true,true);
 				}
 				
 				new addHealth = RoundFloat(FloatMul(float(War3_GetMaxHP(victim)),HPPercentHealPerKill[iSkillLevel]));
