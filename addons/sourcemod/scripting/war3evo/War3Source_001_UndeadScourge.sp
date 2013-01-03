@@ -62,7 +62,7 @@ public OnMapStart()
 
 public OnUltimateCommand(client,race,bool:pressed)
 {
-	if(pressed && War3_GetRace(client)==thisRaceID && IsPlayerAlive(client) && !Silenced(client))
+	if(pressed && War3_GetRace(client)==thisRaceID && IsPlayerAlive(client) && !Silenced(client) && !Spying(client))
 	{
 		new ult_level=War3_GetSkillLevel(client,race,SKILL_SUICIDE);
 		if(ult_level>0)
@@ -120,7 +120,7 @@ public OnWar3EventDeath(victim, attacker)
 {
 	new race=W3GetVar(DeathRace);
 	new skill=War3_GetSkillLevel(victim,thisRaceID,SKILL_SUICIDE);
-	if(race==thisRaceID && skill>0 && !Hexed(victim))
+	if(race==thisRaceID && skill>0 && !Hexed(victim) && !Spying(victim))
 	{
 		decl Float:location[3];
 		GetClientAbsOrigin(victim,location);
