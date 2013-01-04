@@ -449,7 +449,7 @@ bool:Internal_War3Source_SayCommand(client,String:arg1[256])
 		W3CreateEvent(DoShowItemsInfoMenu,client);
 		return returnblocking;
 	}
-	else if(CommandCheck(arg1,"itemsinfo2"))
+	else if(CommandCheck(arg1,"itemsinfo2")||CommandCheck(arg1,"iteminfo2"))
 	{
 		W3CreateEvent(DoShowItems2InfoMenu,client);
 		return returnblocking;
@@ -464,9 +464,14 @@ bool:Internal_War3Source_SayCommand(client,String:arg1[256])
 		CloseHandle(array);
 		return returnblocking;
 	}
-	else if(CommandCheck(arg1,"jobinfo"))
+	else if(CommandCheck(arg1,"jobinfo")||CommandCheck(arg1,"raceinfo"))
 	{
 		W3CreateEvent(DoShowRaceinfoMenu,client);
+		return returnblocking;
+	}
+	else if(CommandCheck(arg1,"mygold")||CommandCheck(arg1,"gold"))
+	{
+		War3_ChatMessage(client,"Gold: %i",War3_GetGold(client));
 		return returnblocking;
 	}
 	else if(CommandCheck(arg1,"speed"))
