@@ -26,7 +26,7 @@ new thisRaceID, SKILL_RED, SKILL_GREEN, SKILL_BLUE, ULT_DISCO;
 
 //new Float:RGBChance[6] = { 0.00, 0.05, 0.10, 0.15, 0.20, 0.25 };
 new Float:RGBChance[6] = { 0.00, 0.05, 0.10, 0.15, 0.20, 0.25 };
-new Float:ClientPos[64][3];
+//new Float:ClientPos[64][3];
 new ClientTarget[64];
 
 const Maximum_Players_array=100;
@@ -66,9 +66,9 @@ public OnWar3LoadRaceOrItemOrdered2(num)
 	   SKILL_RED = War3_AddRaceSkill( thisRaceID, "Red Laser: Burn", "Burn your targets", false, 5 );
 	   SKILL_GREEN = War3_AddRaceSkill( thisRaceID, "Green Laser: Shake", "Shake your targets", false, 5 );
 	   SKILL_BLUE = War3_AddRaceSkill( thisRaceID, "Blue Laser: Freeze", "Freeze your Targets", false, 5 );
-	   ULT_DISCO = War3_AddRaceSkill( thisRaceID, "Disco Ball", "Teleport an enemy into the air above you!", true, 1 );
+	   ULT_DISCO = War3_AddRaceSkill( thisRaceID, "Flash", "Teleport a random ally!", true, 1 );
 	
-	   W3SkillCooldownOnSpawn( thisRaceID, ULT_DISCO, 35.0, false );
+	   //W3SkillCooldownOnSpawn( thisRaceID, ULT_DISCO, 35.0, false );
 
 	   War3_CreateRaceEnd( thisRaceID );
        }
@@ -270,32 +270,31 @@ public OnUltimateCommand( client, race, bool:pressed )
 
 stock Disco( client )
 {
+	// changing so that the client goes to a random ally player
 	if( GetClientTeam( client ) == TEAM_T )
-		ClientTarget[client] = War3_GetRandomPlayer( "#ct", true, true );
-	if( GetClientTeam( client ) == TEAM_CT )
 		ClientTarget[client] = War3_GetRandomPlayer( "#t", true, true );
-	
-	if( ClientTarget[client] == 0 )
+	if( GetClientTeam( client ) == TEAM_CT )
+		ClientTarget[client] = War3_GetRandomPlayer( "#ct", true, true );
+
+	if( ClientTarget[client] == 0 || ClientTarget[client] == client )
 	{
 		PrintHintText( client, "No Target Found" );
 	}
 	else
 	{
-		GetClientAbsOrigin( client, ClientPos[client] );
+		//GetClientAbsOrigin( ClientTarget[client], ClientPos[client] );
 		CreateTimer( 3.0, Teleport, client );
-		CreateTimer( 3.1, Freeze, client );
-		CreateTimer( 5.0, UnFreeze, client );
-		
+
 		new String:NameAttacker[64];
 		GetClientName( client, NameAttacker, 64 );
 		
 		new String:NameVictim[64];
 		GetClientName( ClientTarget[client], NameVictim, 64 );
 		
-		PrintToChat( client, "\x05: \x4%s \x03will teleport to you and become a \x04Disco Ball \x03in \x043 \x03seconds", NameVictim );
-		PrintToChat( ClientTarget[client], "\x05: \x03You will teleport to \x04%s \x03and become a \x04Disco Ball \x03in \x043 \x03seconds", NameAttacker );
+		PrintToChat( ClientTarget[client], "\x05: \x4%s \x03will teleport to you and to aid you in your \x04fight \x03in \x043 \x03seconds", NameAttacker );
+		PrintToChat( client, "\x05: \x03You will teleport to \x04%s \x03and aid him/her in thier \x04fight \x03in \x043 \x03seconds", NameVictim );
 		
-		War3_CooldownMGR( client, 40.0, thisRaceID, ULT_DISCO, true, true);
+		War3_CooldownMGR( client, 20.0, thisRaceID, ULT_DISCO, true, true);
 	}
 }
 
@@ -303,24 +302,13 @@ public Action:Teleport( Handle:timer, any:client )
 {
 	if( ValidPlayer( ClientTarget[client], true ) )
 	{
-		ClientPos[client][2] += 150;
-		TeleportEntity( ClientTarget[client], ClientPos[client], NULL_VECTOR, NULL_VECTOR );
-	}
-}
-
-public Action:Freeze( Handle:timer, any:client )
-{
-	if( ValidPlayer( ClientTarget[client], true ) )
-	{
-		War3_SetBuff( ClientTarget[client], bStunned, thisRaceID, true );
-	}
-}
-
-public Action:UnFreeze( Handle:timer, any:client )
-{
-	if( ValidPlayer( ClientTarget[client], true ) )
-	{
-		War3_SetBuff( ClientTarget[client], bStunned, thisRaceID, false );
+		new Float:ang[3];
+		new Float:ClientPos[3];
+		GetClientAbsOrigin( ClientTarget[client], ClientPos );
+		GetClientEyeAngles( ClientTarget[client], ang);
+		ClientPos[1] -= 50;
+		// lightbender teleports to his allly
+		TeleportEntity( client, ClientPos, ang, NULL_VECTOR );
 	}
 }
 
