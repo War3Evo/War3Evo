@@ -556,7 +556,7 @@ bool:Internal_War3Source_SayCommand(client,String:arg1[256])
 			W3CreateEvent(DoShowShopMenu2,client);
 			return returnblocking;
 		}
-		else if(CommandCheck(arg1,"war3menu")||CommandCheck(arg1,"w3s")||CommandCheck(arg1,"wcs"))
+		else if(CommandCheck(arg1,"war3menu")||CommandCheck(arg1,"w3e")||CommandCheck(arg1,"wcs"))
 		{
 			W3CreateEvent(DoShowWar3Menu,client);
 			return returnblocking;
