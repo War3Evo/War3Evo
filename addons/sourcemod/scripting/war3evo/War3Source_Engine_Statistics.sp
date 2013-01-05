@@ -394,6 +394,7 @@ public bool:CommandCheckStartsWith(String:compare[],String:lookingfor[]) {
 }
 
 
+/*
 FileBugReport(client,String:reportstr[]){
 	new String:longquery[2000];
 	
@@ -450,6 +451,7 @@ FileBugReport(client,String:reportstr[]){
 	W3Socket(longquery,SockCallbackBufReport);
 
 }
+*/
 public SockCallbackBufReport(bool:success,bool:fail,String:str[]){
 
 }
