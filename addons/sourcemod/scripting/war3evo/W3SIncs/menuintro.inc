@@ -36,6 +36,7 @@ public War3Source_IntroMenu_Select(Handle:menu,MenuAction:action,client,selectio
 	{
 		if(W3IsPlayerXPLoaded(client)){
 			//W3CreateEvent(DoShowChangeRaceMenu,client);
+			War3_SetRace(client,1);
 			W3CreateEvent(DoShowWar3Menu,client);
 		}
 		else{
