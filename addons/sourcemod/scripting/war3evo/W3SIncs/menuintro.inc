@@ -27,17 +27,29 @@ public War3Source_IntroMenu(client)
 	}
 	Format(buf,sizeof(buf),"Www.War3Source.Com");
 	AddMenuItem(introMenu,"exit",buf);
+
+	Format(buf,sizeof(buf),"<-- Press this number for war3menu help!");
+	AddMenuItem(introMenu,"exit",buf);
+
+	Format(buf,sizeof(buf),"<-- Press this number for war3menu help!");
+	AddMenuItem(introMenu,"exit",buf);
+
+	Format(buf,sizeof(buf),"<-- Press this number for war3menu help!");
+	AddMenuItem(introMenu,"exit",buf);
+
 	DisplayMenu(introMenu,client,MENU_TIME_FOREVER);
 }
 
 public War3Source_IntroMenu_Select(Handle:menu,MenuAction:action,client,selection)
 {
-	if(W3()&&ValidPlayer(client)&&War3_GetRace(client)==0)
+	if(W3()&&ValidPlayer(client))
 	{
 		if(W3IsPlayerXPLoaded(client)){
-			//W3CreateEvent(DoShowChangeRaceMenu,client);
-			War3_SetRace(client,1);
-			W3CreateEvent(DoShowWar3Menu,client);
+			if(selection>2)
+			{
+				W3CreateEvent(DoShowWar3Menu,client);
+				//W3CreateEvent(DoShowChangeRaceMenu,client);
+			}
 		}
 		else{
 			War3_ChatMessage(client,"%T","Please be patient while we load your XP",client);
