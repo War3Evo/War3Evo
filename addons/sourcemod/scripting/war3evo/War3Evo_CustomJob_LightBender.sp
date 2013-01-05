@@ -310,6 +310,11 @@ public Action:Teleport( Handle:timer, any:client )
 		// lightbender teleports to his allly
 		TeleportEntity( client, ClientPos, ang, NULL_VECTOR );
 	}
+	else
+	{
+		War3_CooldownReset(client, thisRaceID, ULT_DISCO);
+		PrintHintText( client, "Your Target Died!" );
+	}
 }
 
 public War3_GetRandomPlayer( const String:type[], bool:check_alive, bool:check_immunity )
