@@ -42,6 +42,8 @@ static const String:CLASSNAME_WITCH[]	 	= "witch";
 
 new dummyresult;
 
+//global
+new ownerOffset;
 
 new damagestack=0;
 
@@ -65,6 +67,8 @@ public OnPluginStart()
 	{
 		HookEvent("infected_hurt", EventInfectedHurt);
 	}
+
+	ownerOffset = FindSendPropInfo("CBaseObject", "m_hBuilder");
 }
 
 //cvar handle
@@ -85,6 +89,8 @@ public bool:InitNativesForwards()
 	CreateNative("W3GetDamageStack",NW3GetDamageStack);
 
 	CreateNative("W3ChanceModifier",Native_W3ChanceModifier);
+
+	CreateNative("W3IsOwnerSentry",Native_W3IsOwnerSentry);
 
 
 	FHOnW3TakeDmgAllPre=CreateGlobalForward("OnW3TakeDmgAllPre",ET_Hook,Param_Cell,Param_Cell,Param_Cell);
@@ -156,21 +162,46 @@ public OnClientDisconnect(client){
 	SDKUnhook(client,SDKHook_OnTakeDamage,SDK_Forwarded_OnTakeDamage); 
 }
 
+public Native_W3IsOwnerSentry(Handle:plugin,numParams)
+{
+	new client=GetNativeCell(1);
+	new bool:UseInternalInflictor=GetNativeCell(2);
+	new pSentry;
+	if(UseInternalInflictor)
+		pSentry=g_CurInflictor;
+	else
+		pSentry=GetNativeCell(3);
+
+	if(ValidPlayer(client))
+	{
+		if(IsValidEntity(pSentry)&&TF2_GetPlayerClass(client)==TFClass_Engineer)
+		{
+			decl String:netclass[32];
+			GetEntityNetClass(pSentry, netclass, sizeof(netclass));
+
+			if (strcmp(netclass, "CObjectSentrygun") == 0 || strcmp(netclass, "CObjectTeleporter") == 0 || strcmp(netclass, "CObjectDispenser") == 0)
+			{
+				if (GetEntDataEnt2(pSentry, ownerOffset) == client)
+					return true;
+			}
+		}
+	}
+	return false;
+}
 
 public Native_W3ChanceModifier(Handle:plugin,numParams)
 {
-	
+
 	new attacker=GetNativeCell(1);
 	//new inflictor=W3GetDamageInflictor();
 	//new damagetype=W3GetDamageType();
 	if(!GameTF()||attacker<=0 || attacker>MaxClients || !IsValidEdict(attacker)){
 		return _:1.0;
 	}
-	
-	
+
+
 	return _:ChanceModifier[attacker];
 }
-
 
 public Action:SDK_Forwarded_OnTakeDamage(victim,&attacker,&inflictor,&Float:damage,&damagetype)
 {

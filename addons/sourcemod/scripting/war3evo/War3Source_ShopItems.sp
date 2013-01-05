@@ -23,7 +23,7 @@ new String:helmSound2[]="physics/metal/metal_solid_impact_bullet3.wav";
 new String:helmSound3[]="physics/metal/metal_solid_impact_bullet4.wav";
 
 //global
-new ownerOffset;
+//new ownerOffset;
 
 
 enum{
@@ -148,7 +148,7 @@ public OnPluginStart()
 		MoneyOffsetCS=FindSendPropInfo("CCSPlayer","m_iAccount");
 	}
 
-	ownerOffset = FindSendPropInfo("CBaseObject", "m_hBuilder");
+	//ownerOffset = FindSendPropInfo("CBaseObject", "m_hBuilder");
 }
 new bool:war3ready;
 public OnWar3LoadRaceOrItemOrdered(num)
@@ -920,13 +920,7 @@ same error above except with shopmenu items
 
 public OnW3TakeDmgAll(victim,attacker,Float:damage)
 {
-	//new inflictor = W3GetDamageInflictor();
-	new bool:IsSentry = false;
-	if(ValidPlayer(attacker))
-	{
-		IsSentry = IS_sentryowner(attacker,W3GetDamageInflictor());
-	}
-	if(!IsSentry&&W3GetDamageIsBullet()&&ValidPlayer(victim)&&ValidPlayer(attacker,true)&&GetClientTeam(victim)!=GetClientTeam(attacker))
+	if(!W3IsOwnerSentry(attacker)&&W3GetDamageIsBullet()&&ValidPlayer(victim)&&ValidPlayer(attacker,true)&&GetClientTeam(victim)!=GetClientTeam(attacker))
 	{
 		//DP("bullet 1 claw %d vic alive%d",War3_GetOwnsItem(attacker,shopItem[CLAW]),ValidPlayer(victim,true,true));
 		//new vteam=GetClientTeam(victim);
@@ -934,7 +928,7 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 		
 		if(!W3HasImmunity(victim,Immunity_Items)&&!Perplexed(attacker))
 		{
-			if(War3_GetOwnsItem(attacker,shopItem[CLAW])&&ValidPlayer(victim,true,true)) // claws of attack
+			if(War3_GetOwnsItem(attacker,shopItem[CLAW])&&ValidPlayer(victim,true,true)&&W3Chance(W3ChanceModifier(attacker))) // claws of attack
 			{
 				new Float:dmg=GetConVarFloat(ClawsAttackCvar);
 				if(dmg<0.0) 	dmg=0.0;
@@ -958,7 +952,7 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 				
 			if( War3_GetOwnsItem(attacker,shopItem[FROST]) && !bFrosted[victim])
 			{
-				new chance;
+				/*new chance;
 				switch (TF2_GetPlayerClass(attacker))
 				{
 					case TFClass_Scout:
@@ -1002,7 +996,8 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 						chance = 10;
 					}
 				}
-				if(GetRandomInt(1, 100) <= chance)
+				if(GetRandomInt(1, 100) <= chance) */
+				if(W3Chance(W3ChanceModifier(attacker)))
 				{
 					new Float:speed_frost=GetConVarFloat(OrbFrostCvar);
 					if(speed_frost<=0.0) speed_frost=0.01; // 0.0 for override removes
@@ -1018,7 +1013,7 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 			}
 	
 
-			if(War3_GetOwnsItem(attacker,shopItem[MASK])) // Mask of death
+			if(War3_GetOwnsItem(attacker,shopItem[MASK]) && W3Chance(W3ChanceModifier(attacker))) // Mask of death
 			{
 				new Float:hp_percent=GetConVarFloat(MaskDeathCvar);
 				if(hp_percent<0.0)	hp_percent=0.0;
@@ -1229,20 +1224,13 @@ public OnW3TakeDmgBullet(victim,attacker,Float:damage)
 	//new String:GetWeapon1[64];
 	//GetClientWeapon( attacker, GetWeapon1 , 64);
 	//DP(GetWeapon1);
-	new inflictor = W3GetDamageInflictor();
-	new bool:IsSentry = false;
-	if(ValidPlayer(attacker))
-	{
-		IsSentry = IS_sentryowner(attacker,inflictor);
-	}
 
-
-	if (!IsSentry&&ValidPlayer(victim, true) && ValidPlayer(attacker) && victim != attacker)
+	if (!W3IsOwnerSentry(attacker)&&ValidPlayer(victim, true) && ValidPlayer(attacker) && victim != attacker)
 	{
 		if ((GetClientTeam(victim) != GetClientTeam(attacker)) && (!W3HasImmunity(victim, Immunity_Items)))
 		{
 			//new chance = RoundFloat(100.0 * W3ChanceModifier(attacker));
-			new chance;
+			/*new chance;
 			switch (TF2_GetPlayerClass(attacker))
 			{
 				case TFClass_Scout:
@@ -1286,7 +1274,9 @@ public OnW3TakeDmgBullet(victim,attacker,Float:damage)
 					chance = 10;
 				}
 			}
-			if(GetRandomInt(1, 100) <= chance)
+			*/
+			//if(GetRandomInt(1, 100) <= chance)
+			if(W3Chance(W3ChanceModifier(attacker)))
 			{
 				if(War3_GetOwnsItem(attacker, shopItem[FIREORB]) && !(TF2_IsPlayerInCondition(victim, TFCond_OnFire)) && !Perplexed(attacker))
 				{
