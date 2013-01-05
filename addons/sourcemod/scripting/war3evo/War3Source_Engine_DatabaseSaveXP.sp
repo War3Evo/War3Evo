@@ -416,11 +416,15 @@ public T_CallbackSelectPDataMain(Handle:owner,Handle:hndl,const String:error[],a
 				PrintToConsole(client,"%T","[War3Source] War3 MAIN retrieval: gold {amount} Time {amount}",client,cred,GetGameTime());
 				PrintToConsole(client,"[War3Source] Diamonds %d",diamonds);
 				
-				new raceFound=0; // worst case senario set player to race 0
+				new raceFound=0; // worst case senario set player to race 0 <<-- changed to 1 so that they must have a race
 				if(GetConVarInt(hSetRaceOnJoinCvar)>0)
 				{
 					//Scan all the races
 					new RacesLoaded = War3_GetRacesLoaded();
+					if(RacesLoaded>0)
+					{
+						raceFound=1;  //Change default to 1 since races do exist
+					}
 					for(new x=1;x<=RacesLoaded;x++)
 					{
 						new String:short[16];
@@ -443,8 +447,7 @@ public T_CallbackSelectPDataMain(Handle:owner,Handle:hndl,const String:error[],a
 			///////////////////////////////////////////
 			///////////////////////////////////////////
 			///////////////////////////////////////////
-			/////////ADD NEW PLAYER JOIN SOUND/////////
-			/////////IN THIS AREA AS THIS IS //////////
+			/////////IN THIS AREA IS///////////////////
 			/////////WHERE THE NEW PLAYER DATA/////////
 			/////////IS CREATED!///////////////////////
 			///////////////////////////////////////////
@@ -482,6 +485,10 @@ public T_CallbackSelectPDataMain(Handle:owner,Handle:hndl,const String:error[],a
 				new Handle:querytrie=CreateTrie();
 				SetTrieString(querytrie,"query",longquery);
 				SQL_TQuery(hDB,T_CallbackInsertPDataMain,longquery,querytrie);
+
+				// Set New Player Job
+				War3_SetRace(client,1);
+
 			}
 			
 		}
