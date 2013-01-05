@@ -110,7 +110,7 @@ And that’s the art of the test!
 
 
 #define VERSION_NUM "1.2.4.0"
-#define eVERSION_NUM "1.0.1.7 (12/31/2012)"
+#define eVERSION_NUM "1.0.1.8 (1/5/2013)"
 #define REVISION_NUM 12321 //increment every release
 
 //DO NOT REMOVE THE OFFICIAL AUTHORS. YOU SHALL NOT DEPRIVE THEM OF THE CREDIT THEY DESERVE
