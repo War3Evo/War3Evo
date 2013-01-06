@@ -5,7 +5,6 @@
 #include <sourcemod>
 #include "W3SIncs/War3Source_Interface"
 
-
 new Handle:g_hGameMode;
 new bool:bSurvivalStarted;
 new bool:bStartingArea[MAXPLAYERS];
@@ -73,9 +72,9 @@ public Action:Command_ReloadCats(args) {
 
 public War3Source_EnterCheckEvent(Handle:event,const String:name[],bool:dontBroadcast)
 {
-	if(GetEventInt(event,"userid")>0)
+	if(GetEventInt(event,"userid") > 0)
 	{
-		new client = GetClientOfUserId(GetEventInt(event,"userid"));
+		new client = GetClientOfUserId(GetEventInt(event, "userid"));
 		if (ValidPlayer(client, true) && GetClientTeam(client) == TEAM_SURVIVORS)
 		{
 			bStartingArea[client] = true;
@@ -94,9 +93,9 @@ public War3Source_EnterCheckEvent(Handle:event,const String:name[],bool:dontBroa
 
 public War3Source_LeaveCheckEvent(Handle:event,const String:name[],bool:dontBroadcast)
 {
-	if(GetEventInt(event,"userid")>0)
+	if(GetEventInt(event,"userid") > 0)
 	{
-		new client = GetClientOfUserId(GetEventInt(event,"userid"));
+		new client = GetClientOfUserId(GetEventInt(event, "userid"));
 		if (ValidPlayer(client, true) && GetClientTeam(client) == TEAM_SURVIVORS)
 		{
 			W3Hint(client, HINT_LOWEST, 1.0, "You will not be able to change jobs during the map.");
@@ -188,7 +187,7 @@ stock GetNewRacesInCat(client,String:category[]) {
 	return amount;
 }
 
-War3Source_ChangeRaceMenu(client)
+War3Source_ChangeRaceMenu(client,bool:forceUncategorized=false)
 {
 	if(W3IsPlayerXPLoaded(client))
 	{
@@ -202,7 +201,7 @@ War3Source_ChangeRaceMenu(client)
 
 		SetTrans(client);
 		decl Handle:crMenu;
-		if(IsCategorized()) {
+		if( IsCategorized() && !forceUncategorized ) {
 			//Revan: the long requested changerace categorie feature
 			//TODO:
 			//- translation support
@@ -219,6 +218,8 @@ War3Source_ChangeRaceMenu(client)
 			}
 			SetMenuTitle(crMenu,"%s\n \n",title);
 			decl String:strCat[64];
+			//Prepend 'All Jobs' entry.
+			AddMenuItem(crMenu,"-1","All Jobs");
 			//At first we gonna add the categories
 			for(new i=1;i<CatCount;i++) {
 				W3GetCategory(i,strCat,sizeof(strCat));
@@ -366,6 +367,11 @@ public War3Source_CRMenu_SelCat(Handle:menu,MenuAction:action,client,selection)
 				SetTrans(client);
 				new String:sItem[64],String:title[512],String:rbuf[4],String:rname[64],String:rdisp[128];
 				GetMenuItem(menu, selection, sItem, sizeof(sItem));
+				if( StringToInt(sItem) == -1 ) {
+					War3Source_ChangeRaceMenu(client,true);
+					return;
+				}
+
 				new Handle:crMenu=CreateMenu(War3Source_CRMenu_Selected);
 				SetMenuExitButton(crMenu,true);
 				Format(title,sizeof(title),"%T","[War3Source] Select your desired job",GetTrans());
@@ -445,13 +451,14 @@ public War3Source_CRMenu_Selected(Handle:menu,MenuAction:action,client,selection
 			new SelectionStyle;
 			GetMenuItem(menu,selection,SelectionInfo,sizeof(SelectionInfo),SelectionStyle, SelectionDispText,sizeof(SelectionDispText));
 			new race_selected=StringToInt(SelectionInfo);
-			new bool:allowChooseRace=bool:CanSelectRace(client,race_selected); //this is the deny system W3Denyable
 			
 			if(race_selected==-1) {
 				War3Source_ChangeRaceMenu(client); //user came from the categorized cr menu and clicked the back button
 				return;
-			}			
-			else if(allowChooseRace==false){
+			}
+
+			new bool:allowChooseRace=bool:CanSelectRace(client,race_selected); //this is the deny system W3Denyable			
+			if(allowChooseRace==false){
 				War3Source_ChangeRaceMenu(client);//derpy hooves
 			}
 			
