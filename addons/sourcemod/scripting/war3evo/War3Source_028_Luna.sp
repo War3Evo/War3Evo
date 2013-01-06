@@ -167,7 +167,7 @@ public OnW3TakeDmgBullet( victim, attacker, Float:damage )
 			{
 				// So that players' sentry does not proc this skill
 				// Less chance to Proc for based on your class.
-				if(!W3IsOwnerSentry(attacker) && W3ClassProc(attacker) && skill_level > 0 && SkillAvailable(attacker,thisRaceID,SKILL_MOONBEAM,false) &&!W3HasImmunity( victim, Immunity_Skills ))
+				if(!W3IsOwnerSentry(attacker) && skill_level > 0 && SkillAvailable(attacker,thisRaceID,SKILL_MOONBEAM,false) &&!W3HasImmunity( victim, Immunity_Skills ))
 				{
 					MoonBeamDamageAndEffect(victim, attacker, LucentBeamMin[skill_level], LucentBeamMax[skill_level]);
 
