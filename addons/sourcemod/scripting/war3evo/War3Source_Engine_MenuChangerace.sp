@@ -10,7 +10,7 @@ new bool:bSurvivalStarted;
 new bool:bStartingArea[MAXPLAYERS];
 
 //race cat defs
-new Handle:hUseCategories,Handle:hCanDrawCat;
+new Handle:hUseCategories,Handle:hCanDrawCat,Handle:hAllowCategoryDefault;
 new String:strCategories[MAXCATS][64];
 new CatCount;
 
@@ -54,6 +54,7 @@ public OnPluginStart()
 		}
 	}
 	hUseCategories = CreateConVar("war3_jobcats","0","If non-zero job categories will be enabled");
+	hAllowCategoryDefault = CreateConVar("war3_allow_default_cats","0","Allow Default categories to show in category menu? (default 0)");
 	RegServerCmd("war3_reloadcats", Command_ReloadCats);
 }
 
@@ -223,6 +224,8 @@ War3Source_ChangeRaceMenu(client,bool:forceUncategorized=false)
 			//At first we gonna add the categories
 			for(new i=1;i<CatCount;i++) {
 				W3GetCategory(i,strCat,sizeof(strCat));
+				if(StrEqual(strCat,"default") && !GetConVarBool(hAllowCategoryDefault))
+					continue;
 				if(strlen(strCat)>0) {
 					if(HasCategoryAccess(client,i)) {
 						new amount=GetNewRacesInCat(client,strCat);
@@ -379,6 +382,8 @@ public War3Source_CRMenu_SelCat(Handle:menu,MenuAction:action,client,selection)
 				// Iteriate through the races and print them out				
 				new racelist[MAXRACES];
 				new racedisplay=W3GetRaceList(racelist);
+				new bool:SteamGroupRequired=false;
+				AddMenuItem(crMenu,"-1","[Return to Categories]");
 				for(new i=0;i<racedisplay;i++)
 				{
 					new	x=racelist[i],String:rcvar[64];
@@ -420,14 +425,53 @@ public War3Source_CRMenu_SelCat(Handle:menu,MenuAction:action,client,selection)
 						{
 							Format(rdisp,sizeof(rdisp),"%s %T",rdisp,"reqlvl {amount}",GetTrans(),minlevel);
 						}
-						AddMenuItem(crMenu,rbuf,rdisp,(minlevel<=W3GetTotalLevels(client)||W3IsDeveloper(client))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
+						new String:requiredflagstr[32];
+						W3GetRaceAccessFlagStr(x,requiredflagstr,sizeof(requiredflagstr));  ///14 = index, see races.inc
+
+						if(!StrEqual(requiredflagstr, "0", false)&&!StrEqual(requiredflagstr, "", false)&&!W3IsDeveloper(client))
+						{
+							Format(rdisp,sizeof(rdisp),"%s (VIP Only)",rdisp);
+							if(W3RaceHasFlag(x,"steamgroup"))
+							{
+								Format(rdisp,sizeof(rdisp),"%s (Steam Group)",rdisp);
+							}
+							new AdminId:admin = GetUserAdmin(client);
+							if(admin == INVALID_ADMIN_ID) //flag is required and this client is not admin
+							{
+								AddMenuItem(crMenu,rbuf,rdisp,ITEMDRAW_DISABLED);
+							}
+							else
+							{
+								AddMenuItem(crMenu,rbuf,rdisp,ITEMDRAW_DEFAULT);
+							}
+						}
+						else if(!War3_IsInSteamGroup(client)&&W3RaceHasFlag(x,"steamgroup"))
+						{
+							Format(rdisp,sizeof(rdisp),"%s *War3Evo Steam Group Required*",rdisp);
+							AddMenuItem(crMenu,rbuf,rdisp,ITEMDRAW_DISABLED);
+							SteamGroupRequired=true;
+							//War3_ChatMessage(client,"Job %s requires you join our Steam Group:\nhttp://steamcommunity.com/groups/war3evo",rname);
+							//War3_ChatMessage("Sometimes we lose connection to the steam group, so please be patient.");
+						}
+						else
+						{
+							//AddMenuItem(crMenu,rbuf,rdisp,(minlevel<=W3GetTotalLevels(client)||StrEqual(steamid,"STEAM_0:1:35173666",false)?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
+							if(W3RaceHasFlag(x,"steamgroup"))
+							{
+								Format(rdisp,sizeof(rdisp),"%s (Steam Group)",rdisp);
+							}
+							AddMenuItem(crMenu,rbuf,rdisp,minlevel<=W3GetTotalLevels(client)?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
+						}
+					}
+					if(SteamGroupRequired==true)
+					{
+						War3_ChatMessage(client,"Steam Group: http://steamcommunity.com/groups/war3evo");
 					}
 				}
-				AddMenuItem(crMenu,"-1","Back");
 				DisplayMenu(crMenu,client,MENU_TIME_FOREVER);
 			}
 		}
-	case MenuAction_End:
+		case MenuAction_End:
 		{
 			CloseHandle(menu);
 		}
