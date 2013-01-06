@@ -1048,7 +1048,7 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 		}
 	}
 }
-
+/*
 bool:IS_sentryowner(client,pSentry)
 {
 	if(ValidPlayer(client))
@@ -1073,7 +1073,7 @@ bool:IS_sentryowner(client,pSentry)
 	}
 	return false;
 }
-
+*/
 public Action:Unfrost(Handle:timer,any:client)
 {
 	bFrosted[client]=false;
