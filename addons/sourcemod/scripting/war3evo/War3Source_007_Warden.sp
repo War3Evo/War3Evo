@@ -71,7 +71,7 @@ public OnPluginStart()
 
 public OnWar3LoadRaceOrItemOrdered(num)
 {
-	if(num==70)
+	if(num==0)
 	{
 		thisRaceID=War3_CreateNewRaceT("warden");
 		SKILL_FANOFKNIVES=War3_AddRaceSkillT(thisRaceID,"FanOfKnivesTF",false,4);
