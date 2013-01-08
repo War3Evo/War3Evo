@@ -18,6 +18,7 @@
 #include "W3SIncs/colors"
 #include "W3SIncs/aura"
 #include "W3SIncs/War3Source_Effects"
+#include "W3SIncs/War3Source_Logging"
 //sh include is at the end of this file
 
 
@@ -76,13 +77,6 @@ public APLRes:AskPluginLoad2(Handle:plugin,bool:late,String:error[],err_max)
 		}
 	}
 
-	//do not load if these functions exists
-	if(GetFunctionByName(plugin, "W3ONLY")!=INVALID_FUNCTION && !W3()) {
-		return APLRes_SilentFailure;
-	}
-	if(GetFunctionByName(plugin, "SHONLY")!=INVALID_FUNCTION && !SH()) {
-		return APLRes_SilentFailure;
-	}
 	return APLRes_Success;
 }
 /**********************
@@ -95,15 +89,6 @@ forward bool:InitNativesForwards();
  */
 forward APLRes:AskPluginLoad2Custom(Handle:plugin,bool:late,String:error[],err_max);
 
-/**********************
- * Implement this with blank statement if you want this plugin to not load if it is not war3 mode
- */
-forward W3ONLY();
-
-/**********************
- * Implement this with blank statement if you want this plugin to not load if it is not sh mode
- */
-forward SHONLY();
 
 //variables forwarded to every w3 plugin
 new W3ForwarededVars[W3ForwardedVarsEnum];
@@ -117,43 +102,13 @@ stock EXT() {
 
 //INTERFACE ONLY VARIABLES, use for determining game type
 stock tValveGame;
-stock bool:bWar3Mode;
-stock bool:bSHMode;
-stock W3() {
-	return bWar3Mode;
-}
-stock SH() {
-	return bSHMode;
-}
+
 stock ValveGameEnum:War3_GetGame() {
 	return ValveGameEnum:tValveGame;
 }
 
 //Do not manually call this, this determines the game mode and is called internally in the API
 stock DetermineGameMode() {
-	//DETERMIE GAME MODE
-#if defined WAR3MAIN
-	PrintToServer("[SH] READING shsourcemode.cfg trying to find 'shsource' in the file");
-#endif
-	new Handle:file=OpenFile("cfg/shsourcemode.cfg", "a+"); //creates new file if one not exists
-
-	bWar3Mode = true; //default
-	bSHMode = false; //default
-	new String:buffer[256];
-	while (ReadFileLine(file, buffer, sizeof(buffer))) {
-		if (strncmp(buffer, "shsource", strlen("shsource"), false) == 0) {
-			bWar3Mode = false;
-			bSHMode = true;
-#if defined WAR3MAIN
-			PrintToServer("[SH] SHSource MODE ENABLED");
-#endif
-			break;
-		}
-	}
-	CloseHandle( file);
-#if defined WAR3MAIN
-	PrintToServer("[SH] FINISHED READING shsourcemode.cfg");
-#endif
 
 	//DETERMINE GAME TYPE: CS TF ETC
 	new String:gameDir[64];
@@ -3224,5 +3179,4 @@ stock CreateTimer_DEBUG(any:f=0,any:ff=0,any:fff=0,any:ffff=0) {}
 #include "W3SIncs/War3Source_L4D_Interface"
 #include "W3SIncs/stocks_misc"
 
-//SUPER HERO INDLUDE FILE, many stock requires war3 functions to be delcared first...
-#include "W3SIncs/SuperHero_Interface"
+
