@@ -1,7 +1,7 @@
 #pragma semicolon 1    ///WE RECOMMEND THE SEMICOLON
 
 #include <sourcemod>
-#include "W3SIncs/War3Source_Interface"  
+#include "W3SIncs/War3Source_Interface"
 
 
 new thisRaceID;
@@ -11,7 +11,7 @@ public Plugin:myinfo =
 	author = "Smilax & Glider helped a lot :D", //modified by Ownz
 	description = "The Dark Elf race for War3Source.",
 	version = "1.0.0.0",
-	url = "http://cgaclan.com/"
+	url = "http://www.war3evo.com/"
 };
 
 new SKILL_FADE,SKILL_SLOWFALL,SKILL_TRIBUNAL,ULTIMATE_DARKORB;
@@ -34,8 +34,8 @@ new Float:prevdarkvec[3]={0.0,0.0,0.0};
 new Float:victimvec[3]={0.0,0.0,0.0};
 
 // Sounds
-stock String:tribunal[256]; //="war3source/darkelf/tribunal.mp3";
-stock String:darkorb[256]; //="war3source/darkelf/darkorb.mp3";
+//stock String:tribunal[]="war3source/darkelf/tribunal.mp3";
+//stock String:darkorb[]="war3source/darkelf/darkorb.mp3";
 
 
 public OnWar3LoadRaceOrItemOrdered(num)
@@ -59,24 +59,10 @@ public OnPluginStart()
 
 public OnMapStart()
 {
-	if(GAMECSGO)
-	{
-		strcopy(tribunal,sizeof(tribunal),"music/war3source/darkelf/tribunal.mp3");
-		strcopy(darkorb,sizeof(darkorb),"music/war3source/darkelf/darkorb.mp3");
-	}
-	else
-	{
-		strcopy(tribunal,sizeof(tribunal),"war3source/darkelf/tribunal.mp3");
-		strcopy(darkorb,sizeof(darkorb),"war3source/darkelf/darkorb.mp3");
-	}
+	War3_PrecacheParticle("teleporter_red_entrance");
+	War3_PrecacheParticle("teleporter_blue_entrance");
+	War3_PrecacheParticle("ghost_smoke");
 
-	//Only precache them on TF2
-	if(War3_GetGame()==Game_TF)
-	{
-		War3_PrecacheParticle("teleporter_red_entrance");
-		War3_PrecacheParticle("teleporter_blue_entrance");
-		War3_PrecacheParticle("ghost_smoke");
-	}
 	//War3_PrecacheSound(tribunal);
 	//War3_PrecacheSound(darkorb);
 }
@@ -101,9 +87,9 @@ public OnUltimateCommand(client,race,bool:pressed)
 					W3FlashScreen(target,{0,0,0,255},duration,0.5,FFADE_OUT);
 					//EmitSoundToAll(darkorb,target);
 					//EmitSoundToAll(darkorb,target);
-					if(War3_GetGame()==Game_TF) {
-						AttachThrowAwayParticle(target, "ghost_smoke", victimvec, "", duration);
-					}
+
+					// tf2 only ghost_smoke
+					AttachThrowAwayParticle(target, "ghost_smoke", victimvec, "", duration);
 					War3_CooldownMGR(client,DarkorbCooldownTime,thisRaceID,ULTIMATE_DARKORB,_,_);
 					W3Hint(target,HINT_COOLDOWN_NOTREADY,5.0,"%T","You've been blinded by a Dark Elf!",target);
 					W3Hint(client,HINT_COOLDOWN_NOTREADY,5.0,"%T","DarkOrb blinded Successfully",client);
@@ -223,7 +209,7 @@ public Action:Slowfall2Timer(Handle:timer,any:client)
 				new Float:gravity=SlowfallGravity[skilllevel_levi];
 				//DP("set %f",gravity);
 				War3_SetBuff(client,fLowGravitySkill,thisRaceID,gravity);
-				if(!IsInvis(client)&&War3_GetGame()==Game_TF){
+				if(!IsInvis(client)){
 					AttachThrowAwayParticle(client, GetApparentTeam(client)==TEAM_RED?"teleporter_red_entrance":"teleporter_blue_entrance", darkvec, "", 1.0);
 				}
 			}
