@@ -408,6 +408,15 @@ public OnWar3EventSpawn(client)
 	RemoveWards(client);
 	for(new x=1;x<=MaxClients;x++)
 		bBeenHit[client][x]=false;
+/*	if(ValidPlayer(client))
+	{
+		if(IsFakeClient(client))
+		{
+			if(War3_GetRace(client)==thisRaceID)
+			{
+			}
+		}
+	}*/
 }
 
 new damagestackcritmatch=-1;
@@ -444,6 +453,17 @@ public OnW3TakeDmgBulletPre(victim,attacker,Float:damage)
 
 //need event for weapon string
 public OnWar3EventPostHurt(victim,attacker,dmg){
+	// Trigger Ultimate on bots 5% chance
+	if(ValidPlayer(victim))
+	{
+		if(IsFakeClient(victim)&&War3_GetRace(victim)==thisRaceID&&W3Chance(0.05))
+		{
+			//DP("ultimate should trigger");
+			OnUltimateCommand(victim,thisRaceID,true);
+			new Float:cooldown=GetConVarFloat(ultCooldownCvar);
+			War3_CooldownMGR(victim,cooldown,thisRaceID,ULT_LIGHTNING,true,false);
+		}
+	}
 	if(victim>0&&attacker>0&&victim!=attacker)
 	{
 		new race_attacker=War3_GetRace(attacker);
