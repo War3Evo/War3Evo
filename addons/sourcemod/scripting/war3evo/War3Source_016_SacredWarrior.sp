@@ -94,19 +94,7 @@ public Action:Heal_BurningSpearTimer(Handle:h,any:data) //1 sec
 				{
 					damage = VictimSpearStacks[i] * SpearDamage[skill]; // Number of stacks on the client * damage of the attacker
 					
-					if(War3_GetGame()==Game_TF)
-					{
-						War3_DealDamage(i,damage,attacker,_,"bleed_kill"); // Bleeding Icon
-					}
-					else
-					{
-						if(GameCS() && GetClientHealth(i)>damage){ //cs damages slows....
-							SetEntityHealth(i,GetClientHealth(i)-damage);
-						}
-						else{
-							War3_DealDamage(i,damage,attacker,_,"burningspear"); // Generic skill name
-						}
-					}
+					War3_DealDamage(i,damage,attacker,_,"bleed_kill"); // Bleeding Icon
 					VictimSpearTicks[i]--;
 				}
 				else{
@@ -117,7 +105,7 @@ public Action:Heal_BurningSpearTimer(Handle:h,any:data) //1 sec
 				}
 			}
 		}
-	}                
+	}
 }
 
 

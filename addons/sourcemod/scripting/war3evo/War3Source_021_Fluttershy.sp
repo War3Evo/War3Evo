@@ -16,9 +16,6 @@ public Plugin:myinfo =
 	version = "0",
 	url = "ownageclan.com"
 };
-public LoadCheck(){
-	return GameTF();
-}
 
 new SKILL_STARE,SKILL_TOLERATE,SKILL_KINDNESS,ULTIMATE_YOUBEGENTLE;
 new AuraID;
