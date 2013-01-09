@@ -57,30 +57,10 @@ public OnPluginStart()
 
 public OnMapStart()
 {
-	if(GAMECSGO){
-		strcopy(explosionSound1,sizeof(explosionSound1),"music/war3source/particle_suck1.mp3");
-	}
-	else
-	{
-		strcopy(explosionSound1,sizeof(explosionSound1),"war3source/particle_suck1.mp3");
-	}
+	strcopy(explosionSound1,sizeof(explosionSound1),"war3source/particle_suck1.mp3");
 
-	if(GAMETF)
-	{
-		ExplosionModel=PrecacheModel("materials/particles/explosion/explosionfiresmoke.vmt",false);
-		PrecacheSound("weapons/explode1.wav",false);
-	}
-	else if(GAMECS)
-	{
-		ExplosionModel=PrecacheModel("materials/sprites/zerogxplode.vmt",false);
-		PrecacheSound("weapons/explode5.wav",false);
-	}
-	else if(GAMECSGO)
-	{
-		ExplosionModel=PrecacheModel("materials/sprites/zerogxplode.vmt",false);
-		War3_PrecacheSound("music/war3source/csgo/weapons/explode5.mp3");
-		//PrecacheSound("music/war3source/csgo/weapons/explode5.mp3",false);
-	}
+	ExplosionModel=PrecacheModel("materials/particles/explosion/explosionfiresmoke.vmt",false);
+	PrecacheSound("weapons/explode1.wav",false);
 
 	BeamSprite=War3_PrecacheBeamSprite();
 	HaloSprite=War3_PrecacheHaloSprite();
@@ -130,20 +110,14 @@ public Action:SuicideAction(Handle:timer,any:client)
 		{
 			TE_SetupExplosion(SuicideLocation[client],ExplosionModel,10.0,1,0,RoundToFloor(radius),160);
 			TE_SendToAll();
-			if(War3_GetGame()==Game_TF){
-				
-				
-				ThrowAwayParticle("ExplosionCore_buildings", SuicideLocation[client],  5.0);
-				ThrowAwayParticle("ExplosionCore_MidAir", SuicideLocation[client],  5.0);
-				ThrowAwayParticle("ExplosionCore_MidAir_underwater", SuicideLocation[client],  5.0);
-				ThrowAwayParticle("ExplosionCore_sapperdestroyed", SuicideLocation[client],  5.0);
-				ThrowAwayParticle("ExplosionCore_Wall", SuicideLocation[client],  5.0);
-				ThrowAwayParticle("ExplosionCore_Wall_underwater", SuicideLocation[client],  5.0);
-			}
-			else{
-				SuicideLocation[client][2]-=40.0;
-			}
-			
+
+			ThrowAwayParticle("ExplosionCore_buildings", SuicideLocation[client],  5.0);
+			ThrowAwayParticle("ExplosionCore_MidAir", SuicideLocation[client],  5.0);
+			ThrowAwayParticle("ExplosionCore_MidAir_underwater", SuicideLocation[client],  5.0);
+			ThrowAwayParticle("ExplosionCore_sapperdestroyed", SuicideLocation[client],  5.0);
+			ThrowAwayParticle("ExplosionCore_Wall", SuicideLocation[client],  5.0);
+			ThrowAwayParticle("ExplosionCore_Wall_underwater", SuicideLocation[client],  5.0);
+
 			TE_SetupBeamRingPoint(SuicideLocation[client], 10.0, radius, BeamSprite, HaloSprite, 0, 15, 0.5, 10.0, 10.0, {255,255,255,33}, 120, 0);
 			TE_SendToAll();
 			
@@ -158,27 +132,11 @@ public Action:SuicideAction(Handle:timer,any:client)
 			TE_SetupBeamRingPoint(SuicideLocation[client], 20.0, radius+10.0, BeamSprite, HaloSprite, 0, 15, 0.5, 10.0, 10.0, beamcolor, 120, 0);
 			TE_SendToAll();
 			
-			if(War3_GetGame()==Game_TF){
-				SuicideLocation[client][2]-=30.0;
-			}
-			else{
-				SuicideLocation[client][2]+=40.0;
-			}
-			
+			SuicideLocation[client][2]-=30.0;
+
 			EmitSoundToAll(explosionSound1,client);
 			
-			if(GAMETF)
-			{
-				EmitSoundToAll("weapons/explode1.wav",client);
-			}
-			else if(GAMECS)
-			{
-				EmitSoundToAll("weapons/explode5.wav",client);
-			}
-			else if(GAMECSGO)
-			{
-				W3EmitSoundToAll("music/war3source/csgo/weapons/explode5.mp3",client);
-			}
+			EmitSoundToAll("weapons/explode1.wav",client);
 		}
 		new bool:friendlyfire = GetConVarBool(FindConVar("mp_friendlyfire"));
 		new Float:location_check[3];

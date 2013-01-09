@@ -71,9 +71,6 @@ public OnPluginStart()
 	m_vecVelocity_1 = FindSendPropOffs("CBasePlayer","m_vecVelocity[1]");
 	m_vecBaseVelocity = FindSendPropOffs("CBasePlayer","m_vecBaseVelocity");
 	
-	if(War3_GetGame()==CS){
-		HookEvent("player_jump",PlayerJumpEvent);
-	}
 	RegConsoleCmd("bashme",Cmdbashme);
 	LoadTranslations("w3s.race.chronos.phrases");
 }
@@ -85,16 +82,8 @@ public Action:Cmdbashme(client,args){
 new glowsprite;
 public OnMapStart()
 {
-	if(GAMECSGO)
-	{
-		strcopy(leapsnd,sizeof(leapsnd),"music/war3source/chronos/timeleap.mp3");
-		strcopy(spheresnd,sizeof(spheresnd),"music/war3source/chronos/sphere.mp3");
-	}
-	else
-	{
-		strcopy(leapsnd,sizeof(leapsnd),"war3source/chronos/timeleap.mp3");
-		strcopy(spheresnd,sizeof(spheresnd),"war3source/chronos/sphere.mp3");
-	}
+	strcopy(leapsnd,sizeof(leapsnd),"war3source/chronos/timeleap.mp3");
+	strcopy(spheresnd,sizeof(spheresnd),"war3source/chronos/sphere.mp3");
 
 	War3_PrecacheSound(leapsnd);
 	War3_PrecacheSound(spheresnd);
@@ -153,7 +142,7 @@ public PlayerJumpEvent(Handle:event,const String:name[],bool:dontBroadcast)
 public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon)
 {
 
-	if (War3_GetGame() != Game_CS && (buttons & IN_JUMP)) //assault for non CS games
+	if (buttons & IN_JUMP) //assault for non CS games
 	{
 		if (War3_GetRace(client) == thisRaceID)
 		{
@@ -312,13 +301,8 @@ public Action:sphereLoop(Handle:h,any:client){
 					CreateTimer(SphereEndTime[client]-GetGameTime(),unBashUlt,i);
 					War3_SetBuff(i,bBashed,thisRaceID,true);
 					
-					if(War3_GetGame()==CS){
-						FakeClientCommand(i,"use weapon_knife");
-					}
-					else{
-						War3_SetBuff(i,fAttackSpeed,thisRaceID,0.33);
-					}
-					
+					War3_SetBuff(i,fAttackSpeed,thisRaceID,0.33);
+
 					War3_SetBuff(i,bImmunitySkills,thisRaceID,false);
 					War3_SetBuff(i,bImmunityUltimates,thisRaceID,false);
 					bTrapped[i]=true;
@@ -374,24 +358,8 @@ public OnW3TakeDmgAllPre(victim,attacker,Float:damage){
 			//some damage burn here? allow
 		}
 	}
-	if(ValidPlayer(attacker)&&bTrapped[attacker]){ //trapped people can only use knife
-		if(War3_GetGame()==CS){
-			new wpnent = W3GetCurrentWeaponEnt(attacker);
-			if(wpnent>0&&IsValidEdict(wpnent)){
-				decl String:WeaponName[32];
-				GetEdictClassname(wpnent, WeaponName, 32);
-				if(StrContains(WeaponName,"weapon_knife",false)<0){
-					
-					PrintHintText(attacker,"%T","You can only damage with knife",attacker);
-					War3_DamageModPercent(0.0);
-				}
-			}
-			else{
-				PrintToChatAll("chronosblock no wpn detected2");
-				War3_DamageModPercent(0.0);
-			}
-		}
-	}
+//	if(ValidPlayer(attacker)&&bTrapped[attacker]){ //trapped people can only use knife
+//	}
 	if(ValidPlayer(attacker,true)&&IsInOwnSphere(victim)&&!bTrapped[attacker]&&!W3HasImmunity(attacker,Immunity_Ultimates)){ //cant shoot to inside the sphere	
 		War3_DamageModPercent(0.0);	
 	}

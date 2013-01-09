@@ -113,136 +113,36 @@ stock DetermineGameMode() {
 	//DETERMINE GAME TYPE: CS TF ETC
 	new String:gameDir[64];
 	GetGameFolderName(gameDir, sizeof(gameDir));
-	if (StrContains(gameDir, "cstrike", false) == 0) {
-		tValveGame=_:Game_CS;
-#if defined WAR3MAIN
-		PrintToServer("[War3Source] Game set: Counter-Strike Source ValveGame %d",tValveGame);
-#endif
-		ServerCommand("sv_allowminmodels 0");
-	} else if (StrContains(gameDir, "dod", false) == 0) {
-#if defined WAR3MAIN
-		PrintToServer("[War3Source] Game set: Day of Defeat Source (ONLY DEVELOPER SUPPORT!)");
-#endif
-	tValveGame	=_:Game_DOD;
-	}
-	else if(StrContains(gameDir,"tf",false)==0)
+	if(StrContains(gameDir,"tf",false)==0)
 	{
 #if defined WAR3MAIN
-		PrintToServer("[War3Source] Game set: Team Fortress 2");
+		PrintToServer("[War3Evo] Game set: Team Fortress 2");
 #endif
 		tValveGame=_:Game_TF;
 	}
-	else if(StrContains(gameDir,"left4dead2",false)==0)
-	{
-#if defined WAR3MAIN
-		PrintToServer("[War3Source] Game set: Left 4 Dead 2");
-#endif
-		tValveGame=_:Game_L4D2;
-	}
-	else if(StrContains(gameDir,"left4dead",false)==0)
-	{
-#if defined WAR3MAIN
-		PrintToServer("[War3Source] Game set: Left 4 Dead");
-#endif
-		tValveGame=_:Game_L4D;
-	}
-	else if(StrContains(gameDir,"csgo",false)==0)
-	{
-#if defined WAR3MAIN
-		PrintToServer("[War3Source] Game set: Counter Strike Global Offensive");
-#endif
-		tValveGame=_:Game_CSGO;
-	}
 	else
 	{
-		SetFailState("[War3Source] Sorry, this game isn't support by War3Source yet. If you think this is a mistake, you probably renamed your game directory. For example, re-naming cstrike to cstrike2 will cause this error. (folder name: %s)", gameDir);
+		SetFailState("[War3Evo] Sorry, this game isn't support by War3Evo. If you think this is a mistake, you probably renamed your game directory. For example, re-naming cstrike to cstrike2 will cause this error. (folder name: %s)", gameDir);
 	}
 //bGameModeDetermined=true;
 }
-#define GAMECS GameCS()
-#define GAMETF GameTF()
-#define GAMEL4D1 GameL4D1()
-#define GAMEL4D2 GameL4D2()
-#define GAMEL4DAny GameL4DAny()
-#define GAMECSGO GameCSGO()
-#define GAMECSANY GameCSANY()
-stock bool:GameCS() {
-	return War3_GetGame()==Game_CS;
-}
-stock bool:GameTF() {
-	return War3_GetGame()==Game_TF;
-}
 
-stock bool:GameL4D1() {
-	return (War3_GetGame() == Game_L4D);
-}
+//#pragma deprecated use if(GAMECSANY)
 
-stock bool:GameL4D2() {
-	return ( War3_GetGame() == Game_L4D2);
-}
-
-stock bool:GameL4DAny() {
-	return (War3_GetGame() == Game_L4D || War3_GetGame() == Game_L4D2);
-}
-
-stock bool:GameCSGO() {
-	return War3_GetGame() == Game_CSGO;
-}
-stock bool:GameCSANY() {
-	new ValveGameEnum:war3Game = War3_GetGame();
-	if(war3Game==Game_CS || war3Game==Game_CSGO) {
-		return true;
-	}
-	return false;
-}
-
-#pragma deprecated use if(GAMECSANY)
-// This checks if the current game is CS:S or CS:GO
-stock bool:War3_IsCounterStrike() {
-	new ValveGameEnum:war3Game = War3_GetGame();
-	if(war3Game==Game_CS || war3Game==Game_CSGO) {
-		return true;
-	}
-	return false;
-}
 //We mark some natives optional so different plugins can still startup
 /**********************
  * CALL THIS IN ASKPLUGINLOAD if you are using any of these or have native errors
  */
 
 stock GlobalOptionalNatives() {
-	MarkNativeAsOptional("SHHasHero");
-	MarkNativeAsOptional("SHGetHeroesClientCanHave");
-	MarkNativeAsOptional("SHHasHero");
-
 	MarkNativeAsOptional("W3GetReqXP");
-	MarkNativeAsOptional("SHGetReqXP");
 
 	MarkNativeAsOptional("War3_ShowXP");
-	MarkNativeAsOptional("SHShowXP");
 
 	MarkNativeAsOptional("W3SaveXP");
-	MarkNativeAsOptional("SHSaveXP");
 
 	MarkNativeAsOptional("War3Failed");
 
-	///omfg
-	MarkNativeAsOptional("SHHasHero");
-	MarkNativeAsOptional("SHSetHasHero");
-	MarkNativeAsOptional("SHGetHeroHasPowerBind");
-	MarkNativeAsOptional("SHSetHeroHasPowerBind");
-	MarkNativeAsOptional("SHGetLevel");
-	MarkNativeAsOptional("SHSetLevel");
-	MarkNativeAsOptional("SHGetXP");
-	MarkNativeAsOptional("SHSetXP");
-	MarkNativeAsOptional("SHShowXP");
-	MarkNativeAsOptional("SHGetReqXP");
-	MarkNativeAsOptional("SHGetHeroesClientCanHave");
-	MarkNativeAsOptional("SHGetPowerBind");
-	MarkNativeAsOptional("SHSetPowerBind");
-	MarkNativeAsOptional("SHMaxLevel");
-	MarkNativeAsOptional("SHSaveXP");
-	MarkNativeAsOptional("SHTryToGiveClientHero");
 	MarkNativeAsOptional("OurTestNative");
 	MarkNativeAsOptional("OurTestNative2");
 	MarkNativeAsOptional("W3ExtVersion");
@@ -1194,18 +1094,14 @@ stock Handle:War3_NearEntByName(client,String:ent_name[],Float:distance)
  */
 stock Handle:War3_NearBuilding(client,Float:distance=150.0)
 {
-	if(War3_GetGame()==Game_TF)
-	{
-		new Handle:hEnts=CreateDataPack();
-		WritePackString(hEnts,"obj_dispenser");
-		WritePackString(hEnts,"obj_sentrygun");
-		WritePackString(hEnts,"obj_teleporter_entrance");
-		WritePackString(hEnts,"obj_teleporter_exit");
-		new Handle:result=War3_NearEntsByName(client,hEnts,4,distance);
-		CloseHandle(hEnts);
-		return result;
-	}
-	return INVALID_HANDLE;
+	new Handle:hEnts=CreateDataPack();
+	WritePackString(hEnts,"obj_dispenser");
+	WritePackString(hEnts,"obj_sentrygun");
+	WritePackString(hEnts,"obj_teleporter_entrance");
+	WritePackString(hEnts,"obj_teleporter_exit");
+	new Handle:result=War3_NearEntsByName(client,hEnts,4,distance);
+	CloseHandle(hEnts);
+	return result;
 }
 
 // THE FOLLOWING NATIVES RETRIEVE DATA CACHED ONGAMEFRAME!
@@ -1382,7 +1278,7 @@ stock nsEntity_SetHealth(entity, health) {
  */
 stock War3_TFHealingEvent(client, amount_healed)
 {
-    if (War3_GetGame() != Game_TF || !ValidPlayer(client, true) || IsFakeClient(client))
+    if (!ValidPlayer(client, true) || IsFakeClient(client))
     {
         return;
     }
@@ -2376,44 +2272,12 @@ stock bool:W3Chance(Float:chancepercent=1.0) {
 	return (GetRandomFloat(0.0,1.0)<=chancepercent);
 }
 
-//sets armor, but does not give any helm
-stock War3_SetCSArmor(client, amount) {
-	// Revan: thoose armor properities for CS:GO are the same as in CS:Source
-	new ValveGameEnum:war3Game = War3_GetGame();
-	if (war3Game == Game_CS || war3Game == Game_CSGO) {
-		if (amount > 125) {
-			amount = 125;
-		}
-		SetEntProp(client, Prop_Send, "m_ArmorValue", amount);
-	}
-}
-stock War3_GetCSArmor(client) {
-	new ValveGameEnum:war3Game = War3_GetGame();
-	if (war3Game == Game_CS || war3Game == Game_CSGO) {
-		return GetEntProp(client, Prop_Send, "m_ArmorValue");
-	}
-	return 0;
-}
-stock War3_GetCSArmorHasHelmet(client) {
-return GetEntProp(client, Prop_Send, "m_bHasHelmet")
-}
-stock War3_SetCSArmorHasHelmet(client,bool:hashelmet) {
-	return SetEntProp(client, Prop_Send, "m_bHasHelmet",hashelmet? 1:0, 1);
-}
-
 /**
  * Returns the amount of money you have in CS/CS:GO
  * When used in TF2 it returns the amount of money the player has in MVM
  */
 stock GetCSMoney(client) {
-	new ValveGameEnum:war3Game = War3_GetGame();
-	if (war3Game == Game_CS || war3Game == Game_CSGO) {
-		return GetEntProp(client, Prop_Send, "m_iAccount");
-	} else if (war3Game == Game_TF) {
-		return GetEntProp(client, Prop_Send, "m_nCurrency");
-	}
-
-	return 0;
+	return GetEntProp(client, Prop_Send, "m_nCurrency");
 }
 
 /**
@@ -2421,16 +2285,11 @@ stock GetCSMoney(client) {
  * When used in TF2 it sets the amount of money the player has in MVM
  */
 stock SetCSMoney(client, newamount) {
-	new ValveGameEnum:war3Game = War3_GetGame();
-	if (war3Game == Game_CS || war3Game == Game_CSGO) {
-		SetEntProp(client, Prop_Send, "m_iAccount", newamount);
-	} else if (war3Game == Game_TF) {
-		if (newamount < 0)
-			newamount = 0;
-		if (newamount > 32767)
-			newamount = 32767;
-		SetEntProp(client, Prop_Send, "m_nCurrency", newamount);
-	}
+	if (newamount < 0)
+		newamount = 0;
+	if (newamount > 32767)
+		newamount = 32767;
+	SetEntProp(client, Prop_Send, "m_nCurrency", newamount);
 }
 
 stock UTIL_Remove(entity) {
@@ -2460,33 +2319,17 @@ stock PlayersOnTeam(team) {
 }
 
 stock GetShortTeamName(team,String:retstr[],maxlen) {
-	if(War3_GetGame()==CS || War3_GetGame()==CSGO) {
-		if(team==1) {
-			Format(retstr,maxlen,"%t","CS Spec");
-			return;
-		}
-		if(team==TEAM_T) {
-			Format(retstr,maxlen,"%t","CS T");
-			return;
-		}
-		if(team==TEAM_CT) {
-			Format(retstr,maxlen,"%t","CS CT");
-			return;
-		}
+	if(team==1) {
+		Format(retstr,maxlen,"%t","TF Spec");
+		return;
 	}
-	else if(War3_GetGame()==TF) {
-		if(team==1) {
-			Format(retstr,maxlen,"%t","TF Spec");
-			return;
-		}
-		if(team==TEAM_RED) {
-			Format(retstr,maxlen,"%t","TF RED");
-			return;
-		}
-		if(team==TEAM_BLUE) {
-			Format(retstr,maxlen,"%t","TF BLU");
-			return;
-		}
+	if(team==TEAM_RED) {
+		Format(retstr,maxlen,"%t","TF RED");
+		return;
+	}
+	if(team==TEAM_BLUE) {
+		Format(retstr,maxlen,"%t","TF BLU");
+		return;
 	}
 
 	Format(retstr,maxlen,"%t","Unknown Team");
@@ -2514,145 +2357,117 @@ stock GetRacesOnTeam(raceid, team, ignoreIfAdminSetRace = false) {
 
 stock bool:W3IsDamageFromMelee(const String:weapon[])
 {
-	switch (War3_GetGame())
-	{
-		case Game_CS:
-		{
-			return StrEqual(weapon,"knife");
-		}
-		case Game_DOD:
-		{
-			return (StrEqual(weapon,"amerknife") ||
-					StrEqual(weapon,"spade") ||
-					StrEqual(weapon,"punch"));
-		}
-		case Game_TF:
-		{
-			return (// Logfile names
-					StrEqual(weapon, "shovel") ||
-					StrEqual(weapon, "wrench") ||
-					StrEqual(weapon, "bat") ||
-					StrEqual(weapon, "bonesaw") ||
-					StrEqual(weapon, "bottle") ||
-					StrEqual(weapon, "club") ||
-					StrEqual(weapon, "fireaxe") ||
-					StrEqual(weapon, "fists") ||
-					StrEqual(weapon, "sandman") ||
-					StrEqual(weapon, "pickaxe") ||
-					StrEqual(weapon, "sword") ||
-					StrEqual(weapon, "demoshield") ||
-					StrEqual(weapon, "taunt_scout") ||
-					StrEqual(weapon, "taunt_sniper") ||
-					StrEqual(weapon, "taunt_pyro") ||
-					StrEqual(weapon, "taunt_demoman") ||
-					StrEqual(weapon, "taunt_heavy") ||
-					StrEqual(weapon, "taunt_spy") ||
-					StrEqual(weapon, "taunt_soldier")||
-                    StrEqual(weapon, "annihilator") ||
-                    StrEqual(weapon, "ubersaw") ||
-                    StrEqual(weapon, "axtinguisher") ||
-                    StrEqual(weapon, "gloves") ||
-                    StrEqual(weapon, "sandman") ||
-                    StrEqual(weapon, "unique_pickaxe") ||
-                    StrEqual(weapon, "robot_arm") ||
-                    StrEqual(weapon, "sledgehammer") ||
-                    StrEqual(weapon, "paintrain") ||
-                    StrEqual(weapon, "southern_hospitality") ||
-                    StrEqual(weapon, "wrench_golden") ||
-                    StrEqual(weapon, "tribalkukri") ||
-                    StrEqual(weapon, "battleaxe") ||
-                    StrEqual(weapon, "battleneedle") ||
-                    StrEqual(weapon, "powerjack") ||
-                    StrEqual(weapon, "holy_mackerel") ||
-                    StrEqual(weapon, "eternal_reward") ||
-                    StrEqual(weapon, "bushwacka") ||
-                    StrEqual(weapon, "gloves_running_urgently") ||
-                    StrEqual(weapon, "fryingpan") ||
-                    StrEqual(weapon, "headtaker") ||
-                    StrEqual(weapon, "ullapool_caber") ||
-                    StrEqual(weapon, "warrior_spirit") ||
-                    StrEqual(weapon, "candy_cane") ||
-                    StrEqual(weapon, "boston_basher") ||
-                    StrEqual(weapon, "back_scratcher") ||
-                    StrEqual(weapon, "claidheamohmor") ||
-                    StrEqual(weapon, "wrench_jag") ||
-                    StrEqual(weapon, "steel_fists") ||
-                    StrEqual(weapon, "lava_axe") ||
-                    StrEqual(weapon, "lava_bat") ||
-                    StrEqual(weapon, "warfan") ||
-                    StrEqual(weapon, "kunai") ||
-                    StrEqual(weapon, "demokatana") ||
-                    StrEqual(weapon, "shahanshah") ||
-                    StrEqual(weapon, "persian_persuader") ||
-                    StrEqual(weapon, "solemn_vow") ||
-                    StrEqual(weapon, "market_gardener") ||
-                    StrEqual(weapon, "saxxy") ||
-                    StrEqual(weapon, "eviction_notice") ||
-                    StrEqual(weapon, "disciplinary_action") ||
-                    StrEqual(weapon, "atomizer") ||
-                    StrEqual(weapon, "scout_sword") ||
-                    StrEqual(weapon, "mailbox") ||
-                    StrEqual(weapon, "big_earner") ||
-                    StrEqual(weapon, "the_maul") ||
-                    StrEqual(weapon, "nonnonviolent_protest") ||
-                    StrEqual(weapon, "nessieclub") ||
-                    StrEqual(weapon, "unarmed_combat") ||
-                    StrEqual(weapon, "voodoo_pin") ||
-                    StrEqual(weapon, "apocofists") ||
-                    StrEqual(weapon, "eureka_effect") ||
-                    StrEqual(weapon, "thirddegree") ||
-                    StrEqual(weapon, "scotland_shard") ||
-                    StrEqual(weapon, "sharp_dresser") ||
-                    StrEqual(weapon, "wrap_assassin") ||
-                    StrEqual(weapon, "spy_cicle") ||
-                    StrEqual(weapon, "holiday_punch") ||
-                    StrEqual(weapon, "black_rose") ||
-                    StrEqual(weapon, "lollichop") ||
-                    StrEqual(weapon, "unique_pickaxe_escape") ||
-                    StrEqual(weapon, "freedom_staff") ||
-                    // Weapon names
-                    StrEqual(weapon, "tf_weapon_bat") ||
-                    StrEqual(weapon, "tf_weapon_bat_wood") ||
-                    StrEqual(weapon, "tf_weapon_bat_fish") ||
-                    StrEqual(weapon, "tf_weapon_shovel") ||
-                    StrEqual(weapon, "saxxy") ||
-                    StrEqual(weapon, "tf_weapon_bat_giftwrap") ||
-                    StrEqual(weapon, "tf_weapon_fireaxe") ||
-                    StrEqual(weapon, "tf_weapon_sword") ||
-                    StrEqual(weapon, "tf_weapon_bottle") ||
-                    StrEqual(weapon, "tf_weapon_stickbomb") ||
-                    StrEqual(weapon, "tf_weapon_katana") ||
-                    StrEqual(weapon, "tf_weapon_fists") ||
-                    StrEqual(weapon, "tf_weapon_wrench") ||
-                    StrEqual(weapon, "tf_weapon_robot_arm") ||
-                    StrEqual(weapon, "tf_weapon_bonesaw") ||
-                    StrEqual(weapon, "tf_weapon_club") ||
-                    StrEqual(weapon, "tf_weapon_knife")
-                );
-		}
-		case Game_L4D2:
-		{
-			return StrEqual(weapon, "weapon_melee");
-		}
-		case Game_CSGO:
-		{
-			// Revan: Seems only to be weapon_knife (normal knife) and weapon_knifegg (golden knife)
-			return (StrContains(weapon,"knife",false)!=-1);
-		}
-	}
-	return false;
+	return (// Logfile names
+			StrEqual(weapon, "shovel") ||
+			StrEqual(weapon, "wrench") ||
+			StrEqual(weapon, "bat") ||
+			StrEqual(weapon, "bonesaw") ||
+			StrEqual(weapon, "bottle") ||
+			StrEqual(weapon, "club") ||
+			StrEqual(weapon, "fireaxe") ||
+			StrEqual(weapon, "fists") ||
+			StrEqual(weapon, "sandman") ||
+			StrEqual(weapon, "pickaxe") ||
+			StrEqual(weapon, "sword") ||
+			StrEqual(weapon, "demoshield") ||
+			StrEqual(weapon, "taunt_scout") ||
+			StrEqual(weapon, "taunt_sniper") ||
+			StrEqual(weapon, "taunt_pyro") ||
+			StrEqual(weapon, "taunt_demoman") ||
+			StrEqual(weapon, "taunt_heavy") ||
+			StrEqual(weapon, "taunt_spy") ||
+			StrEqual(weapon, "taunt_soldier")||
+			StrEqual(weapon, "annihilator") ||
+			StrEqual(weapon, "ubersaw") ||
+			StrEqual(weapon, "axtinguisher") ||
+			StrEqual(weapon, "gloves") ||
+			StrEqual(weapon, "sandman") ||
+			StrEqual(weapon, "unique_pickaxe") ||
+			StrEqual(weapon, "robot_arm") ||
+			StrEqual(weapon, "sledgehammer") ||
+			StrEqual(weapon, "paintrain") ||
+			StrEqual(weapon, "southern_hospitality") ||
+			StrEqual(weapon, "wrench_golden") ||
+			StrEqual(weapon, "tribalkukri") ||
+			StrEqual(weapon, "battleaxe") ||
+			StrEqual(weapon, "battleneedle") ||
+			StrEqual(weapon, "powerjack") ||
+			StrEqual(weapon, "holy_mackerel") ||
+			StrEqual(weapon, "eternal_reward") ||
+			StrEqual(weapon, "bushwacka") ||
+			StrEqual(weapon, "gloves_running_urgently") ||
+			StrEqual(weapon, "fryingpan") ||
+			StrEqual(weapon, "headtaker") ||
+			StrEqual(weapon, "ullapool_caber") ||
+			StrEqual(weapon, "warrior_spirit") ||
+			StrEqual(weapon, "candy_cane") ||
+			StrEqual(weapon, "boston_basher") ||
+			StrEqual(weapon, "back_scratcher") ||
+			StrEqual(weapon, "claidheamohmor") ||
+			StrEqual(weapon, "wrench_jag") ||
+			StrEqual(weapon, "steel_fists") ||
+			StrEqual(weapon, "lava_axe") ||
+			StrEqual(weapon, "lava_bat") ||
+			StrEqual(weapon, "warfan") ||
+			StrEqual(weapon, "kunai") ||
+			StrEqual(weapon, "demokatana") ||
+			StrEqual(weapon, "shahanshah") ||
+			StrEqual(weapon, "persian_persuader") ||
+			StrEqual(weapon, "solemn_vow") ||
+			StrEqual(weapon, "market_gardener") ||
+			StrEqual(weapon, "saxxy") ||
+			StrEqual(weapon, "eviction_notice") ||
+			StrEqual(weapon, "disciplinary_action") ||
+			StrEqual(weapon, "atomizer") ||
+			StrEqual(weapon, "scout_sword") ||
+			StrEqual(weapon, "mailbox") ||
+			StrEqual(weapon, "big_earner") ||
+			StrEqual(weapon, "the_maul") ||
+			StrEqual(weapon, "nonnonviolent_protest") ||
+			StrEqual(weapon, "nessieclub") ||
+			StrEqual(weapon, "unarmed_combat") ||
+			StrEqual(weapon, "voodoo_pin") ||
+			StrEqual(weapon, "apocofists") ||
+			StrEqual(weapon, "eureka_effect") ||
+			StrEqual(weapon, "thirddegree") ||
+			StrEqual(weapon, "scotland_shard") ||
+			StrEqual(weapon, "sharp_dresser") ||
+			StrEqual(weapon, "wrap_assassin") ||
+			StrEqual(weapon, "spy_cicle") ||
+			StrEqual(weapon, "holiday_punch") ||
+			StrEqual(weapon, "black_rose") ||
+			StrEqual(weapon, "lollichop") ||
+			StrEqual(weapon, "unique_pickaxe_escape") ||
+			StrEqual(weapon, "freedom_staff") ||
+			// Weapon names
+			StrEqual(weapon, "tf_weapon_bat") ||
+			StrEqual(weapon, "tf_weapon_bat_wood") ||
+			StrEqual(weapon, "tf_weapon_bat_fish") ||
+			StrEqual(weapon, "tf_weapon_shovel") ||
+			StrEqual(weapon, "saxxy") ||
+			StrEqual(weapon, "tf_weapon_bat_giftwrap") ||
+			StrEqual(weapon, "tf_weapon_fireaxe") ||
+			StrEqual(weapon, "tf_weapon_sword") ||
+			StrEqual(weapon, "tf_weapon_bottle") ||
+			StrEqual(weapon, "tf_weapon_stickbomb") ||
+			StrEqual(weapon, "tf_weapon_katana") ||
+			StrEqual(weapon, "tf_weapon_fists") ||
+			StrEqual(weapon, "tf_weapon_wrench") ||
+			StrEqual(weapon, "tf_weapon_robot_arm") ||
+			StrEqual(weapon, "tf_weapon_bonesaw") ||
+			StrEqual(weapon, "tf_weapon_club") ||
+			StrEqual(weapon, "tf_weapon_knife")
+			);
+	//return false;
 }
 
 stock bool:TF2_HasTheFlag(client)
 {
-	if (War3_GetGame() == Game_TF)
+	new ent = -1;
+	while ((ent = FindEntityByClassname(ent, "item_teamflag")) != -1)
 	{
-		new ent = -1;
-		while ((ent = FindEntityByClassname(ent, "item_teamflag")) != -1)
-		{
-			if (GetEntPropEnt(ent, Prop_Data, "m_hOwnerEntity")==client)
-			return true;
-		}
+		if (GetEntPropEnt(ent, Prop_Data, "m_hOwnerEntity")==client)
+		return true;
 	}
 	return false;
 }
@@ -3022,8 +2837,8 @@ native W3IsBuffInvised(client); //returns true if client alpha is <50
 
 //invisible or cloaked?
 stock IsInvis(client) {
-	return (GameTF() && (TF2_IsPlayerInCondition(client, TFCond_Cloaked)
-			|| W3IsBuffInvised(client)));
+	return (TF2_IsPlayerInCondition(client, TFCond_Cloaked)
+			|| W3IsBuffInvised(client));
 }
 
 /**

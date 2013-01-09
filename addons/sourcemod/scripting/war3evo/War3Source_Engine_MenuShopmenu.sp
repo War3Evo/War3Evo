@@ -395,5 +395,5 @@ public OnSelectExceededMaxItemsMenuBuy(Handle:menu,MenuAction:action,client,sele
 public NW3BuyUseCSMoney(Handle:plugin,numParams)
 {
 	//return ((War3_GetGame()==CS || (War3_GetGame() == TF))&&GetConVarInt(hBuyItemUseCSMoneCvar)>0)?true:false;
-	return ((GAMECSANY || GAMETF)&&GetConVarInt(hBuyItemUseCSMoneCvar)>0)?true:false;
+	return (GetConVarInt(hBuyItemUseCSMoneCvar)>0)?true:false;
 }

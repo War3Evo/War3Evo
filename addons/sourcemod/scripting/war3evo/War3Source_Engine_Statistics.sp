@@ -54,22 +54,11 @@ public OnPluginStart()
 		collectwlstats=false;
 	}
 	
-	if(War3_GetGame()==CS){
-
-		if(!HookEventEx("round_end",War3Source_RoundOverEvent))
-		{
-			PrintToServer("[War3Source] Could not hook the round_end event.");
-		}
-	}
-	else if(War3_GetGame()==Game_TF)
+	if(!HookEventEx("teamplay_round_win",War3Source_RoundOverEvent))
 	{
-		if(!HookEventEx("teamplay_round_win",War3Source_RoundOverEvent))
-		{
-			PrintToServer("[War3Source] Could not hook the teamplay_round_win event.");
-			
-		}
+		PrintToServer("[War3Source] Could not hook the teamplay_round_win event.");
 	}
-	
+
 	hSecondDBCvar=CreateConVar("war3_bug_to_my_db","0","send war3bug messages to your own database?");
 	hShowSocketError=CreateConVar("war3_show_sockets_error","0","show socket errors");
 	
@@ -664,15 +653,7 @@ public War3Source_RoundOverEvent(Handle:event,const String:name[],bool:dontBroad
 {
 	if(bCollectStats && collectwlstats&&   PlayersOnTeam(2)+PlayersOnTeam(3)>5)
 	{
-		new winteam=-1;
-		if(War3_GetGame()==Game_TF)
-		{
-			winteam=GetEventInt(event,"team");
-		}
-		else
-		{
-			winteam=GetEventInt(event,"winner");
-		}
+		new winteam=GetEventInt(event,"team");
 		if(winteam>0)
 		{
 			for(new i=1;i<=MaxClients;i++)

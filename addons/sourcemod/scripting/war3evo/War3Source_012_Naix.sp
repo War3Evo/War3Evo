@@ -75,7 +75,7 @@ public OnWar3LoadRaceOrItemOrdered(num)
 
 stock bool:IsOurRace(client) {
 
-  return W3()&&(War3_GetRace(client)==thisRaceID);
+  return War3_GetRace(client)==thisRaceID;
 }
 
 

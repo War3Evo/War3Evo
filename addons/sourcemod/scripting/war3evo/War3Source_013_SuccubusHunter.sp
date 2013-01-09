@@ -74,21 +74,6 @@ public OnPluginStart()
 	//HookEvent("player_hurt",PlayerHurtEvent);
 	//HookEvent("player_death",PlayerDeathEvent);
 	
-	g_GameType = War3_GetGame();
-	switch (g_GameType)
-	{
-		case Game_CS:
-		{
-			HookEvent("player_jump",PlayerJumpEvent);
-			m_iAccount = FindSendPropOffs("CCSPlayer", "m_iAccount");
-			m_vecVelocity_1 = FindSendPropOffs("CBasePlayer","m_vecVelocity[1]");
-			m_vecBaseVelocity = FindSendPropOffs("CBasePlayer","m_vecBaseVelocity");
-		}
-		case Game_TF:
-		{
-		}
-	}
-	
 	AddCommandListener(SayCommand, "say");
 	AddCommandListener(SayCommand, "say_team");
 	
@@ -149,15 +134,8 @@ public OnWar3EventSpawn(client)
 			dollar *= skulls[client];
 			xp *= skulls[client];
 			
-			if(GameCS()){	
-				new old_health=GetClientHealth(client);
-				SetEntityHealth(client,old_health+hp);
-			}
-			else{
-			
-				War3_SetBuff(client,iAdditionalMaxHealth,thisRaceID,hp);
-			}
-			
+			War3_SetBuff(client,iAdditionalMaxHealth,thisRaceID,hp);
+
 			new old_XP = War3_GetXP(client,thisRaceID);
 			new kill_XP = W3GetKillXP(client);
 			if (xp > kill_XP)

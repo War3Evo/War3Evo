@@ -81,7 +81,7 @@ public bool:CanHitThis(entityhit, mask, any:data)
 	{// Check if the TraceRay hit the itself.
 		return false; // Don't allow self to be hit, skip this result
 	}
-	if(ValidPlayer(entityhit)&&ValidPlayer(data)&&War3_GetGame()==Game_TF&&GetClientTeam(entityhit)==GetClientTeam(data)){
+	if(ValidPlayer(entityhit)&&ValidPlayer(data)&&GetClientTeam(entityhit)==GetClientTeam(data)){
 		return false; //skip result, prend this space is not taken cuz they on same team
 	}
 	return true; // It didn't hit itself

@@ -18,33 +18,31 @@ public Plugin:myinfo=
 public OnPluginStart()
 {
 	Cvar_ChatBlocking=CreateConVar("war3_command_blocking","0","block chat commands from showing up");
-	if(W3()) {
 
-		RegConsoleCmd("say",War3Source_SayCommand);
-		RegConsoleCmd("say_team",War3Source_TeamSayCommand);
-		RegConsoleCmd("+ultimate",War3Source_UltimateCommand);
-		RegConsoleCmd("-ultimate",War3Source_UltimateCommand);
-		RegConsoleCmd("+ability",War3Source_NoNumAbilityCommand);
-		RegConsoleCmd("-ability",War3Source_NoNumAbilityCommand); //dont blame me if ur job is a failure because theres too much buttons to press
-		RegConsoleCmd("+ability1",War3Source_AbilityCommand);
-		RegConsoleCmd("-ability1",War3Source_AbilityCommand);
-		RegConsoleCmd("+ability2",War3Source_AbilityCommand);
-		RegConsoleCmd("-ability2",War3Source_AbilityCommand);
-		RegConsoleCmd("+ability3",War3Source_AbilityCommand);
-		RegConsoleCmd("-ability3",War3Source_AbilityCommand);
-		RegConsoleCmd("+ability4",War3Source_AbilityCommand);
-		RegConsoleCmd("-ability4",War3Source_AbilityCommand);
+	RegConsoleCmd("say",War3Source_SayCommand);
+	RegConsoleCmd("say_team",War3Source_TeamSayCommand);
+	RegConsoleCmd("+ultimate",War3Source_UltimateCommand);
+	RegConsoleCmd("-ultimate",War3Source_UltimateCommand);
+	RegConsoleCmd("+ability",War3Source_NoNumAbilityCommand);
+	RegConsoleCmd("-ability",War3Source_NoNumAbilityCommand); //dont blame me if ur job is a failure because theres too much buttons to press
+	RegConsoleCmd("+ability1",War3Source_AbilityCommand);
+	RegConsoleCmd("-ability1",War3Source_AbilityCommand);
+	RegConsoleCmd("+ability2",War3Source_AbilityCommand);
+	RegConsoleCmd("-ability2",War3Source_AbilityCommand);
+	RegConsoleCmd("+ability3",War3Source_AbilityCommand);
+	RegConsoleCmd("-ability3",War3Source_AbilityCommand);
+	RegConsoleCmd("+ability4",War3Source_AbilityCommand);
+	RegConsoleCmd("-ability4",War3Source_AbilityCommand);
 
-		RegConsoleCmd("ability",War3Source_OldWCSCommand);
-		RegConsoleCmd("ability1",War3Source_OldWCSCommand);
-		RegConsoleCmd("ability2",War3Source_OldWCSCommand);
-		RegConsoleCmd("ability3",War3Source_OldWCSCommand);
-		RegConsoleCmd("ability4",War3Source_OldWCSCommand);
-		RegConsoleCmd("ultimate",War3Source_OldWCSCommand);
+	RegConsoleCmd("ability",War3Source_OldWCSCommand);
+	RegConsoleCmd("ability1",War3Source_OldWCSCommand);
+	RegConsoleCmd("ability2",War3Source_OldWCSCommand);
+	RegConsoleCmd("ability3",War3Source_OldWCSCommand);
+	RegConsoleCmd("ability4",War3Source_OldWCSCommand);
+	RegConsoleCmd("ultimate",War3Source_OldWCSCommand);
 
-		RegConsoleCmd("shopmenu",War3Source_CmdShopmenu);
-		RegConsoleCmd("shopmenu2",War3Source_CmdShopmenu2);
-	}
+	RegConsoleCmd("shopmenu",War3Source_CmdShopmenu);
+	RegConsoleCmd("shopmenu2",War3Source_CmdShopmenu2);
 }
 
 public bool:InitNativesForwards()
@@ -496,28 +494,14 @@ bool:Internal_War3Source_SayCommand(client,String:arg1[256])
 				}
 			}
 		}
-		new Float:currentmaxspeed=GetEntDataFloat(ClientX,War3_GetGame()==Game_TF?FindSendPropOffs("CTFPlayer","m_flMaxspeed"):FindSendPropOffs("CBasePlayer","m_flLaggedMovementValue"));
-		if(GameTF())
+		new Float:currentmaxspeed=GetEntDataFloat(ClientX,FindSendPropOffs("CTFPlayer","m_flMaxspeed"));
+		if(SpecTarget==true)
 		{
-			if(SpecTarget==true)
-			{
-				War3_ChatMessage(client,"%T (%.2fx)","Spectating target's max speed is {amount}",client,currentmaxspeed,W3GetSpeedMulti(ClientX));
-			}
-			else
-			{
-				War3_ChatMessage(client,"%T (%.2fx)","Your max speed is {amount}",client,currentmaxspeed,W3GetSpeedMulti(client));
-			}
+			War3_ChatMessage(client,"%T (%.2fx)","Spectating target's max speed is {amount}",client,currentmaxspeed,W3GetSpeedMulti(ClientX));
 		}
 		else
 		{
-			if(SpecTarget==true)
-			{
-				War3_ChatMessage(client,"%T","Spectating target's max speed is {amount}",client,currentmaxspeed);
-			}
-			else
-			{
-				War3_ChatMessage(client,"%T","Your max speed is {amount}",client,currentmaxspeed);
-			}
+			War3_ChatMessage(client,"%T (%.2fx)","Your max speed is {amount}",client,currentmaxspeed,W3GetSpeedMulti(client));
 		}
 	}
 	else if(CommandCheck(arg1,"maxhp"))

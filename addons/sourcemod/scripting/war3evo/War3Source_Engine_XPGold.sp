@@ -13,7 +13,7 @@ public Plugin:myinfo=
 	url="http://war3source.com/"
 };
 
-new String:levelupSound[256]; //="war3source/levelupcaster.mp3";
+new String:levelupSound[]="war3source/levelupcaster.mp3";
 
 
 ///MAXLEVELXPDEFINED is in constants
@@ -53,75 +53,35 @@ new Handle:AssistGoldCvar;
 
 public OnPluginStart()
 {
+	BotIgnoreXPCvar=CreateConVar("war3_ignore_bots_xp","0","Set to 1 to not award XP for killing bots");
+	HeadshotXPCvar=CreateConVar("war3_percent_headshotxp","20","Percent of kill XP awarded additionally for headshots");
+	MeleeXPCvar=CreateConVar("war3_percent_meleexp","120","Percent of kill XP awarded additionally for melee/knife kills");
+	AssistKillXPCvar=CreateConVar("war3_percent_assistkillxp","75","Percent of kill XP awarded for an assist kill.");
 	
-	if(W3()){
-		BotIgnoreXPCvar=CreateConVar("war3_ignore_bots_xp","0","Set to 1 to not award XP for killing bots");
-		HeadshotXPCvar=CreateConVar("war3_percent_headshotxp","20","Percent of kill XP awarded additionally for headshots");
-		MeleeXPCvar=CreateConVar("war3_percent_meleexp","120","Percent of kill XP awarded additionally for melee/knife kills");
-		AssistKillXPCvar=CreateConVar("war3_percent_assistkillxp","75","Percent of kill XP awarded for an assist kill.");
+	RoundWinXPCvar=CreateConVar("war3_percent_roundwinxp","100","Percent of kill XP awarded for being on the winning team");
 	
-		RoundWinXPCvar=CreateConVar("war3_percent_roundwinxp","100","Percent of kill XP awarded for being on the winning team");
-	
-		hLevelDifferenceBounus=CreateConVar("war3_xp_level_difference_bonus","0","Bounus Xp awarded per level if victim has a higher level");
-		minplayersXP=CreateConVar("war3_min_players_xp_gain","2","minimum amount of players needed on teams for people to gain xp");
-		MaxGoldCvar=CreateConVar("war3_maxgold","100");
-		
-		KillGoldCvar=CreateConVar("war3_killgold","2");
-		AssistGoldCvar=CreateConVar("war3_assistgold","1");
-		
-		ParseXPSettingsFile();
-		
-		// l4d
-		KillSmokerXPCvar=CreateConVar("war3_l4d_smokerxp","50","XP awarded to a player killing a Smoker");
-		KillBoomerXPCvar=CreateConVar("war3_l4d_boomerxp","50","XP awarded to a player killing a Boomer");
-		KillHunterXPCvar=CreateConVar("war3_l4d_hunterxp","50","XP awarded to a player killing a Hunter");
-		KillJockeyXPCvar=CreateConVar("war3_l4d_jockeyexp","50","XP awarded to a player killing a Jockey");
-		KillSpitterXPCvar=CreateConVar("war3_l4d_spitterxp","50","XP awarded to a player killing a Spitter");
-		KillChargerXPCvar=CreateConVar("war3_l4d_chargerexp","50","XP awarded to a player killing a Charger");
-		KillCommonXPCvar=CreateConVar("war3_l4d_commonexp","5","XP awarded to a player killing a common infected");
-		KillUncommonXPCvar=CreateConVar("war3_l4d_uncommonexp","10","XP awarded to a player killing a uncommon infected");
-		
-		 
-		if(War3_GetGame()==CS){
-			
-			if(!HookEventEx("round_end",War3Source_RoundOverEvent))
-			{
-				PrintToServer("[War3Source] Could not hook the round_end event.");
-			}
-		}
-		
-		else if(War3_GetGame()==Game_TF)
-		{
-			if(!HookEventEx("teamplay_round_win",War3Source_RoundOverEvent)) //usual win xp
-			{
-				PrintToServer("[War3Source] Could not hook the teamplay_round_win event.");
-				
-			}
-		}
-		else if(War3_IsL4DEngine())
-		{		
-			MZombieClass = FindSendPropInfo("CTerrorPlayer", "m_zombieClass");
-		}
-	}	
+	hLevelDifferenceBounus=CreateConVar("war3_xp_level_difference_bonus","0","Bounus Xp awarded per level if victim has a higher level");
+	minplayersXP=CreateConVar("war3_min_players_xp_gain","2","minimum amount of players needed on teams for people to gain xp");
+	MaxGoldCvar=CreateConVar("war3_maxgold","100");
+
+	KillGoldCvar=CreateConVar("war3_killgold","2");
+	AssistGoldCvar=CreateConVar("war3_assistgold","1");
+
+	ParseXPSettingsFile();
+
+	if(!HookEventEx("teamplay_round_win",War3Source_RoundOverEvent)) //usual win xp
+	{
+		PrintToServer("[War3Source] Could not hook the teamplay_round_win event.");
+	}
 }
 public OnMapStart()
 {
-	if(GAMECSGO){
-		strcopy(levelupSound,sizeof(levelupSound),"music/war3source/levelupcaster.mp3");
-	}
-	else
-	{
-		strcopy(levelupSound,sizeof(levelupSound),"war3source/levelupcaster.mp3");
-	}
-
 	War3_PrecacheSound(levelupSound);
 }
 public bool:InitNativesForwards()
 {
-	if(W3()){
-		CreateNative("W3GetReqXP" ,NW3GetReqXP);
-		CreateNative("War3_ShowXP",Native_War3_ShowXP);
-	}
+	CreateNative("W3GetReqXP" ,NW3GetReqXP);
+	CreateNative("War3_ShowXP",Native_War3_ShowXP);
 	CreateNative("W3GetKillXP",NW3GetKillXP);
 
 	CreateNative("W3GetMaxGold",NW3GetMaxGold);
@@ -436,11 +396,7 @@ public OnWar3EventDeath(victim,attacker){
 	}
 	
 	//DP("get event %d",event);
-	new assister=0;
-	if(War3_GetGame()==Game_TF)
-	{
-		assister=GetClientOfUserId(GetEventInt(event,"assister"));
-	}
+	new assister=GetClientOfUserId(GetEventInt(event,"assister"));
 
 	if(victim!=attacker&&ValidPlayer(attacker))
 	{
@@ -452,16 +408,7 @@ public OnWar3EventDeath(victim,attacker){
 			new bool:is_hs,bool:is_melee;
 			if(IsFakeClient(victim) && GetConVarBool(BotIgnoreXPCvar))
 				return;
-			if(War3_GetGame()==Game_TF)
-			{
-				is_hs=(GetEventInt(event,"customkill")==1);
-				
-			}
-			else
-			{
-				is_hs=GetEventBool(event,"headshot");
-				
-			}
+			is_hs=(GetEventInt(event,"customkill")==1);
 			//DP("wep %s",weapon);
 			is_melee=W3IsDamageFromMelee(weapon);
 			//DP("me %d",is_melee);
@@ -495,14 +442,7 @@ public War3Source_RoundOverEvent(Handle:event,const String:name[],bool:dontBroad
 // cs - int winner
 // tf2 - int team
 	new team=-1;
-	if(War3_GetGame()==Game_TF)
-	{
-		team=GetEventInt(event,"team");
-	}
-	else
-	{
-		team=GetEventInt(event,"winner");
-	}
+	team=GetEventInt(event,"team");
 	if(team>-1)
 	{
 		for(new i=1;i<=MaxClients;i++)
@@ -653,10 +593,8 @@ bool:IsShortTerm(){
 
 
 public OnWar3Event(W3EVENT:event,client){
-	if(W3()){
-		if(event==DoLevelCheck){
-			LevelCheck(client);
-		}
+	if(event==DoLevelCheck){
+		LevelCheck(client);
 	}
 }
 

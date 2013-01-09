@@ -92,7 +92,7 @@ public OnWar3LoadRaceOrItemOrdered(num)
 		SKILL_REVIVE=War3_AddRaceSkillT(thisRaceID,"Phoenix",false,4,"20-50%","2-8%");
 		SKILL_BANISH=War3_AddRaceSkillT(thisRaceID,"Banish",false,4,"20%","0.2");
 		SKILL_MONEYSTEAL=War3_AddRaceSkillT(thisRaceID,"SiphonMana",false,4,"8%","gold","damage");
-		ULT_FLAMESTRIKE=War3_AddRaceSkillT(thisRaceID,"FlameStrike",true,4,GameTF()?"10":"5", "4-10", "500"); 
+		ULT_FLAMESTRIKE=War3_AddRaceSkillT(thisRaceID,"FlameStrike",true,4,"10", "4-10", "500");
 		War3_CreateRaceEnd(thisRaceID);
 	}
 	

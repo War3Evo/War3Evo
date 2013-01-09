@@ -195,7 +195,7 @@ public Native_W3ChanceModifier(Handle:plugin,numParams)
 	new attacker=GetNativeCell(1);
 	//new inflictor=W3GetDamageInflictor();
 	//new damagetype=W3GetDamageType();
-	if(!GameTF()||attacker<=0 || attacker>MaxClients || !IsValidEdict(attacker)){
+	if(attacker<=0 || attacker>MaxClients || !IsValidEdict(attacker)){
 		return _:1.0;
 	}
 
@@ -365,8 +365,7 @@ public EventPlayerHurt(Handle:event,const String:name[],bool:dontBroadcast)
 	new victim_userid=GetEventInt(event,"userid");
 	new attacker_userid=GetEventInt(event,"attacker");
 	new damage=GetEventInt(event,"dmg_health");
-	if(War3_GetGame()==Game_TF)
-		damage=GetEventInt(event,"damageamount");
+	damage=GetEventInt(event,"damageamount");
 	
 	new victim=GetClientOfUserId(victim_userid);
 	
@@ -585,20 +584,10 @@ public Native_War3_DealDamage(Handle:plugin,numParams)
 		g_CurDamageIsWarcraft=g_NextDamageIsWarcraftDamage;
 		///sdk immediately follows, we must expose this to posthurt once sdk exists
 		//new bool:settobullet=bool:W3GetDamageIsBullet(); //just in case someone dealt damage inside this forward and made it "not bullet"
-	 
-		
-	
-		
-		decl oldcsarmor;
-		if((WAR3_DMGTYPE==W3DMGTYPE_TRUEDMG||WAR3_DMGTYPE==W3DMGTYPE_MAGIC)&&War3_GetGame()==CS){
-			oldcsarmor=War3_GetCSArmor(victim);
-			War3_SetCSArmor(victim,0) ;
-		}
-		
+
 		g_NextDamageIsTrueDamage=(WAR3_DMGTYPE==W3DMGTYPE_TRUEDMG);
 		g_CurDamageIsTrueDamage=(WAR3_DMGTYPE==W3DMGTYPE_TRUEDMG);
 		
-
 
 		#if defined DEBUG
 		DP2("dealdamage %d->%d {",attacker,victim);
@@ -634,10 +623,6 @@ public Native_War3_DealDamage(Handle:plugin,numParams)
 		}
 		//removed for now... SDKHooks_TakeDamage(victim, attacker, attacker, float(damage), dmg_type);
 		//damage has been dealt BY NOW
-		
-		if((WAR3_DMGTYPE==W3DMGTYPE_TRUEDMG||WAR3_DMGTYPE==W3DMGTYPE_MAGIC)&&War3_GetGame()==CS){
-			War3_SetCSArmor(victim,oldcsarmor);
-		}
 		
 		if(g_CurLastActualDamageDealt==-88){
 			g_CurLastActualDamageDealt=0;

@@ -278,7 +278,7 @@ public Action:CalcHexHealWaves(Handle:timer,any:userid)
 
 public OnAbilityCommand(client,ability,bool:pressed)
 {
-	if(War3_GetGame()==Game_TF && War3_GetRace(client)==thisRaceID && ability==0 && pressed && IsPlayerAlive(client))
+	if(War3_GetRace(client)==thisRaceID && ability==0 && pressed && IsPlayerAlive(client))
 	{
 		new skill_level=War3_GetSkillLevel(client,thisRaceID,SKILL_RECARN_WARD);
 		if(skill_level>0&&!Silenced(client))
@@ -318,14 +318,12 @@ public OnW3TakeDmgAllPre(victim,attacker,Float:damage)
 			{
 				if(!W3HasImmunity(attacker,Immunity_Ultimates))
 				{
-					if(War3_GetGame()==Game_TF){
-						decl Float:pos[3];
-						GetClientEyePosition(victim, pos);
-						pos[2] += 4.0;
-						War3_TF_ParticleToClient(0, "miss_text", pos); //to the attacker at the enemy pos
-						
-						//War3_TF_ParticleToClient(0, "healthgained_blu", pos);
-					}
+					decl Float:pos[3];
+					GetClientEyePosition(victim, pos);
+					pos[2] += 4.0;
+					War3_TF_ParticleToClient(0, "miss_text", pos); //to the attacker at the enemy pos
+
+					//War3_TF_ParticleToClient(0, "healthgained_blu", pos);
 					War3_DamageModPercent(0.0);
 				}
 				else

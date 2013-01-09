@@ -232,13 +232,10 @@ public OnW3TakeDmgBulletPre(victim,attacker,Float:damage)
 					War3_DamageModPercent(0.0); //NO DAMAMGE
 					
 					W3MsgEvaded(victim,attacker);
-					if(War3_GetGame()==Game_TF){
-						decl Float:pos[3];
-						GetClientEyePosition(victim, pos);
-						pos[2] += 4.0;
-						War3_TF_ParticleToClient(0, "miss_text", pos); //to the attacker at the enemy pos
-					}
-						
+					decl Float:pos[3];
+					GetClientEyePosition(victim, pos);
+					pos[2] += 4.0;
+					War3_TF_ParticleToClient(0, "miss_text", pos); //to the attacker at the enemy pos
 				}
 				
 			/*	//thorns only if he didnt evade

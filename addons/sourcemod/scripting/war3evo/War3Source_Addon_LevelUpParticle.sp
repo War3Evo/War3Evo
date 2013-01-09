@@ -27,13 +27,7 @@ public OnPluginStart()
 
 public OnMapStart()
 {
-	if (War3_GetGame() == Game_TF || War3_IsL4DEngine())
-	{
-		War3_PrecacheParticle("achieved");
-	}
-	else if (GameCS() || GameCSGO()) {
-		PrecacheModel("effects/combinemuzzle2.vmt");
-	}
+	War3_PrecacheParticle("achieved");
 }
 
 public OnWar3Event(W3EVENT:event, client)
@@ -47,25 +41,11 @@ public OnWar3Event(W3EVENT:event, client)
 		
 		new level = War3_GetLevel(client, race);
 		
-		new ValveGameEnum:war3Game = War3_GetGame();
+		AttachThrowAwayParticle(client, "achieved", NULL_VECTOR, "partyhat", 5.0);
+		AttachThrowAwayParticle(client, "bday_1balloon", NULL_VECTOR, "partyhat", 5.0);
+		AttachThrowAwayParticle(client, "bday_balloon01", NULL_VECTOR, "partyhat", 5.0);
+		AttachThrowAwayParticle(client, "bday_balloon02", NULL_VECTOR, "partyhat", 5.0);
 		
-		if (war3Game == Game_TF)
-		{
-			AttachThrowAwayParticle(client, "achieved", NULL_VECTOR, "partyhat", 5.0);
-			AttachThrowAwayParticle(client, "bday_1balloon", NULL_VECTOR, "partyhat", 5.0);
-			AttachThrowAwayParticle(client, "bday_balloon01", NULL_VECTOR, "partyhat", 5.0);
-			AttachThrowAwayParticle(client, "bday_balloon02", NULL_VECTOR, "partyhat", 5.0);
-		
-		}
-		else if (war3Game == Game_CS || war3Game == Game_CSGO)
-		{
-			CSParticle(client, level);
-		}
-		else if (War3_IsL4DEngine() && GetClientTeam(client) == TEAM_SURVIVORS)
-		{
-			// Glider: I never checked if l4d1 has this particle & attachment, l4d2 has 'em
-			AttachThrowAwayParticle(client, "achieved", NULL_VECTOR, "eyes", 5.0);
-		}	
 		for(new i=1;i<=MaxClients;i++){
 			if(ValidPlayer(i)){
 				SetTrans(i);
