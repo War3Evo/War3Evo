@@ -347,12 +347,12 @@ if(War3_GetRace(attacker)==thisRaceID)
 		if(ARMOR_ENABLED[attacker])
 		{
 			//W3FlashScreen(attacker,RGBA_COLOR_BLUE);
-			//War3_DamageModPercent(0.50);
+			War3_DamageModPercent(0.50);
 		}
 		else
 		{
-			W3FlashScreen(attacker,RGBA_COLOR_BLUE);
-			War3_DamageModPercent(0.50);
+			//W3FlashScreen(attacker,RGBA_COLOR_BLUE);
+			War3_DamageModPercent(0.75);
 		}
 	}
 }
