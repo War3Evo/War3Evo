@@ -1,7 +1,7 @@
 #pragma semicolon 1    ///WE RECOMMEND THE SEMICOLON
 
 #include <sourcemod>
-#include "W3SIncs/War3Source_Interface"  
+#include "W3SIncs/War3Source_Interface"
 //#include "W3SIncs/War3Source_Effects"
 
 /*
@@ -106,14 +106,9 @@ public OnAbilityCommand(client,ability,bool:pressed)
 			{
 				if(SkillAvailable(client,thisRaceID,SKILL_SPEED)){
 					inSpeed[client]=true;
-					if(GameTF()){
-						TF2_AddCondition(client,TFCond_SpeedBuffAlly,6.0);
-						War3_SetBuff(client,fMaxSpeed,thisRaceID,abilityspeed[skill_level]);
-						War3_SetBuff(client,fSlow,thisRaceID,0.740740741); //slow down by the factor of the SpeedBuffAlly (1.35)
-					}
-					else{
-						War3_SetBuff(client,fMaxSpeed,thisRaceID,abilityspeed[skill_level]);
-					}
+					TF2_AddCondition(client,TFCond_SpeedBuffAlly,6.0);
+					War3_SetBuff(client,fMaxSpeed,thisRaceID,abilityspeed[skill_level]);
+					War3_SetBuff(client,fSlow,thisRaceID,0.740740741); //slow down by the factor of the SpeedBuffAlly (1.35)
 					speedendtimer[client]=CreateTimer(6.0,EndSpeed,client);
 					War3_CooldownMGR(client,20.0,thisRaceID,SKILL_SPEED,_,_);
 				}
@@ -122,10 +117,8 @@ public OnAbilityCommand(client,ability,bool:pressed)
 	}
 }
 public Action:EndSpeed(Handle:t,any:client){
-	if(GameTF()){
-		//DP("end");
-		TF2_RemoveCondition(client,TFCond_SpeedBuffAlly);
-	}
+	//DP("end");
+	TF2_RemoveCondition(client,TFCond_SpeedBuffAlly);
 	War3_SetBuff(client,fMaxSpeed,thisRaceID,1.0);
 	War3_SetBuff(client,fSlow,thisRaceID,1.0);
 	speedendtimer[client]=INVALID_HANDLE;
@@ -244,12 +237,10 @@ public OnW3TakeDmgBulletPre(victim,attacker,Float:damage)
 						War3_DamageModPercent(0.0); //NO DAMAMGE
 						
 						W3MsgEvaded(victim,attacker);
-						if(War3_GetGame()==Game_TF){
-							decl Float:pos[3];
-							GetClientEyePosition(victim, pos);
-							pos[2] += 4.0;
-							War3_TF_ParticleToClient(0, "miss_text", pos); //to the attacker at the enemy pos
-						}	
+						decl Float:pos[3];
+						GetClientEyePosition(victim, pos);
+						pos[2] += 4.0;
+						War3_TF_ParticleToClient(0, "miss_text", pos); //to the attacker at the enemy pos
 					}
 			}
 		}

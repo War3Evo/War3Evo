@@ -193,9 +193,6 @@ public OnAbilityCommand(client,ability,bool:pressed)
 Sleep(client){
 	War3_SetBuff(client,bStunned,thisRaceID,true);
 	PrintHintText(client,"%T","You are Mesmerized",client);
-	if(GameTF()){
-		
-	}
 }
 
 public Action:EndSleep(Handle:t,any:client){
