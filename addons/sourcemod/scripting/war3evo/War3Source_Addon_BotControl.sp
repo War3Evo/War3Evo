@@ -134,8 +134,11 @@ public Event_ScrambleNow(Handle:event, const String:name[], bool:dontBroadcast)
 	new bool:BotsExist=false;
 	for(new players = 1; players <= MaxClients; ++players)
 	{
-		if(IsFakeClient(players))
-			BotsExist=true;
+		if(ValidPlayer(players))
+		{
+			if(IsFakeClient(players))
+				BotsExist=true;
+		}
 	}
 
 	//Why scramblebots that doesn't exist?
