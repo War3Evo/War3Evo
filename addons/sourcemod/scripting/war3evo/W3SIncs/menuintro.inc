@@ -42,7 +42,7 @@ public War3Source_IntroMenu(client)
 
 public War3Source_IntroMenu_Select(Handle:menu,MenuAction:action,client,selection)
 {
-	if(W3()&&ValidPlayer(client))
+	if(ValidPlayer(client))
 	{
 		if(W3IsPlayerXPLoaded(client)){
 			if(selection>2)
