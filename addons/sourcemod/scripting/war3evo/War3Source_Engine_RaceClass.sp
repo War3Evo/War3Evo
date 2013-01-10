@@ -1,8 +1,13 @@
-
 #pragma dynamic 10000
 #include <sourcemod>
 #include "W3SIncs/War3Source_Interface"
 
+public Plugin:myinfo = 
+{
+    name = "War3Source - Engine - Race Class",
+    author = "War3Source Team",
+    description = "Information about races"
+};
 
 new totalRacesLoaded=0;  ///USE raceid=1;raceid<=GetRacesLoaded();raceid++ for looping
 ///race instance variables
@@ -52,24 +57,12 @@ new raceCell[MAXRACES][ENUM_RaceObject]
 
 //END race instance variables
 
-
-public Plugin:myinfo= 
-{
-	name="W3S Engine Race Class",
-	author="Ownz (DarkEnergy)",
-	description="War3Source Core Plugins",
-	version="1.0",
-	url="http://war3source.com/"
-};
-
-
 public OnPluginStart()
 {
 //silence error
 	skillProp[0][0][0]=0;
 	m_MinimumUltimateLevel=CreateConVar("war3_minimumultimatelevel","6");
-	PrintToServer("SH %d",SH());
-	PrintToServer("W3 %d",W3());
+	PrintToServer("W3E OnPluginStart Engine RaceClass");
 }
 
 
@@ -313,7 +306,8 @@ public NW3GetRaceSkillName(Handle:plugin,numParams)
 	SetNativeString(3,buf,maxlen);
 }
 public NW3GetRaceSkillDesc(Handle:plugin,numParams)
-{	new race=GetNativeCell(1);
+{
+	new race=GetNativeCell(1);
 	new skill=GetNativeCell(2);
 	new maxlen=GetNativeCell(4);
 	
@@ -559,7 +553,7 @@ public NWar3_UseGenericSkill(Handle:plugin,numParams){
 			}
 		}
 	}
-	W3LogError("NO GENREIC SKILL FOUND");
+	W3LogError("NO GENERIC SKILL FOUND");
 	return 0;
 }
 public NW3_GenericSkillLevel(Handle:plugin,numParams){
@@ -846,8 +840,6 @@ CreateRaceEnd(raceid){
 		///now we put shit into the database and create cvars
 		if(!ignoreRaceEnd&&raceid>0)
 		{
-			new Handle:hDB=Handle:W3GetVar(hDatabase);
-			
 			new String:shortname[16];
 			GetRaceShortname(raceid,shortname,sizeof(shortname));
 			
@@ -881,79 +873,11 @@ CreateRaceEnd(raceid){
 			
 			Format(cvarstr,sizeof(cvarstr),"%s_category",shortname);
 			W3SetRaceCell(raceid,RaceCategorieCvar,W3CreateCvar(cvarstr,"default","Determines in which Category the race should be displayed(if cats are active)"));
-			
-			// create war3sourceraces structure, shouldn't be harmful if already exists
-			if(hDB)
-			{
-				PrintToServer("---Starting Threaded race operations: %s----------",shortname);
-				//PrintToServer("Creating race into war3sourceraces if not exists %s",shortname);
-				
-				
-				new String:longquery[4001];
-				// populate war3sourceraces
-				
-				Format(longquery,sizeof(longquery),"INSERT %s IGNORE INTO %s (shortname) VALUES ('%s')",
-					W3GetVar(hDatabaseType)==SQLType_SQLite?"OR":"",
-					W3()?"war3sourceraces":(SH()?"shheroes":"invalidgametype"),
-					shortname
-					);
-				
-				SQL_TQuery(hDB,T_CallbackInsertRace1,longquery,raceid,DBPrio_High);
-				
-				
-				
-			}
+            
 		}
 		ignoreRaceEnd=false;
 	}
 }
-
-public T_CallbackInsertRace1(Handle:owner,Handle:hndl,const String:error[],any:raceid)
-{
-	SQLCheckForErrors(hndl,error,"T_CallbackInsertRace1");
-	new Handle:hDB=Handle:W3GetVar(hDatabase);
-	
-	
-	new String:retstr[2000];
-	new String:escapedstr[2000];
-	new String:longquery[4000];
-	Format(longquery,sizeof(longquery),"UPDATE %s SET ",W3()?"war3sourceraces":(SH()?"shheroes":"invalidgametype"));
-	
-	GetRaceName(raceid,retstr,sizeof(retstr));
-	SQL_EscapeString(hDB,retstr,escapedstr,sizeof(escapedstr));
-	Format(longquery,sizeof(longquery),"%s name='%s'",longquery,escapedstr);
-	
-	
-	new SkillCount = GetRaceSkillCount(raceid);
-	for(new i=1;i<=SkillCount;i++){
-		GetRaceSkillName(raceid,i,retstr,sizeof(retstr));
-		SQL_EscapeString(hDB,retstr,escapedstr,sizeof(escapedstr));
-		Format(longquery,sizeof(longquery),"%s, skill%d='%s %s'",longquery,i,IsSkillUltimate(raceid,i)?"Ultimate":"",escapedstr);
-		
-		GetRaceSkillDesc(raceid,i,retstr,sizeof(retstr));
-		SQL_EscapeString(hDB,retstr,escapedstr,sizeof(escapedstr));
-		Format(longquery,sizeof(longquery),"%s, skilldesc%d='%s'",longquery,i,escapedstr);
-	}
-	
-	new String:shortname[16];
-	GetRaceShortname(raceid,shortname,sizeof(shortname));
-	
-	Format(longquery,sizeof(longquery),"%s WHERE shortname = '%s'",longquery,shortname);
-	SQL_TQuery(hDB,  T_CallbackInsertRace2,longquery,raceid,DBPrio_High);//
-}
-public T_CallbackInsertRace2(Handle:owner,Handle:hndl,const String:error[],any:raceid)
-{
-	SQLCheckForErrors(hndl,error,"T_CallbackInsertRace2");
-	
-	//new String:racename[32];
-//	GetRaceName(raceid,racename,sizeof(racename));
-	//PrintToServer("[War3Source] SQL operations done for war3sourceraces: race %s",racename);
-}
-
-
-
-
-
 
 
 

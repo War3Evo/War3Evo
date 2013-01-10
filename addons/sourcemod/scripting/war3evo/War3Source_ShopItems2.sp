@@ -204,7 +204,7 @@ public OnItem2Lost(client,item){ //deactivate passives , client may have disconn
 public OnW3TakeDmgBulletPre(victim,attacker,Float:damage)
 {
 //sh has no shop2 items
-	if(W3()&&IS_PLAYER(victim)&&IS_PLAYER(attacker)&&victim>0&&attacker>0&&attacker!=victim)
+	if(IS_PLAYER(victim)&&IS_PLAYER(attacker)&&victim>0&&attacker>0&&attacker!=victim)
 	{
 		new vteam=GetClientTeam(victim);
 		new ateam=GetClientTeam(attacker);

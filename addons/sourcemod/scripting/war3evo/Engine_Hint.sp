@@ -190,14 +190,7 @@ public OnGameFrame()
 					if(strlen(output)>1 /*&& strcmp(output," ")==-1 && strcmp(output,"  ")==-1*/)
 					{
 						//DP("-1");
-						if(GAMECSGO)
-						{
-							StopSound(client, SNDCHAN_STATIC, "music/war3source/csgo/ui/hint.mp3");
-						}
-						else
-						{
-							StopSound(client, SNDCHAN_STATIC, "UI/hint.wav");
-						}
+						StopSound(client, SNDCHAN_STATIC, "UI/hint.wav");
 						//if(output[strlen(output)-1]=='\n')
 						//{ 
 						//PrintToServer("deleted");
@@ -284,14 +277,7 @@ public Action:MsgHook_HintText(UserMsg:msg_id, Handle:bf, const players[], playe
 		{
 			if (players[i] != 0 && IsClientInGame(players[i]) && !IsFakeClient(players[i]))
 			{
-				if(GAMECSGO)
-				{
-					StopSound(players[i], SNDCHAN_STATIC, "music/war3source/csgo/ui/hint.mp3");
-				}
-				else
-				{
-					StopSound(players[i], SNDCHAN_STATIC, "UI/hint.wav");
-				}
+				StopSound(players[i], SNDCHAN_STATIC, "UI/hint.wav");
 				if (intercept)
 				{
 					W3Hint(players[i],HINT_NORMAL,4.0,str); //causes update

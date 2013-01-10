@@ -216,7 +216,7 @@ public PlayerDeathEvent(Handle:event,const String:name[],bool:dontBroadcast)
 		}
 		//new deathFlags = GetEventInt(event, "death_flags");
 	// where is the list of flags? idksee firefox
-		//if (War3_GetGame()==Game_TF&&deathFlags & 32)
+		//if (deathFlags & 32)
 		//{
 		   //PrintToChat(client,"war3 debug: dead ringer kill");
 		//}

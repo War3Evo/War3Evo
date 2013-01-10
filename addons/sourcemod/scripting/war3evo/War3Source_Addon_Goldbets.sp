@@ -69,15 +69,7 @@ public Action:Timer_DelayedHooks(Handle:timer)
 {
 	if (g_bEnabled)
 	{
-		if(War3_GetGame()==Game_TF)
-		{
-			HookEvent("teamplay_round_win", Event_RoundEnd,EventHookMode_Post);
-		}
-		else
-		{
-			HookEvent("round_end", Event_RoundEnd, EventHookMode_Post);
-		}
-		
+		HookEvent("teamplay_round_win", Event_RoundEnd,EventHookMode_Post);
 		PrintToServer("[GoldBets] - Loaded");
 	}
 }
@@ -129,12 +121,7 @@ public Action:Command_Say(client, args)
 		
 		if (strcmp(szParts[1],"ct",false) != 0 && strcmp(szParts[1],"t", false) != 0 && strcmp(szParts[1],"blu",false) != 0 && strcmp(szParts[1],"red", false))
 		{
-			if(War3_GetGame()==Game_CS){
-				PrintToChat(client, "\x04[GoldBets]\x01 %t", "Invalid_Team_for_Bet_CSS");
-			}
-			else if(War3_GetGame()==Game_TF){
-				PrintToChat(client, "\x04[GoldBets]\x01 %t", "Invalid_Team_for_Bet_TF2");
-			}
+			PrintToChat(client, "\x04[GoldBets]\x01 %t", "Invalid_Team_for_Bet_TF2");
 			return Plugin_Handled;
 		}
 		
@@ -244,15 +231,8 @@ public Event_RoundEnd(Handle:event, const String:name[], bool:dontBroadcast)
 	
 	new iMaxClients = GetMaxClients();
 	new iWinner;
-	if(War3_GetGame()==Game_TF)
-	{
-		iWinner=GetEventInt(event,"team");
-	}
-	else
-	{
-		iWinner=GetEventInt(event,"winner");
-	}
-	
+	iWinner=GetEventInt(event,"team");
+
 	new WinAmount;
 	if(iWinner == 2)
 	{

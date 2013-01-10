@@ -45,9 +45,6 @@ public OnPluginStart()
 	{
 		LogError("[War3Source] Error finding active weapon offset.");
 	}
-	if(War3_GetGame()==CS || War3_GetGame()==L4D2){
-		HookEvent("weapon_fire",WeaponFireEvent, EventHookMode_Pre);
-	}
 	RegConsoleCmd("w3dropweapon",cmddroptest);
 }
 

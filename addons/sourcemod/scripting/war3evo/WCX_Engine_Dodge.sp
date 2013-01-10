@@ -63,13 +63,10 @@ public OnW3TakeDmgBulletPre(victim,attacker,Float:damage)
 						Call_PushCell(attacker);
 						Call_Finish(dummyresult);
 						
-						if(War3_GetGame()==Game_TF)
-						{
-							decl Float:pos[3];
-							GetClientEyePosition(victim, pos);
-							pos[2] += 4.0;
-							War3_TF_ParticleToClient(0, "miss_text", pos); //to the attacker at the enemy pos
-						}
+						decl Float:pos[3];
+						GetClientEyePosition(victim, pos);
+						pos[2] += 4.0;
+						War3_TF_ParticleToClient(0, "miss_text", pos); //to the attacker at the enemy pos
 					}
 				}
 			}

@@ -349,26 +349,23 @@ public OnAbilityCommand(client,ability,bool:pressed)
 			{
 				new iTeam=GetClientTeam(client);
 				new bool:conf_found=false;
-				if(War3_GetGame()==Game_TF)
+				new Handle:hCheckEntities=War3_NearBuilding(client);
+				new size_arr=0;
+				if(hCheckEntities!=INVALID_HANDLE)
+					size_arr=GetArraySize(hCheckEntities);
+				for(new x=0;x<size_arr;x++)
 				{
-					new Handle:hCheckEntities=War3_NearBuilding(client);
-					new size_arr=0;
-					if(hCheckEntities!=INVALID_HANDLE)
-						size_arr=GetArraySize(hCheckEntities);
-					for(new x=0;x<size_arr;x++)
+					new ent=GetArrayCell(hCheckEntities,x);
+					if(!IsValidEdict(ent)) continue;
+					new builder=GetEntPropEnt(ent,Prop_Send,"m_hBuilder");
+					if(builder>0 && ValidPlayer(builder) && GetClientTeam(builder)!=iTeam)
 					{
-						new ent=GetArrayCell(hCheckEntities,x);
-						if(!IsValidEdict(ent)) continue;
-						new builder=GetEntPropEnt(ent,Prop_Send,"m_hBuilder");
-						if(builder>0 && ValidPlayer(builder) && GetClientTeam(builder)!=iTeam)
-						{
-							conf_found=true;
-							break;
-						}
+						conf_found=true;
+						break;
 					}
-					if(size_arr>0)
-						CloseHandle(hCheckEntities);
 				}
+				if(size_arr>0)
+					CloseHandle(hCheckEntities);
 				if(conf_found)
 				{
 					W3MsgWardLocationDeny(client);

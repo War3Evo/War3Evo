@@ -125,42 +125,40 @@ public OnWar3EventPostHurt(victim,attacker,damage){
 public Action:TFHPBuff(Handle:h,any:data){
 
 
-	if(War3_GetGame()==Game_TF){
-		new Float:now=GetEngineTime();
-		//only create timer of TF2
-		for(new i=1;i<=MaxClients;i++){
-			if(ValidPlayer(i,true)){
-				if(now>LastDamageTime[i]+10.0){
-					
-						// Devotion Aura
-						new curhp =GetClientHealth(i);
-						new hpadd=W3GetBuffSumInt(i,iAdditionalMaxHealth);
-						new maxhp =War3_GetMaxHP(i)-hpadd; //nomal player hp
-						
-						if(curhp>=maxhp&&curhp<maxhp+hpadd){ ///we should add
-							new newhp=curhp+2;
-							if(newhp>maxhp+hpadd){
-								newhp=maxhp+hpadd;
-							}
-							//SetEntPropEnt(entity, PropType:type, const String:prop[], other);
-							//SetEntPropEnt(client,SetEntPropEnt(entity, PropType:type, const String:prop[], other);
-							//SetEntityHealth(i,newhp);
-							//SetEntProp(i, Prop_Data , "m_iMaxHealth", maxhp+hpadd);
-							//if(!W3GetBuffHasTrue(i,fHPRegenDeny)) // MAYBE ADD FOR BUG FIX?
-							SetEntityHealth(i, newhp);
-							
-							//SetEntProp(i, Prop_Send, "m_iHealth", newhp , 1);
-					
-						//curhp =GetClientHealth(i);
-						//if(curhp>maxhp&&curhp<=maxhp+hpadd)
-						//{
-						//	TF2_AddCondition(i, TFCond_Healing, 1.0); //TF2 AUTOMATICALLY ADDS PARTICLES?
+	new Float:now=GetEngineTime();
+	//only create timer of TF2
+	for(new i=1;i<=MaxClients;i++){
+		if(ValidPlayer(i,true)){
+			if(now>LastDamageTime[i]+10.0){
+
+					// Devotion Aura
+					new curhp =GetClientHealth(i);
+					new hpadd=W3GetBuffSumInt(i,iAdditionalMaxHealth);
+					new maxhp =War3_GetMaxHP(i)-hpadd; //nomal player hp
+
+					if(curhp>=maxhp&&curhp<maxhp+hpadd){ ///we should add
+						new newhp=curhp+2;
+						if(newhp>maxhp+hpadd){
+							newhp=maxhp+hpadd;
+						}
+						//SetEntPropEnt(entity, PropType:type, const String:prop[], other);
+						//SetEntPropEnt(client,SetEntPropEnt(entity, PropType:type, const String:prop[], other);
+						//SetEntityHealth(i,newhp);
+						//SetEntProp(i, Prop_Data , "m_iMaxHealth", maxhp+hpadd);
+						//if(!W3GetBuffHasTrue(i,fHPRegenDeny)) // MAYBE ADD FOR BUG FIX?
+						SetEntityHealth(i, newhp);
+
+						//SetEntProp(i, Prop_Send, "m_iHealth", newhp , 1);
+
+					//curhp =GetClientHealth(i);
+					//if(curhp>maxhp&&curhp<=maxhp+hpadd)
+					//{
+					//	TF2_AddCondition(i, TFCond_Healing, 1.0); //TF2 AUTOMATICALLY ADDS PARTICLES?
 					//	}
-						//else{
-						//}
-					}
+					//else{
+					//}
 				}
 			}
 		}
-	}   
+	}
 }

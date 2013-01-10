@@ -20,36 +20,12 @@ public bool:War3Source_HookEvents()
 		PrintToServer("[War3Source] Could not hook the player_death event.");
 		return false;
 	}
-	if(War3_GetGame()==Game_CS)
+	if(!HookEventEx("teamplay_round_win",War3Source_RoundOverEvent))
 	{
-		if(!HookEventEx("round_start",War3Source_RoundStartEvent))
-		{
-			PrintToServer("[War3Source] Could not hook the round_start event.");
-			return false;
-		}
-		iRoundNumber=0;
-		bInFreezeTime=false;
-		
-		if(!HookEventEx("round_end",War3Source_RoundOverEvent))
-		{
-			PrintToServer("[War3Source] Could not hook the round_end event.");
-			return false;
-		}
+		PrintToServer("[War3Source] Could not hook the teamplay_round_win event.");
+		return false;
 	}
-	else if(War3_GetGame()==Game_DOD)
-	{
-		// TODO: DOD specific events
-	}
-	else if(War3_GetGame()==Game_TF)
-	{
-		if(!HookEventEx("teamplay_round_win",War3Source_RoundOverEvent))
-		{
-			PrintToServer("[War3Source] Could not hook the teamplay_round_win event.");
-			return false;
-		}
 
-	}
-	
 	return true;
 	
 }
@@ -227,7 +203,7 @@ public  Action:War3Source_PlayerDeathEvent(Handle:event,const String:name[],bool
 	if(uid_victim>0)
 	{	
 		new deathFlags = GetEventInt(event, "death_flags");
-		if (War3_GetGame()==Game_TF&&deathFlags & 32) //TF_DEATHFLAG_DEADRINGER
+		if (deathFlags & 32) //TF_DEATHFLAG_DEADRINGER
 		{
 			deadringereath=true;
 			//PrintToChat(client,"war3 debug: dead ringer kill");
@@ -318,16 +294,8 @@ public War3Source_RoundOverEvent(Handle:event,const String:name[],bool:dontBroad
 {
 	// cs - int winner
 	// tf2 - int team
-	new team=-1;
-	if(War3_GetGame()==Game_TF)
-	{
-		team=GetEventInt(event,"team");
-	}
-	else
-	{
-		team=GetEventInt(event,"winner");
-	}
-	if(team>-1)
+	//new team=GetEventInt(event,"team");
+	if(GetEventInt(event,"team")>-1)
 	{
 		//winner team...
 	}

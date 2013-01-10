@@ -78,13 +78,7 @@ public OnPluginStart()
 }
 public OnMapStart()
 {
-	if(GAMECSGO){
-		strcopy(levelupSound,sizeof(levelupSound),"music/war3source/levelupcaster.mp3");
-	}
-	else
-	{
-		strcopy(levelupSound,sizeof(levelupSound),"war3source/levelupcaster.mp3");
-	}
+	strcopy(levelupSound,sizeof(levelupSound),"war3source/levelupcaster.mp3");
 
 	War3_PrecacheSound(levelupSound);
 }
@@ -217,12 +211,9 @@ public NWar3_SetRace(Handle:plugin,numParams){
 	return;
 }
 public NWar3_GetRace(Handle:plugin,numParams){
-	if(W3()){
-		new client = GetNativeCell(1);
-		if (client > 0 && client <= MaxClients)
-			return p_properties[client][CurrentRace];
-	}
-	
+	new client = GetNativeCell(1);
+	if (client > 0 && client <= MaxClients)
+		return p_properties[client][CurrentRace];
 	return -2; //return -2 because u usually compare your race
 }
 

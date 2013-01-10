@@ -114,12 +114,7 @@ public bool:InitNativesForwards()
 public OnMapStart() 
 {
 	ExplosionSprite = War3_PrecacheBeamSprite(); //even beamsprites should still do the job
-	if(War3_GetGame() == Game_CSGO) {
-		BloodDrop = PrecacheModel("decals/blood1.vmt");
-	}
-	else {
-		BloodDrop = PrecacheModel("sprites/blood.vmt");
-	}
+	BloodDrop = PrecacheModel("sprites/blood.vmt");
 	iNPCNum++;//skip zero
 }
 

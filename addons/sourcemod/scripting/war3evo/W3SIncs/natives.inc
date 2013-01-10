@@ -90,15 +90,12 @@ public Native_War3_SpawnPlayer(Handle:plugin,numParams)
 public Native_War3_IsUbered(Handle:plugin,numParams)
 {
 	new client = GetNativeCell(1);
-	if (War3_GetGame() == Game_TF)
+	//PrintToChatAll("tf game %d vs current %d",Game_TF,War3_GetGame());
+	new m_nPlayerCond = FindSendPropInfo("CTFPlayer","m_nPlayerCond") ;
+	new cond = GetEntData(client, m_nPlayerCond);
+	if(cond & 32)
 	{
-		//PrintToChatAll("tf game %d vs current %d",Game_TF,War3_GetGame());
-		new m_nPlayerCond = FindSendPropInfo("CTFPlayer","m_nPlayerCond") ;
-		new cond = GetEntData(client, m_nPlayerCond);
-		if(cond & 32)
-		{
-			return true;
-		} 
+		return true;
 	}
 	return false;
 }
@@ -107,31 +104,25 @@ public Native_War3_IsUbered(Handle:plugin,numParams)
 public Native_War3_HasFlag(Handle:plugin,numParams)
 {
 	new client = GetNativeCell(1);
-	if (War3_GetGame() == Game_TF)
+	new ent = -1;
+	while ((ent = FindEntityByClassname(ent, "item_teamflag")) != -1)
 	{
-		new ent = -1;
-		while ((ent = FindEntityByClassname(ent, "item_teamflag")) != -1)
-		{
-			if (GetEntPropEnt(ent, Prop_Data, "m_hOwnerEntity")==client)
-				return true;
-		}
+		if (GetEntPropEnt(ent, Prop_Data, "m_hOwnerEntity")==client)
+			return true;
 	}
 	return false;
 }
 
 stock GetFlagCarrier(team)
 {
-	if (War3_GetGame() == Game_TF)
+	new ent = -1;
+	while ((ent = FindEntityByClassname(ent, "item_teamflag")) != -1)
 	{
-		new ent = -1;
-		while ((ent = FindEntityByClassname(ent, "item_teamflag")) != -1)
+		new owner = GetEntPropEnt(ent, Prop_Data, "m_hOwnerEntity");
+		if (owner > 0)
 		{
-			new owner = GetEntPropEnt(ent, Prop_Data, "m_hOwnerEntity");
-			if (owner > 0)
-			{
-				if (GetClientTeam(owner) == team)
-					return owner;
-			}
+			if (GetClientTeam(owner) == team)
+				return owner;
 		}
 	}
 	return -1;
@@ -142,16 +133,12 @@ stock GetFlagCarrier(team)
 
 public Native_War3_IsCloaked(Handle:plugin,numParams)
 {
-
 	new client = GetNativeCell(1);
-	if (War3_GetGame() == Game_TF)
+	new m_nPlayerCond = FindSendPropInfo("CTFPlayer","m_nPlayerCond") ;
+	new cond = GetEntData(client, m_nPlayerCond);
+	if(cond & 16)
 	{
-		new m_nPlayerCond = FindSendPropInfo("CTFPlayer","m_nPlayerCond") ;
-		new cond = GetEntData(client, m_nPlayerCond);
-		if(cond & 16)
-		{
-			return true;
-		} 
+		return true;
 	}
 	return false;
 }
@@ -169,10 +156,7 @@ public Native_War3_TF_PTC(Handle:plugin,numParams)
 	GetNativeString(2, str, sizeof(str));
 	new Float:pos[3];
 	GetNativeArray(3,pos,3);
-	if(War3_GetGame()==Game_TF){
-		return TE_ParticleToClient(client,str,pos);
-	}
-	return 0;
+	return TE_ParticleToClient(client,str,pos);
 }
 TE_ParticleToClient(client,
 String:Name[],
@@ -266,7 +250,8 @@ public Native_War3_HTBHP(Handle:plugin,numParams)
 {
 	new client = GetNativeCell(1);
 	new addhp = GetNativeCell(2);
-	new maxhp=(War3_GetGame()==Game_TF)?RoundFloat(float(War3_GetMaxHP(client))*1.5):War3_GetMaxHP(client);
+	//new maxhp=(War3_GetGame()==Game_TF)?RoundFloat(float(War3_GetMaxHP(client))*1.5):War3_GetMaxHP(client);
+	new maxhp=RoundFloat(float(War3_GetMaxHP(client))*1.5);
 	new currenthp=GetClientHealth(client);
 	if(currenthp<maxhp){ ///do not make hp lower
 		new newhp=GetClientHealth(client)+addhp;
