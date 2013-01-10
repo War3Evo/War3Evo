@@ -679,13 +679,13 @@ LevelCheck(client){
 			else{
 				keepchecking=false;
 			}
-	
+
 		}
-		
-		if(W3GetLevelsSpent(client,race)<War3_GetLevel(client,race)){
-			//War3Source_SkillMenu(client);
-			W3CreateEvent(DoShowSpendskillsMenu,client);
-		}
+		//  Don't bother players during game to level up.
+		//  Request they level up after they die
+		//if(W3GetLevelsSpent(client,race)<War3_GetLevel(client,race)){
+			//W3CreateEvent(DoShowSpendskillsMenu,client);
+		//}
 	}
 }
 
