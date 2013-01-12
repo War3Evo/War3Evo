@@ -4,13 +4,13 @@
 #include "W3SIncs/War3Source_Interface"
 
 
-//new bool:playerOwnsItem[MAXPLAYERSCUSTOM][MAXITEMS];
-new playerOwnsItemExpireTime[MAXPLAYERSCUSTOM][MAXITEMS];
+new bool:playerOwnsItem2[MAXPLAYERSCUSTOM][MAXITEMS];
+//new playerOwnsItemExpireTime[MAXPLAYERSCUSTOM][MAXITEMS];
 new Handle:g_OnItemPurchaseHandle;
 new Handle:g_OnItemLostHandle;
 
-new Handle:hitemRestrictionCvar;
-//new Handle:hCvarMaxShopitems2;
+//new Handle:hitemRestrictionCvar2;
+new Handle:hCvarMaxShopitems2;
 public Plugin:myinfo= 
 {
 	name="W3S Engine Item2 Ownership",
@@ -24,8 +24,8 @@ public Plugin:myinfo=
 
 public OnPluginStart()
 {
-	hitemRestrictionCvar=CreateConVar("war3_item_restrict","","Disallow items in shopmenu, shortname separated by comma only ie:'claw,orb'");
-	//hCvarMaxShopitems2=CreateConVar("war3_max_shopitems2","2");
+	//hitemRestrictionCvar2=CreateConVar("war3_item2_restrict","","Disallow items in shopmenu, shortname separated by comma only ie:'claw,orb'");
+	hCvarMaxShopitems2=CreateConVar("war3_max_shopitems2","3");
 }
 
 public bool:InitNativesForwards()
@@ -33,23 +33,26 @@ public bool:InitNativesForwards()
 	g_OnItemPurchaseHandle=CreateGlobalForward("OnItem2Purchase",ET_Ignore,Param_Cell,Param_Cell);
 	g_OnItemLostHandle=CreateGlobalForward("OnItem2Lost",ET_Ignore,Param_Cell,Param_Cell);
 
+	CreateNative("War3_GetOwnsItem2",NWar3_GetOwnsItem2);
+	CreateNative("War3_SetOwnsItem2",NWar3_SetOwnsItem2);
 
+	CreateNative("W3IsItem2DisabledGlobal",NW3IsItem2DisabledGlobal);
+	CreateNative("W3IsItem2DisabledForRace",NW3IsItem2DisabledForRace);
 	
-	CreateNative("W3IsItem2DisabledGlobal",NW3IsItemDisabledGlobal);
-	CreateNative("W3IsItem2DisabledForRace",NW3IsItemDisabledForRace);
-	
-	CreateNative("W3GetItem2ExpireTime",NW3GetItem2ExpireTime);
-	CreateNative("W3SetItem2ExpireTime",NW3SetItem2ExpireTime);
+	//CreateNative("W3GetItem2ExpireTime",NW3GetItem2ExpireTime);
+	//CreateNative("W3SetItem2ExpireTime",NW3SetItem2ExpireTime);
 	
 	
 	CreateNative("GetClientItems2Owned",NGetClientItems2Owned);
-	//CreateNative("GetMaxShopitems2PerPlayer",NGetMaxShopitems2PerPlayer);
+	CreateNative("GetMaxShopitems2PerPlayer",NGetMaxShopitems2PerPlayer);
 	
 	return true;
 }
 
-public NW3IsItemDisabledGlobal(Handle:plugin,numParams)
+public NW3IsItem2DisabledGlobal(Handle:plugin,numParams)
 {
+	return false;
+	/*
 	new itemid=GetNativeCell(1);
 	decl String:itemShort[16];
 	W3GetItem2Shortname(itemid,itemShort,16);
@@ -57,7 +60,7 @@ public NW3IsItemDisabledGlobal(Handle:plugin,numParams)
 	decl String:cvarstr[100];
 	decl String:exploded[MAXITEMS][16];
 	decl num;
-	GetConVarString(hitemRestrictionCvar,cvarstr,sizeof(cvarstr));
+	GetConVarString(hitemRestrictionCvar2,cvarstr,sizeof(cvarstr));
 	if(strlen(cvarstr)>0){
 		num=ExplodeString(cvarstr,",",exploded,MAXITEMS,16);
 		for(new i=0;i<num;i++){
@@ -69,8 +72,9 @@ public NW3IsItemDisabledGlobal(Handle:plugin,numParams)
 		}
 	}
 	return false;
+	*/
 }
-public NW3IsItemDisabledForRace(Handle:plugin,numParams)
+public NW3IsItem2DisabledForRace(Handle:plugin,numParams)
 {
 	return false;
 	/*
@@ -100,12 +104,11 @@ public NW3IsItemDisabledForRace(Handle:plugin,numParams)
 	return false;*/
 }
 
+/*
 public NW3GetItem2ExpireTime(Handle:plugin,numParams)
 {
 
 	return _:playerOwnsItemExpireTime[GetNativeCell(1)][GetNativeCell(2)];
-
-
 
 }
 public NW3SetItem2ExpireTime(Handle:plugin,numParams)
@@ -119,7 +122,7 @@ public NW3SetItem2ExpireTime(Handle:plugin,numParams)
 	playerOwnsItemExpireTime[client][item]=time;
 }
 
-
+*/
 
 
 
@@ -201,6 +204,45 @@ public NGetClientItems2Owned(Handle:h,n){
 	//DP("ret %d loaded %d",num,W3GetItems2Loaded());
 	return num;
 }
-//public NGetMaxShopitems2PerPlayer(Handle:h,n){
-	//return GetConVarInt(hCvarMaxShopitems2);
-//}
+public NGetMaxShopitems2PerPlayer(Handle:h,n){
+	return GetConVarInt(hCvarMaxShopitems2);
+}
+
+
+public NWar3_GetOwnsItem2(Handle:plugin,numParams)
+{
+	if (ValidPlayer(GetNativeCell(1)))
+		return _:playerOwnsItem2[GetNativeCell(1)][GetNativeCell(2)];
+	else
+		return false;
+
+}
+
+public NWar3_SetOwnsItem2(Handle:plugin,numParams)
+{
+	new client=GetNativeCell(1);
+	new itemid=GetNativeCell(2);
+	new bool:old=playerOwnsItem2[client][itemid];
+	playerOwnsItem2[client][itemid]=bool:GetNativeCell(3);
+	if(old!=playerOwnsItem2[client][itemid]){
+		switch(playerOwnsItem2[client][itemid]){
+			case false:{
+				Call_StartForward(g_OnItemLostHandle);
+				Call_PushCell(client);
+				Call_PushCell(itemid);
+				Call_Finish(dummy);
+			}
+			case true:{
+				Call_StartForward(g_OnItemPurchaseHandle);
+				Call_PushCell(client);
+				Call_PushCell(itemid);
+				Call_Finish(dummy);
+			}
+			default: {
+				ThrowNativeError(0,"set owns item2 is not true or false");
+			}
+		}
+	}
+
+
+}
