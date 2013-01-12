@@ -19,7 +19,7 @@
 
 #include <cstrike>
 
-enum ITEMENUM{ ///
+enum ITEMENUM{
 	POSTHASTE=0,
 	TRINKET,
 	LIFETUBE,
@@ -66,7 +66,7 @@ enum ITEMENUM{ ///
 	*/
 }
 
-new ItemID[ITEMENUM];
+new ItemID[MAXITEMS];
 
 // Regen Cash
 new bool:CASH_REGEN_PLAYERS[MAXPLAYERSCUSTOM]=false;
@@ -91,7 +91,7 @@ public Plugin:myinfo =
 public OnPluginStart()
 {
 	//CreateTimer(1.0,test,_,TIMER_REPEAT);
-	W3CreateCvar("w3shop2items","loaded","is the shop2 loaded");
+	//W3CreateCvar("w3shop2items","loaded","is the shop2 loaded");
 	cvarAmount = CreateConVar("sm_cashregen_amount", "20", "Amount of money generated per increment", _, true, 0.0, true, 1000.0);
 	cvarTime = CreateConVar("sm_cashregen_time", "20", "Time between cash regens", _, true, 0.0);
 
@@ -131,16 +131,20 @@ public OnPluginStart()
 
 public OnWar3LoadRaceOrItemOrdered(num)
 {
-	if(num==10&&EXT()){
-		ItemID[POSTHASTE]=W3CreateShopItem2T("posthaste",10);	
+	if(num==10){
+
+		for(new x=0;x<MAXITEMS;x++)
+			ItemID[x]=0;
+
+		ItemID[POSTHASTE]=War3_CreateShopItem2T("posthaste",10);
 		if(ItemID[POSTHASTE]==0){
 			DP("ERR ITEM ID RETURNED IS ZERO");
 		}
-		ItemID[TRINKET]=W3CreateShopItem2T("trinket",15);
-		ItemID[LIFETUBE]=W3CreateShopItem2T("lifetube",40);
-		ItemID[SNAKE_BRACELET]=W3CreateShopItem2T("snakebracelet",10);
-		ItemID[FORTIFIED_BRACER]=W3CreateShopItem2T("fortifiedbracer",10);
-		//ItemID[CASH_REGEN]=W3CreateShopItem2T("mvmcashregen",40);
+		ItemID[TRINKET]=War3_CreateShopItem2T("trinket",15);
+		ItemID[LIFETUBE]=War3_CreateShopItem2T("lifetube",40);
+		ItemID[SNAKE_BRACELET]=War3_CreateShopItem2T("sbracelt",10);
+		ItemID[FORTIFIED_BRACER]=War3_CreateShopItem2T("fbracer",10);
+		//ItemID[CASH_REGEN]=War3_CreateShopItem2T("mvmcashregen",40);
 		
 
 	}
