@@ -108,36 +108,44 @@ public Action:Command_Say(client, args) {
 	}
 	if ( StrContains(message, "/song", false)==0)
 	{
-		PrintToChat(client,"Yo this is Lord Dagothur trying to play your super sick song RIGHT MEOW. Type /stop to end the party. Command list:");
-		PrintToChat(client,"/song <song> /youtube <song> /youtube2 <song> /grooveshark");
-		PrintToChat(client,"You can set the volume for /youtube by using /youtube2");
-		PrintToChat(client,"Problem changing volume? Put the mouse a little higher");
+		songHelp(client);
 		new String:buffer2[128];
 		Format(buffer2,sizeof(buffer2),"http://war3evo.com/song/song.php?q=%s",text[startidx+6]);
 		hiddenURL(client,buffer2);		
 		return Plugin_Continue;
 	} else if ( StrContains(message, "/youtube2", false)==0)
 	{
-		PrintToChat(client,"Yo this is Lord Dagothur trying to play your super sick song RIGHT MEOW. Type /stop to end the party. Command list:");
-		PrintToChat(client,"/song <song> /youtube <song> /youtube2 <song> /grooveshark");
-		PrintToChat(client,"You can set the volume for /youtube by using /youtube2");
-		PrintToChat(client,"Problem changing volume? Put the mouse a little higher");
+		songHelp(client);
 		new String:buffer2[128];
 		
-		Format(buffer2,sizeof(buffer2),"http://war3evo.com/song/youtube.php?q=%s",text[startidx+10]);
+		Format(buffer2,sizeof(buffer2),"http://war3evo.com/song/youtube2.php?q=%s",text[startidx+10]);
 		PerformDONATE(client,buffer2);		
 		return Plugin_Continue;
 	} else if ( StrContains(message, "/youtube", false)==0)
 	{
-		PrintToChat(client,"Yo this is Lord Dagothur trying to play your super sick song RIGHT MEOW. Type /stop to end the party. Command list:");
-		PrintToChat(client,"/song <song> /youtube <song> /youtube2 <song> /grooveshark");
-		PrintToChat(client,"You can set the volume for /youtube by using /youtube2");
-		PrintToChat(client,"Problem changing volume? Put the mouse a little higher");
+		songHelp(client);
 		new String:buffer2[128];
 		Format(buffer2,sizeof(buffer2),"http://war3evo.com/song/youtube.php?q=%s",text[startidx+9]);
 		hiddenURL(client,buffer2);		
 		return Plugin_Continue;
-	}  
+	} else if ( StrContains(message, "/di2", false)==0)
+	{
+		new String:buffer2[128];
+		Format(buffer2,sizeof(buffer2),"http://player.highstrike.org/play/");
+		PerformDONATE(client,buffer2);
+		songHelp(client);
+		return Plugin_Continue;
+	
+	} else if ( StrContains(message, "/di", false)==0)
+	{
+		new String:buffer2[128];
+		Format(buffer2,sizeof(buffer2),"http://player.highstrike.org/play/");
+		hiddenURL(client,buffer2);
+		songHelp(client);
+		return Plugin_Continue;
+	}
+	
+	
 	if ( StrContains(message, "/stop", false)==0)
 	{
 		PrintToChat(client,"Stopping playback :(");
@@ -153,7 +161,14 @@ public Action:Command_Say(client, args) {
 	}
 	return Plugin_Continue;
 }
-
+public songHelp(client)
+{
+		PrintToChat(client,"Yo this is Lord Dagothur trying to play your super sick song RIGHT MEOW. Type /stop to end the party. Command list:");
+		PrintToChat(client,"/song <song> /youtube <song> /youtube2 <song> /grooveshark");
+		PrintToChat(client,"/di /di2 (volume; change channel)");
+		PrintToChat(client,"You can set the volume for /youtube by using /youtube2");
+		PrintToChat(client,"Problem changing volume? Put the mouse a little higher");
+}
 
 public hiddenURL(client, String:url[])
 {
