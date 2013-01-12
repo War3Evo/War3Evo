@@ -1,5 +1,5 @@
 
-
+#pragma dynamic 10000
 #include <sourcemod>
 #include "W3SIncs/War3Source_Interface"
 
@@ -20,7 +20,6 @@ public Plugin:myinfo=
 public OnPluginStart()
 {
 	RegConsoleCmd("war3",cmdWar3,"War3 / SH internal variables and commands");
-	RegConsoleCmd("sh",cmdWar3,"War3 / SH internal variables and commands");
 }
 
 public bool:InitNativesForwards()
