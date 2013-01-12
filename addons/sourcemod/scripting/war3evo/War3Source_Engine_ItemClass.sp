@@ -355,10 +355,10 @@ CreateNewItem(String:titemname[] ,String:titemshortname[] ,String:titemdescripti
 	itemOrderCvar[titemid]=W3CreateCvarInt(cvarstr,titemid*100,"item order");
 	
 	Format(cvarstr,sizeof(cvarstr),"%s_itemflags",titemshortname);
-	itemFlagsCvar[titemid]=W3CreateCvar(cvarstr,"","item flags");
+	itemFlagsCvar[titemid]=W3CreateCvar(cvarstr,"0","item flags");
 	
 	Format(cvarstr,sizeof(cvarstr),"%s_itemcategory",titemshortname);
-	itemCategoryCvar[titemid]=W3CreateCvar(cvarstr,"","item category");
+	itemCategoryCvar[titemid]=W3CreateCvar(cvarstr,"0","item category");
 	
 	return titemid; //this will be the new item's id / index
 }
