@@ -681,11 +681,13 @@ LevelCheck(client){
 			}
 
 		}
-		//  Don't bother players during game to level up.
+		//  Don't bother players during game to level up. ???
 		//  Request they level up after they die
-		//if(W3GetLevelsSpent(client,race)<War3_GetLevel(client,race)){
-			//W3CreateEvent(DoShowSpendskillsMenu,client);
-		//}
+		// some reason you can only level for every time you type spendskills..
+		// doesnt level  you up on spawn.
+		if(W3GetLevelsSpent(client,race)<War3_GetLevel(client,race)){
+			W3CreateEvent(DoShowSpendskillsMenu,client);
+		}
 	}
 }
 
