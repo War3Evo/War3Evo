@@ -96,9 +96,9 @@ public W3SetForwarededVar(index,value) {
 	//DP("forwarded %d %d",index,value);
 	W3ForwarededVars[index]=value;
 }
-stock EXT() {
-	return W3ForwarededVars[EXTAvailable];
-}
+//stock EXT() {
+//	return W3ForwarededVars[EXTAvailable];
+//}
 
 //INTERFACE ONLY VARIABLES, use for determining game type
 stock tValveGame;
@@ -206,7 +206,7 @@ stock GlobalOptionalNatives() {
 	MarkNativeAsOptional("War3_SetItem2Property");
 	MarkNativeAsOptional("War3_GetItem2Property");
 	MarkNativeAsOptional("War3_GetItem2IdByShortname");
-	MarkNativeAsOptional("W3CreateShopItem2");
+	//MarkNativeAsOptional("W3CreateShopItem2");
 	MarkNativeAsOptional("W3GetItem2Name");
 	MarkNativeAsOptional("W3GetItem2Shortname");
 	MarkNativeAsOptional("W3GetItem2Desc");
@@ -214,7 +214,7 @@ stock GlobalOptionalNatives() {
 	MarkNativeAsOptional("W3GetItem2Order");
 	MarkNativeAsOptional("W3Item2HasFlag");
 	MarkNativeAsOptional("W3GetItem2Catagory");
-	MarkNativeAsOptional("W3GetItems2LoadedEXT");
+	MarkNativeAsOptional("W3GetItems2Loaded");
 	MarkNativeAsOptional("W3IsItem2DisabledGlobal");
 	MarkNativeAsOptional("W3IsItem2DisabledForRace");
 	MarkNativeAsOptional("W3SaveItem2ExpireTime");
@@ -251,8 +251,8 @@ stock GlobalOptionalNatives() {
 	MarkNativeAsOptional("War3_GetOwnsItem");
 	MarkNativeAsOptional("War3_GetOwnsItem2");
 	MarkNativeAsOptional("War3_GetOwnsItem3");
-	MarkNativeAsOptional("W3GetItem2ExpireTime");
-	MarkNativeAsOptional("W3SetItem2ExpireTime");
+//	MarkNativeAsOptional("W3GetItem2ExpireTime");
+//	MarkNativeAsOptional("W3SetItem2ExpireTime");
 	MarkNativeAsOptional("War3_SetOwnsItem");
 	MarkNativeAsOptional("War3_SetOwnsItem2");
 	MarkNativeAsOptional("War3_SetOwnsItem3");
@@ -353,11 +353,12 @@ stock GlobalOptionalNatives() {
 	MarkNativeAsOptional("CreateWar3GlobalError");
 	MarkNativeAsOptional("W3CreateEvent");
 
-	MarkNativeAsOptional("War3_SetDiamondsEXT");
-	MarkNativeAsOptional("War3_GetDiamondsEXT");
-	MarkNativeAsOptional("War3_GetOwnsItem2EXT");
-	MarkNativeAsOptional("War3_SetOwnsItem2EXT");
-	MarkNativeAsOptional("W3ExtShowShop2");
+	//MarkNativeAsOptional("War3_SetDiamondsEXT");
+	//MarkNativeAsOptional("War3_GetDiamondsEXT");
+	//MarkNativeAsOptional("War3_GetOwnsItem2EXT");
+	//MarkNativeAsOptional("War3_SetOwnsItem2EXT");
+	//MarkNativeAsOptional("W3ExtShowShop2");
+
 	// L4D
 	MarkNativeAsOptional("War3_L4D_IsHelpless");
 	// Skills
@@ -622,6 +623,9 @@ native W3GetItemName(itemid,String:ret[],maxlen);
 native W3GetItemShortname(itemid,String:ret[],maxlen);
 native W3GetItemDescription(itemid,String:ret[],maxlen);
 
+native GetClientItems2Owned(client);
+native GetMaxShopitems2PerPlayer();
+
 native W3GetItemCost(itemid,bool:csmoney);
 native W3GetItemOrder(itemid);
 native W3ItemHasFlag(itemid,String:flagsearch[]);
@@ -719,13 +723,14 @@ native W3SaveItem3(client, itemid);
 
 
 //Shopmenu 2 item class
-//native War3_CreateShopItem2(String:name[],String:shortname[],String:desc[],cost);
-native W3CreateShopItem2(String:name[],String:shortname[],String:desc[],cost,translated=false);
-//translated
-stock W3CreateShopItem2T(String:shortname[],cost) {
-	return W3CreateShopItem2("",shortname,"",cost,true);
+native War3_CreateShopItem2(String:name[],String:shortname[],String:desc[],cost);
+native War3_CreateShopItem2T(String:shortname[],cost);
 
-}
+//native W3CreateShopItem2(String:name[],String:shortname[],String:desc[],cost,translated=false);
+//translated
+//stock W3CreateShopItem2T(String:shortname[],cost) {
+//	return W3CreateShopItem2("",shortname,"",cost,true);
+//}
 
 native War3_SetItem2Property(itemid,W3ItemProp:ITEM_PROPERTY,value);
 native War3_GetItem2Property(itemid,W3ItemProp:ITEM_PROPERTY);
@@ -739,18 +744,15 @@ native W3GetItem2Shortname(itemid,String:ret[],maxlen);
 native W3GetItem2Desc(itemid,String:ret[],maxlen);
 
 native W3GetItem2Cost(itemid);
-//native W3GetItem2Order(itemid);
+native W3GetItem2Order(itemid);
 native W3Item2HasFlag(itemid,String:flagsearch[]);
-//native W3GetItem2Catagory(itemid,String:retcatagorystr[],maxlen);
-native W3GetItems2LoadedEXT();
-stock W3GetItems2Loaded() { //how many items are loaded?
-	return EXT() ? W3GetItems2LoadedEXT() : 0;
-}
+native W3GetItem2Catagory(itemid,String:retcatagorystr[],maxlen);
+native W3GetItems2Loaded();
 
 native bool:W3IsItem2DisabledGlobal(itemid);
 native bool:W3IsItem2DisabledForRace(race,itemid);
 
-native W3ExtShowShop2(client);
+//native W3ExtShowShop2(client);
 
 //Forces a save into database of when the item expires
 //client must own item already
@@ -834,8 +836,8 @@ native War3_RestoreItemsFromDeath(client,bool:payforit=true,bool:csmoney=false);
 // returns true if they are in steam group
 native War3_IsInSteamGroup(client);
 
-native W3GetItem2ExpireTime(client, item);
-native W3SetItem2ExpireTime(client, item, time); //use full linux time , ie: NOW()+duration
+//native W3GetItem2ExpireTime(client, item);
+//native W3SetItem2ExpireTime(client, item, time); //use full linux time , ie: NOW()+duration
 
 native bool:W3BuyUseCSMoney();
 
@@ -849,24 +851,8 @@ native bool:W3BuyUseCSMoney();
  *	ITEM IS NOT LOST AUTOMATICALLY ON DEATH  
  */
 
-native War3_GetOwnsItem2EXT(client, item);
-
-native War3_SetOwnsItem2EXT(client,item,bool:ownsitem);
-stock War3_GetOwnsItem2(client, item) {
-	if (EXT()) {
-		if (item < 1) {
-			DP("err invalid item id %d client %d", item, client);
-			ThrowError("asdf");
-		}
-		return War3_GetOwnsItem2EXT(client, item);
-	}
-	return 0;
-}
-stock War3_SetOwnsItem2(client,item,bool:ownsitem) {
-	if(EXT()) {
-		War3_SetOwnsItem2EXT(client,item,bool:ownsitem);
-	}
-}
+native War3_GetOwnsItem2(client, item);
+native War3_SetOwnsItem2(client,item,bool:ownsitem);
 
 /**
  * Finds the best target within a player's view cone
@@ -1681,19 +1667,14 @@ stock War3_GetGold(client) {
 	return W3GetPlayerProp(client, PlayerGold);
 }
 
-native War3_GetDiamondsEXT(client);
-native War3_SetDiamondsEXT(client, newd);
+//native War3_GetDiamondsEXT(client);
+//native War3_SetDiamondsEXT(client, newd);
 
 stock War3_GetDiamonds(client) {
-	if (EXT()) {
-		return War3_GetDiamondsEXT(client);
-	}
-	return 0;
+	return W3GetPlayerProp(client, PlayerDiamonds);
 }
 stock War3_SetDiamonds(client, newd) {
-	if (EXT()) {
-		War3_SetDiamondsEXT(client, newd);
-	}
+	W3SetPlayerProp(client, PlayerDiamonds, newd);
 }
 
 native W3IsDeveloper(client);
