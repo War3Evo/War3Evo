@@ -1,10 +1,10 @@
 "Phrases"
 {
-	"mvmcashregen_ItemName"
+	"mvmcashregen_temName"
 	{
 		"en"		"My Piggy Bank"
 	}
-	"mvmcashregen_ItemDesc"
+	"mvmcashregen_temDesc"
 	{
 		"en"		"50 Cash regeneration per 5 seconds."
 	}
