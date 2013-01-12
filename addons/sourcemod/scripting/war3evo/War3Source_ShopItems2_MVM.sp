@@ -127,7 +127,7 @@ public OnPluginStart()
 
 public OnWar3LoadRaceOrItemOrdered(num)
 {
-	if(num==10&&EXT()){
+	if(num==10){
 		ItemID[POSTHASTE]=W3CreateShopItem2T("posthaste",10);	
 		if(ItemID[POSTHASTE]==0){
 			DP("ERR ITEM ID RETURNED IS ZERO");
