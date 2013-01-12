@@ -124,7 +124,7 @@ public Action:Command_Say(client, args) {
 		PrintToChat(client,"Problem changing volume? Put the mouse a little higher");
 		new String:buffer2[128];
 		
-		Format(buffer2,sizeof(buffer2),"http://war3evo.com/song/youtube.php?q=%s",text[startidx+10]);
+		Format(buffer2,sizeof(buffer2),"http://war3evo.com/song/youtube2.php?q=%s",text[startidx+10]);
 		PerformDONATE(client,buffer2);		
 		return Plugin_Continue;
 	} else if ( StrContains(message, "/youtube", false)==0)
