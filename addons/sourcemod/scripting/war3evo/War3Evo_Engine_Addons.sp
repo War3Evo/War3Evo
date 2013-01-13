@@ -55,43 +55,54 @@ public Action:Timer_Checker(Handle:timer, any:userid)
 	CheckPlayers();
 }
 
+public OnWar3Event(W3EVENT:event,client){
+	// Record Items before death
+	if(event==OnDeathPre)
+	{
+		new attacker = W3GetVar(EventArg1);
+		new victim = client;
+		if(victim!=attacker&&ValidPlayer(victim)&&ValidPlayer(attacker))
+		{
+			decl String:msgbuffer[256 + MAX_NAME_LENGTH];
+			// El Diablo (Flame Predator level 20) killed you from %i feet %i hp left.
+			new String:attackerName[32];
+			new String:attackerRaceName[32];
+			GetClientName(attacker,attackerName,64);
+			new attackerraceid = War3_GetRace(attacker);
+			War3_GetRaceName(attackerraceid,attackerRaceName,64);
+			new attackerlevel = War3_GetLevel(attacker, attackerraceid);
+
+			new ItemsLoaded = W3GetItemsLoaded();
+			if(GetClientItemsOwned(attacker)>0)
+			{
+				decl String:itemname[64];
+				new String:itembuffer[512]; // handle 8 items .. 64 * 8
+				for(new x=1;x<=ItemsLoaded;x++)
+				{
+					if(War3_GetOwnsItem(attacker,x))
+					{
+						W3GetItemName(x,itemname,sizeof(itemname));
+						Format(itembuffer, sizeof(itembuffer),"\x01|\x05%s%s", itemname, itembuffer);
+					}
+				}
+				Format(itembuffer, sizeof(itembuffer),"%s\x01|", itembuffer);
+				Format(msgbuffer, sizeof(msgbuffer),"\x04[War3Evo] \x05%s \x01(\x05%s \x01level \x05%i\x01) \x01killed you from \x05%i \x01feet with \x05%i \x01hp left. Carrying following items:", attackerName, attackerRaceName, attackerlevel, distance, attacker_hpleft);
+				CSayText2(victim,attacker,msgbuffer);
+				CSayText2(victim,attacker,itembuffer);
+			}
+			else
+			{
+				Format(msgbuffer, sizeof(msgbuffer),"\x04[War3Evo] \x05%s \x01(\x05%s \x01level \x05%i\x01) \x01killed you from \x05%i \x01feet with \x05%i \x01hp left. Carrying following items: \x01<\x05no items\x01>", attackerName, attackerRaceName, attackerlevel, distance, attacker_hpleft);
+				CSayText2(victim,attacker,msgbuffer);
+			}
+		}
+		// Add code below here
+	}
+}
+
+
 public OnWar3EventDeath(victim, attacker, deathrace, distance, attacker_hpleft)
 {
-	if(victim!=attacker&&ValidPlayer(victim)&&ValidPlayer(attacker))
-	{
-		decl String:msgbuffer[256 + MAX_NAME_LENGTH];
-		// El Diablo (Flame Predator level 20) killed you from %i feet %i hp left.
-		new String:attackerName[32];
-		new String:attackerRaceName[32];
-		GetClientName(attacker,attackerName,64);
-		new attackerraceid = War3_GetRace(attacker);
-		War3_GetRaceName(attackerraceid,attackerRaceName,64);
-		new attackerlevel = War3_GetLevel(attacker, attackerraceid);
-
-		new ItemsLoaded = W3GetItemsLoaded();
-		if(GetClientItemsOwned(attacker)>0)
-		{
-			decl String:itemname[64];
-			new String:itembuffer[512]; // handle 8 items .. 64 * 8
-			for(new x=1;x<=ItemsLoaded;x++)
-			{
-				if(War3_GetOwnsItem(attacker,x))
-				{
-					W3GetItemName(x,itemname,sizeof(itemname));
-					Format(itembuffer, sizeof(itembuffer),"\x01|\x05%s%s", itemname, itembuffer);
-				}
-			}
-			Format(itembuffer, sizeof(itembuffer),"%s\x01|", itembuffer);
-			Format(msgbuffer, sizeof(msgbuffer),"\x04[War3Evo] \x05%s \x01(\x05%s \x01level \x05%i\x01) \x01killed you from \x05%i \x01feet with \x05%i \x01hp left. Carrying following items:", attackerName, attackerRaceName, attackerlevel, distance, attacker_hpleft);
-			CSayText2(victim,attacker,msgbuffer);
-			CSayText2(victim,attacker,itembuffer);
-		}
-		else
-		{
-			Format(msgbuffer, sizeof(msgbuffer),"\x04[War3Evo] \x05%s \x01(\x05%s \x01level \x05%i\x01) \x01killed you from \x05%i \x01feet with \x05%i \x01hp left. Carrying following items: \x01<\x05no items\x01>", attackerName, attackerRaceName, attackerlevel, distance, attacker_hpleft);
-			CSayText2(victim,attacker,msgbuffer);
-		}
-	}
 	// VIP INSTANT RESPAWN
 	if(ValidPlayer(victim))
 	{
