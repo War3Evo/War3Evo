@@ -4,6 +4,8 @@
 * Author(s): Anthony Iacono, Necavi 
 */
 
+//this USED to be the best race :\
+
 #pragma semicolon 1
 
 #include <sourcemod>
