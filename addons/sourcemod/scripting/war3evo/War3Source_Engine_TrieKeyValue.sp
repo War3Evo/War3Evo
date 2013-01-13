@@ -33,6 +33,7 @@ public bool:InitNativesForwards()
 	CreateNative("W3GetCvar",NW3GetCvar);
 	CreateNative("W3SetCvar",NW3SetCvar);
 	CreateNative("W3FindCvar",NW3FindCvar);
+	//CreateNative("W3RemoveCvar",NW3RemoveCvar);
 	
 	CreateNative("W3CvarList",NW3CvarList);
 	CreateNative("W3GetCvarByString",NW3GetCvarByString);
@@ -93,6 +94,16 @@ public NW3FindCvar(Handle:plugin,numParams){
 	GetNativeString(1,cvarstr,sizeof(cvarstr));
 	return FindStringInArray(Cvararraylist, cvarstr);
 }
+/*
+  Need to do: add way to to remove arrays from code
+  so we can force a restart without having to restart the server.
+
+public NW3RemoveCvar(Handle:plugin,numParams){
+	decl String:cvarstr[64];
+	GetNativeString(1,cvarstr,sizeof(cvarstr));
+	return FindStringInArray(Cvararraylist, cvarstr);
+}
+*/
 public NW3CvarList(Handle:plugin,numParams){
 	
 	return _:CloneHandle(Cvararraylist);
