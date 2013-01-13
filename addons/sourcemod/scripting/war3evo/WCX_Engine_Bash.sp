@@ -16,7 +16,7 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
-	LoadTranslations("w3s.race.human.phrases");
+	LoadTranslations("w3s.race.humanally.phrases");
 }
 
 public OnWar3EventPostHurt(victim,attacker,damage){

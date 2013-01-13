@@ -51,7 +51,7 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
-	LoadTranslations("w3s.race.human.phrases");
+	LoadTranslations("w3s.race.humanally.phrases");
 	LoadTranslations("w3s.race.undead.phrases");
 }
 
