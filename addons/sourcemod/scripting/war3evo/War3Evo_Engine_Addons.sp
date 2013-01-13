@@ -55,6 +55,39 @@ public Action:Timer_Checker(Handle:timer, any:userid)
 	CheckPlayers();
 }
 
+
+//HACK, THIS IS A BAD HACK - Dagothur 1/13/2013
+new String:itembuffer2[512];
+
+//HERE'S ANOTHER LOL - Dagothur 1/13/2013
+public OnWar3Event(W3EVENT:event,client){
+	// Record Items before death
+	if(event==OnDeathPre)
+	{
+		//Check to see if Player owns any items, if so.. record those items,
+		// otherwise keep the current record.
+		Format(itembuffer2, sizeof(itembuffer2), "");
+		if(GetClientItemsOwned(client)>0)
+		{
+			new ItemsLoaded = W3GetItemsLoaded();
+			decl String:itemname[64];
+			for(new x=1;x<=ItemsLoaded;x++)
+			{
+					if(War3_GetOwnsItem(client,x)) {
+						W3GetItemName(x,itemname,sizeof(itemname));
+						Format(itembuffer2, sizeof(itembuffer2),"\x01|\x05%s%s", itemname, itembuffer2);
+					}
+			}
+			Format(itembuffer2, sizeof(itembuffer2),"%s\x01|", itembuffer2);
+		}
+		else 
+		{
+			Format(itembuffer2, sizeof(itembuffer2), "\x01<\x05no items\x01>");
+		}
+	}
+}
+
+
 public OnWar3EventDeath(victim, attacker, deathrace, distance, attacker_hpleft)
 {
 	if(victim!=attacker&&ValidPlayer(victim)&&ValidPlayer(attacker))
@@ -91,6 +124,16 @@ public OnWar3EventDeath(victim, attacker, deathrace, distance, attacker_hpleft)
 			Format(msgbuffer, sizeof(msgbuffer),"\x04[War3Evo] \x05%s \x01(\x05%s \x01level \x05%i\x01) \x01killed you from \x05%i \x01feet with \x05%i \x01hp left. Carrying following items: \x01<\x05no items\x01>", attackerName, attackerRaceName, attackerlevel, distance, attacker_hpleft);
 			CSayText2(victim,attacker,msgbuffer);
 		}
+		
+		//hack to display the reverse to the killer; note how the var names remain but they are pulling the opposite info - Dagothur 1/13/2013
+		GetClientName(victim,attackerName,64);
+		attackerraceid = War3_GetRace(victim);
+		War3_GetRaceName(attackerraceid,attackerRaceName,64);
+		attackerlevel = War3_GetLevel(victim, attackerraceid);
+
+		Format(msgbuffer, sizeof(msgbuffer),"\x04[War3Evo] \x05You \x01killed \x05%s \x01(\x05%s \x01level \x05%i\x01) \x01 from \x05%i \x01feet with \x05%i \x01hp left. They carried the following items:", attackerName, attackerRaceName, attackerlevel, distance, attacker_hpleft);
+		CSayText2(attacker,victim,msgbuffer);
+		CSayText2(attacker,victim,itembuffer2);
 	}
 	// VIP INSTANT RESPAWN
 	if(ValidPlayer(victim))
