@@ -156,7 +156,7 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 {
 	if(W3GetDamageIsBullet()&&ValidPlayer(victim,true)&&ValidPlayer(attacker,true)&&GetClientTeam(victim)!=GetClientTeam(attacker))
 	{
-		if(War3_GetRace(victim)==thisRaceID && W3Chance(W3ChanceModifier(attacker)) )
+		if(War3_GetRace(victim)==thisRaceID)
 		{
 			new skill_level=War3_GetSkillLevel(victim,thisRaceID,SKILL_SPIKE);
 			if(skill_level>0&&!Hexed(victim,false))
@@ -190,7 +190,7 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 				}
 			}	
 		}
-		if(War3_GetRace(attacker)==thisRaceID)
+		if(War3_GetRace(attacker)==thisRaceID && W3Chance(W3ChanceModifier(attacker)))
 		{
 			new skill_level = War3_GetSkillLevel(attacker,thisRaceID,SKILL_BEETLES);
 			if(!Hexed(attacker,false)&&GetRandomFloat(0.0,1.0)<=BeetleChanceArr[skill_level])
