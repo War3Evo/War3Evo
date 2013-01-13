@@ -474,6 +474,16 @@ public T_CallbackSelectPDataMain(Handle:owner,Handle:hndl,const String:error[],a
 				// Set New Player Job
 				War3_SetRace(client,1);
 
+				//new String:requiredflagstr[32];
+				//new newrace = GetRandomInt(1, War3_GetRacesLoaded());
+				//W3GetRaceAccessFlagStr(newrace,requiredflagstr,sizeof(requiredflagstr));
+				//while ((W3RaceHasFlag(newrace, "hidden")&&W3RaceHasFlag(newrace, "steamgroup"))&&(!StrEqual(requiredflagstr, "0", false)&&!StrEqual(requiredflagstr, "", false))
+				//{
+					//newrace = GetRandomInt(1, War3_GetRacesLoaded());
+					//W3GetRaceAccessFlagStr(newrace,requiredflagstr,sizeof(requiredflagstr));
+				//}
+				//War3_SetRace(client,newrace);
+				//War3_SetLevel(client, newrace, W3GetRaceMaxLevel(race));
 			}
 			
 		}
