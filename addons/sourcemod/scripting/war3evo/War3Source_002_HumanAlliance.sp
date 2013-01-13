@@ -36,8 +36,8 @@ new Float:oldpos[MAXPLAYERSCUSTOM][3];
 new Float:teleportpos[MAXPLAYERSCUSTOM][3];
 new bool:inteleportcheck[MAXPLAYERSCUSTOM];
 
-//new String:teleportSound[]="war3source/blinkarrival.wav";
-new String:teleportSound[256];
+new String:teleportSound[]="war3source/blinkarrival.mp3";
+//new String:teleportSound[256];
 public Plugin:myinfo = 
 {
 	name = "Race - Human Alliance",
@@ -52,7 +52,7 @@ public OnPluginStart()
 	
 	ultCooldownCvar=CreateConVar("war3_human_teleport_cooldown","20.0","Cooldown between teleports");
 	
-	LoadTranslations("w3s.race.human.phrases");
+	LoadTranslations("w3s.race.humanally.phrases");
 }
 
 public OnWar3LoadRaceOrItemOrdered(num)
@@ -63,7 +63,7 @@ public OnWar3LoadRaceOrItemOrdered(num)
 		
 		
 		
-		thisRaceID=War3_CreateNewRaceT("human");
+		thisRaceID=War3_CreateNewRaceT("humanally");
 		SKILL_INVIS=War3_AddRaceSkillT(thisRaceID,"Invisibility",false,4,"60% (CS), 40% (TF)");
 		SKILL_HEALTH=War3_AddRaceSkillT(thisRaceID,"DevotionAura",false,4,"15/25/35/45");
 		SKILL_BASH=War3_AddRaceSkillT(thisRaceID,"Bash",false,4,"7/13/19/25%","0.2");
@@ -77,9 +77,6 @@ public OnWar3LoadRaceOrItemOrdered(num)
 
 public OnMapStart()
 {
-
-	strcopy(teleportSound,sizeof(teleportSound),"war3source/blinkarrival.mp3");
-
 	BeamSprite=War3_PrecacheBeamSprite();
 	HaloSprite=War3_PrecacheHaloSprite();
 	
