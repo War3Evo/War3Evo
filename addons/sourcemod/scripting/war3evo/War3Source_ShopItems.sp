@@ -48,7 +48,9 @@ enum{
 	ARMBAND,
 	ANTIWARD,
 	INSTAUBER,
-	ARMOR_PIERCING
+	ARMOR_PIERCING,
+	DIAMOND_CONVERTER,
+	DIAMOND_CONVERTER2
 }
 
 new shopItem[MAXITEMS];//
@@ -186,6 +188,12 @@ public OnWar3LoadRaceOrItemOrdered(num)
 
 		shopItem[ARMOR_PIERCING]=War3_CreateShopItem("Physical Armor Piercing","piercing",
 		"Upgrades your weapons with ability to penetrate physical armor.\nRequires Oil of Penetration",20,3500);
+
+		shopItem[DIAMOND_CONVERTER]=War3_CreateShopItem("1000 Gold to 1 Diamond","cgold1k",
+		"1,000 Gold to 1 Diamond",1000,3500);
+
+		shopItem[DIAMOND_CONVERTER2]=War3_CreateShopItem("10000 Gold to 10 Diamond","cgold10k",
+		"10,000 Gold to 10 Diamonds",10000,3500);
 	}
 }
 public OnMapStart()
@@ -379,6 +387,40 @@ public OnItemPurchase(client,item)
 			//War3_SetOwnsItem(client,item,true);
 			//War3_SetBuffItem(client,fArmorPhysical,item,6.0);
 		}
+	}
+	if(item==shopItem[DIAMOND_CONVERTER]&&ValidPlayer(client))
+	{
+		new newgold = War3_GetGold(client) - 1000;
+		if(newgold<0)
+		{
+			War3_ChatMessage(client,"You don't have enough gold to convert to diamonds.");
+			War3_ChatMessage(client,"%i gold and %i diamonds.",War3_GetGold(client),War3_GetDiamonds(client));
+		}
+		else
+		{
+			new newdiamonds = War3_GetDiamonds(client) + 1;
+			War3_SetGold(client,newgold);
+			War3_SetDiamonds(client,newdiamonds);
+			War3_ChatMessage(client,"You now have %i gold and %i diamonds.",newgold,newdiamonds);
+		}
+		War3_SetOwnsItem(client,shopItem[DIAMOND_CONVERTER],false);
+	}
+	if(item==shopItem[DIAMOND_CONVERTER2]&&ValidPlayer(client))
+	{
+		new newgold = War3_GetGold(client) - 10000;
+		if(newgold<0)
+		{
+			War3_ChatMessage(client,"You don't have enough gold to convert to diamonds.");
+			War3_ChatMessage(client,"%i gold and %i diamonds.",War3_GetGold(client),War3_GetDiamonds(client));
+		}
+		else
+		{
+			new newdiamonds = War3_GetDiamonds(client) + 10;
+			War3_SetGold(client,newgold);
+			War3_SetDiamonds(client,newdiamonds);
+			War3_ChatMessage(client,"You now have %i gold and %i diamonds.",newgold,newdiamonds);
+		}
+		War3_SetOwnsItem(client,shopItem[DIAMOND_CONVERTER2],false);
 	}
 }
 
