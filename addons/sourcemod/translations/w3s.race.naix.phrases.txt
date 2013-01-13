@@ -33,7 +33,7 @@
 	}
 	"naix_skill_Feast_desc"
 	{
-		"en"		"Regenerates #1# percent of enemy's current HP on hit."
+		"en"		"Regenerates #1# percent of enemy's current HP chance on hit."
 	}
 
 	"naix_skill_Rage"
