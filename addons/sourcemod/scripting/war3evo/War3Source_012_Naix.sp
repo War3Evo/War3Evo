@@ -43,8 +43,6 @@ new String:ultsnd[]="war3source/naix/predult.mp3";
 
 public Plugin:myinfo = 
 {
-	CreateConVar("war3evo_Naix",PLUGIN_VERSION,"War3evo Job Naix",FCVAR_PLUGIN);
-
 	name = "Race - Lifestealer",
 	author = "Stinkyfax and Ownz (DarkEnergy)",
 	description = "N'aix - the embodiment of lust and greed,\nbent on stealing the life of every living creature he encounters.",
@@ -56,6 +54,8 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_Naix",PLUGIN_VERSION,"War3evo Job Naix",FCVAR_PLUGIN);
+
 	ultCooldownCvar=CreateConVar("war3_naix_ult_cooldown","20","Cooldown time for Rage.");
 	
 	LoadTranslations("w3s.race.naix.phrases");
