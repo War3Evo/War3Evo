@@ -1,4 +1,4 @@
-// war3evo ondeath
+#define PLUGIN_VERSION "0.0.0.1"
 
 #include <sourcemod>
 #include "W3SIncs/War3Source_Interface"
@@ -27,6 +27,8 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_shopmenu1",PLUGIN_VERSION,"War3evo shopmenu",FCVAR_PLUGIN);
+
 	g_maxplayers = CreateConVar("War3Evo_maxplayers", "24", "The max amount of players your server can hold.");
 	g_addbots = CreateConVar("War3Evo_addbots", "10", "When players are at or  below this number, set tf_bot_quota to this number.");
 	CreateTimer(10.0,Timer_Checker,TIMER_REPEAT);

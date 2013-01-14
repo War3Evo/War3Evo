@@ -1,4 +1,4 @@
- 	
+#define PLUGIN_VERSION "0.0.0.1"
 
 ////BUFF SYSTEM
 
@@ -32,6 +32,7 @@ public Plugin:myinfo=
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_BuffSystem",PLUGIN_VERSION,"War3evo Buff System",FCVAR_PLUGIN);
 	
 	InitiateBuffPropertiesArray(BuffProperties);
 	

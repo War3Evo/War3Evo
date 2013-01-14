@@ -7,6 +7,7 @@
  *-- El Diablo
  *-- www.war3evo.com
  */
+#define PLUGIN_VERSION "0.0.0.1"
  
 #pragma semicolon 1
 
@@ -93,6 +94,8 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_shopmenu1",PLUGIN_VERSION,"War3evo shopmenu1",FCVAR_PLUGIN);
+
 	MyWeaponsOffset=FindSendPropOffs("CBaseCombatCharacter","m_hMyWeapons");
 	
 	ActiveWeaponOffset=FindSendPropOffs("CBaseCombatCharacter","m_hActiveWeapon"); 
@@ -190,7 +193,7 @@ public OnWar3LoadRaceOrItemOrdered(num)
 		"Upgrades your weapons with ability to penetrate physical armor.\nRequires Oil of Penetration",20,3500);
 
 		shopItem[DIAMOND_CONVERTER]=War3_CreateShopItem("1000 Gold to 1 Diamond","cgold1k",
-		"1,000 Gold to 1 Diamond",1000,3500);
+		"1,000 Gold to 1 Diamond",10000,3500);
 
 		shopItem[DIAMOND_CONVERTER2]=War3_CreateShopItem("10000 Gold to 10 Diamond","cgold10k",
 		"10,000 Gold to 10 Diamonds",10000,3500);

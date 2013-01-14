@@ -4,6 +4,7 @@
 * Author(s): Anthony Iacono, necavi
 * Modified for TF2 Stability: El Diablo
 */
+#define PLUGIN_VERSION "0.0.0.1"
 
 #pragma semicolon 1
 
@@ -49,7 +50,7 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
-	
+	CreateConVar("war3evo_HumanAlliance",PLUGIN_VERSION,"War3evo Human Alliance",FCVAR_PLUGIN);
 	ultCooldownCvar=CreateConVar("war3_human_teleport_cooldown","20.0","Cooldown between teleports");
 	
 	LoadTranslations("w3s.race.humanally.phrases");

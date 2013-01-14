@@ -1,4 +1,5 @@
-							 /* ========================================================================== */
+#define PLUGIN_VERSION "0.0.0.1"
+/* ========================================================================== */
 /*                                                                            */
 /*   War3source_Custom_HyperCyborg.sp                                         */
 /*   (c) 2012 El Diablo                                                       */
@@ -74,6 +75,7 @@ public Plugin:myinfo =
 };
 public OnPluginStart()
 {
+	CreateConVar("war3evo_HyperCyborg",PLUGIN_VERSION,"War3evo Hyper Cyborg",FCVAR_PLUGIN);
 	// To do: add translations
 	//LoadTranslations("w3s.race.mage.phrases");
 	ownerOffset = FindSendPropInfo("CBaseObject", "m_hBuilder");

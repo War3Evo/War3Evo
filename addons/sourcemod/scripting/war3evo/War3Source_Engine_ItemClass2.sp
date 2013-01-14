@@ -1,4 +1,4 @@
-
+#define PLUGIN_VERSION "0.0.0.1"
 
 #include <sourcemod>
 #include "W3SIncs/War3Source_Interface"
@@ -53,7 +53,7 @@ public OnMapEnd()
 
 public bool:InitNativesForwards()
 {
-
+	CreateConVar("war3evo_itemclass2",PLUGIN_VERSION,"War3evo itemclass2",FCVAR_PLUGIN);
 
 	CreateNative("War3_CreateShopItem2",NWar3_CreateShopItem2);
 	CreateNative("War3_CreateShopItem2T",NWar3_CreateShopItem2T);

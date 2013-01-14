@@ -1,3 +1,5 @@
+#define PLUGIN_VERSION "0.0.0.1"
+
 //Cooldown manager
 //keeps track of all cooldowns
 
@@ -65,6 +67,8 @@ public Plugin:myinfo=
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_CoolDownMGR",PLUGIN_VERSION,"War3evo Cool Down Manager",FCVAR_PLUGIN);
+
 	CreateTimer(0.1,DeciSecondTimer,_,TIMER_REPEAT);
 
 }

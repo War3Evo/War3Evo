@@ -1,3 +1,4 @@
+#define PLUGIN_VERSION "0.0.0.1"
 /* ============================================================================ */
 /*										                                        */
 /*   naix.sp									                                */
@@ -42,6 +43,8 @@ new String:ultsnd[]="war3source/naix/predult.mp3";
 
 public Plugin:myinfo = 
 {
+	CreateConVar("war3evo_Naix",PLUGIN_VERSION,"War3evo Job Naix",FCVAR_PLUGIN);
+
 	name = "Race - Lifestealer",
 	author = "Stinkyfax and Ownz (DarkEnergy)",
 	description = "N'aix - the embodiment of lust and greed,\nbent on stealing the life of every living creature he encounters.",

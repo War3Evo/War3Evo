@@ -1,3 +1,4 @@
+#define PLUGIN_VERSION "0.0.0.1"
 /**
  * File: War3Source_Addon_LevelUpParticle.sp
  * Description: Displays particles whenever somebody levels up.
@@ -22,6 +23,8 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_AddonLevelUpParticle",PLUGIN_VERSION,"War3evo Addon Level Up Particle",FCVAR_PLUGIN);
+
 	LoadTranslations("w3s.addon.levelupparticle.phrases");	
 }
 

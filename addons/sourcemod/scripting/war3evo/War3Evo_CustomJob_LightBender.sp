@@ -1,14 +1,9 @@
+#define PLUGIN_VERSION "0.0.0.1"
 /**
- *
- *  "Nun Chuka Kata": DataTable warning: player: Out-of-range value (90.561455) in SendPropFloat 'm_angEyeAngles[0]', clamping.
- *
- *
- *
- *
-* File: War3Source_Light_Bender.sp
+ * File: War3Source_Light_Bender.sp
 * Description: The Light Bender race for SourceCraft.
 * Author(s): xDr.HaaaaaaaXx
-*/
+**/
 
 #pragma semicolon 1
 #pragma tabsize 0
@@ -41,6 +36,12 @@ public Plugin:myinfo =
 	version = "1.0.0.0",
 	url = ""
 };
+
+public OnPluginStart()
+{
+	CreateConVar("war3evo_LightBender",PLUGIN_VERSION,"War3evo Job Light Bender",FCVAR_PLUGIN);
+}
+
 
 public OnMapStart()
 {

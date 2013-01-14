@@ -1,3 +1,5 @@
+#define PLUGIN_VERSION "0.0.0.1"
+
 #include <sourcemod>
 #include "W3SIncs/War3Source_Interface"
 
@@ -17,6 +19,8 @@ public Plugin:myinfo=
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_CommandHook",PLUGIN_VERSION,"War3evo Chat Command Hooks",FCVAR_PLUGIN);
+
 	Cvar_ChatBlocking=CreateConVar("war3_command_blocking","0","block chat commands from showing up");
 
 	RegConsoleCmd("say",War3Source_SayCommand);

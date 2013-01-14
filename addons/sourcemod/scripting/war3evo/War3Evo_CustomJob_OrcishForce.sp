@@ -1,3 +1,4 @@
+#define PLUGIN_VERSION "0.0.0.1"
 /**
  * File: War3Source_CustomRace_OrcishForce.sp
  * Description: The Orcish Force Horde race.
@@ -78,7 +79,7 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
-
+	CreateConVar("war3evo_OrcishForce",PLUGIN_VERSION,"War3evo Orcish Force",FCVAR_PLUGIN);
 	//HookEvent("round_start",RoundStartEvent);
 	ultCooldownCvar=CreateConVar("war3_orcishforce_chain_cooldown","20.0","Cooldown time for chain lightning.");
 

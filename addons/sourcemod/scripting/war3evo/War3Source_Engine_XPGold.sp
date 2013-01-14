@@ -1,3 +1,5 @@
+#define PLUGIN_VERSION "0.0.0.1"
+
 #pragma semicolon 1    ///WE RECOMMEND THE SEMICOLON
 #pragma tabsize 0     // doesn't mess with how you format your lines
 
@@ -53,6 +55,8 @@ new Handle:AssistGoldCvar;
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_XPGold",PLUGIN_VERSION,"War3evo XP Gold system",FCVAR_PLUGIN);
+
 	BotIgnoreXPCvar=CreateConVar("war3_ignore_bots_xp","0","Set to 1 to not award XP for killing bots");
 	HeadshotXPCvar=CreateConVar("war3_percent_headshotxp","20","Percent of kill XP awarded additionally for headshots");
 	MeleeXPCvar=CreateConVar("war3_percent_meleexp","120","Percent of kill XP awarded additionally for melee/knife kills");

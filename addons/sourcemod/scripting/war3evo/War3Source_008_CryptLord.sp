@@ -1,3 +1,4 @@
+#define PLUGIN_VERSION "0.0.0.1"
 /**
  * File: War3Source_CryptLord.sp
  * Description: The Crypt Lord race for War3Source.
@@ -48,6 +49,7 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_cryptlord",PLUGIN_VERSION,"War3evo Job Crypt Lord",FCVAR_PLUGIN);
 	
 	//ultCooldownCvar=CreateConVar("war3_crypt_locust_cooldown","20","Cooldown between ultimate usage");
 	//ultRangeCvar=CreateConVar("war3_crypt_locust_range","800","Range of locust ultimate");

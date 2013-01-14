@@ -1,7 +1,3 @@
- ////////////////////////////////////////////////////////////////////////////
-/////////NOT THE ORIGINAL FILE//////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-
  /**
  * File: War3Source_ShadowHunter.sp
  * Description: The Shadow Hunter race for War3Source.
@@ -10,6 +6,7 @@
  * War3Evo -- Modified by El Diablo
  *
  */
+#define PLUGIN_VERSION "0.0.0.1"
  
 #pragma semicolon 1
 //#pragma tabsize 0
@@ -86,7 +83,7 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
-
+	CreateConVar("war3evo_ShadowPaladin",PLUGIN_VERSION,"War3evo Job Shadow Paladin",FCVAR_PLUGIN);
 	ultCooldownCvar=CreateConVar("war3_hunter_voodoo_cooldown","20","Cooldown between Big Bad Voodoo (ultimate)");
 	CreateTimer(1.0,CalcWards,_,TIMER_REPEAT);
 	CreateTimer(1.0,CalcHexHealWaves,_,TIMER_REPEAT);
@@ -98,8 +95,6 @@ public OnWar3LoadRaceOrItemOrdered(num)
 {
 	if(num==60)
 	{
-		
-		
 		thisRaceID=War3_CreateNewRace("Shadow Paladin","hunter");
 		SKILL_HEALINGWAVE=War3_AddRaceSkill(thisRaceID,"Healing Wave",
 		"Heal teammates around you",false,4);

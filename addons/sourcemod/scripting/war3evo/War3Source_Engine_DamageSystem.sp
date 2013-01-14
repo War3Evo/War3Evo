@@ -1,4 +1,4 @@
-
+#define PLUGIN_VERSION "0.0.0.1"
 
 
 //DAMAGE SYSTEM
@@ -62,6 +62,8 @@ public Plugin:myinfo=
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_DamageSystem",PLUGIN_VERSION,"War3evo Damage System",FCVAR_PLUGIN);
+
 	HookEvent("player_hurt", EventPlayerHurt);
 	if(War3_IsL4DEngine())
 	{

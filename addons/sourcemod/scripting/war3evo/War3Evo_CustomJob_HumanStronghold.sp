@@ -1,3 +1,4 @@
+#define PLUGIN_VERSION "0.0.0.1"
 /**
 * File: War3Source_HumanStronghold.sp
 * Description: The Human Stronghold race for War3Source.
@@ -52,7 +53,8 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
-	
+	CreateConVar("war3evo_HumanStronghold",PLUGIN_VERSION,"War3evo Job Human Stronghold",FCVAR_PLUGIN);
+
 	ultCooldownCvar=CreateConVar("war3_human_ultimate_cooldown","30.0","Cooldown between teleports");
 	
 	//LoadTranslations("w3s.race.human.phrases");

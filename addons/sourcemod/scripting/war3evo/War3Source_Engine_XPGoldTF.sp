@@ -1,3 +1,5 @@
+#define PLUGIN_VERSION "0.0.0.1"
+
 #include <sourcemod>
 #include "W3SIncs/War3Source_Interface"
 
@@ -31,6 +33,7 @@ new Handle:MvMMedicSharedPowerupXPCvar;
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_XPGoldAddon",PLUGIN_VERSION,"War3evo XP Gold system addon",FCVAR_PLUGIN);
 
 	PointCaptureXPCvar=CreateConVar("war3_percent_tf_pointcapturexp","25","Percent of kill XP awarded to the capturing team");
 	PointCapBlockXPCvar=CreateConVar("war3_percent_tf_blockcapturexp","20","Percent of kill XP awarded for blocking a capture");
