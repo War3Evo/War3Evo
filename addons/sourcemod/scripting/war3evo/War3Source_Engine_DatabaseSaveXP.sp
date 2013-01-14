@@ -477,11 +477,18 @@ public T_CallbackSelectPDataMain(Handle:owner,Handle:hndl,const String:error[],a
 				new String:requiredflagstr[32];
 				new racesloaded = War3_GetRacesLoaded();
 				new newrace = GetRandomInt(1, racesloaded);
+				new countit=0;
 				W3GetRaceAccessFlagStr(newrace,requiredflagstr,sizeof(requiredflagstr));
-				while (W3RaceHasFlag(newrace, "hidden")||W3RaceHasFlag(newrace, "steamgroup")||!StrEqual(requiredflagstr, "0", false)||!StrEqual(requiredflagstr, "", false))
+				while ((W3RaceHasFlag(newrace, "hidden")||W3RaceHasFlag(newrace, "steamgroup"))&&(!StrEqual(requiredflagstr, "0", false)||!StrEqual(requiredflagstr, "", false)))
 				{
+					countit++;
 					newrace = GetRandomInt(1, racesloaded);
 					W3GetRaceAccessFlagStr(newrace,requiredflagstr,sizeof(requiredflagstr));
+					if(countit>3)
+					{
+						newrace=1;
+						requiredflagstr="0";
+					}
 				}
 				War3_SetRace(client,newrace);
 				War3_SetLevel(client, newrace, W3GetRaceMaxLevel(newrace));
