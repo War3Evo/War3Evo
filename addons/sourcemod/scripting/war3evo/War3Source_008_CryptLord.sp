@@ -190,7 +190,7 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 				}
 			}	
 		}
-		if(War3_GetRace(attacker)==thisRaceID && W3Chance(W3ChanceModifier(attacker) && W3Chance(W3ChanceModifier(attacker))) //added a seconed chance modifier, much like the current Naix code for Feast. I tested it out with the pyro, beatles (this skill) procs wayy too much. Naix's feast procs just the right amount. -Dagothur 1/13/2013
+		if(War3_GetRace(attacker)==thisRaceID && W3Chance(W3ChanceModifier(attacker))) //added a seconed chance modifier, much like the current Naix code for Feast. I tested it out with the pyro, beatles (this skill) procs wayy too much. Naix's feast procs just the right amount. -Dagothur 1/13/2013
 		{
 			new skill_level = War3_GetSkillLevel(attacker,thisRaceID,SKILL_BEETLES);
 			if(!Hexed(attacker,false)&&GetRandomFloat(0.0,1.0)<=BeetleChanceArr[skill_level])
