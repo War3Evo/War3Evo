@@ -181,8 +181,8 @@ public OnW3TakeDmgBullet( victim, attacker, Float:damage )
 					//TE_SendToAll(0.0);
 					//TE_SetupBeamRingPoint(start_pos, 20.0, maxdist+10.0, XBeamSprite, HaloSprite, 0, 1, 1.0, 90.0, 0.0, {128,0,255,255}, 10, 0);
 					//TE_SendToAll(2.0);
-					for (new i = 1; i <= MaxClients; i++) {
-						if(ValidPlayer(i,true) && GetClientTeam(i) != GetClientTeam(attacker)&&!W3HasImmunity(i,Immunity_Wards)) {
+					for (new i = 1; i <= MaxClients; i++) { 
+						if(ValidPlayer(i,true) && GetClientTeam(i) != GetClientTeam(attacker)&&!W3HasImmunity(i,Immunity_Skills)) { //this was checking for ward immunity instead of skill immunity - Dagothur 1/16/2013
 							decl Float:TargetPos[3];
 							GetClientAbsOrigin(i, TargetPos);
 							if (GetVectorDistance(start_pos, TargetPos) <= maxdist) {
