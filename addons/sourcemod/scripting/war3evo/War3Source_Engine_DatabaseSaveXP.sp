@@ -488,6 +488,7 @@ public T_CallbackSelectPDataMain(Handle:owner,Handle:hndl,const String:error[],a
 					{
 						newrace=1;
 						requiredflagstr="0";
+						break;
 					}
 				}
 				War3_SetRace(client,newrace);
