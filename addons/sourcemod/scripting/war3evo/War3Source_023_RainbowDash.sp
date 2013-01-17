@@ -56,7 +56,7 @@ public FOO(){
 }
 public OnPluginStart()
 {
-	CreateTimer(1.0,CalcWards,_,TIMER_REPEAT);
+	//CreateTimer(1.0,CalcWards,_,TIMER_REPEAT);
 	
 }
 
@@ -66,6 +66,7 @@ public OnMapStart()
 	HaloSprite = War3_PrecacheHaloSprite();
 	XBeamSprite = War3_PrecacheBeamSprite();
 }
+/*
 public Action:CalcWards(Handle:t){
 	for(new i=1;i<66;i++){
 		if(ValidPlayer(i)&&!IsFakeClient(i)){
@@ -83,7 +84,7 @@ public Action:CalcWards(Handle:t){
 		}
 	}
 }
-
+*/
 ///look attack speed
 public OnSkillLevelChanged(client,race,skill,newskilllevel)
 {
