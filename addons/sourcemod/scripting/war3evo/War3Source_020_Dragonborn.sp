@@ -111,7 +111,7 @@ public OnUltimateCommand(client,race,bool:pressed)
 				if(target>0)
 				{
 					EmitSoundToAll(ultsndblue,client);
-					EmitSoundToAll(ultsndblue,client);
+					EmitSoundToAll(ultsndblue,target); //play sound to target ... - Dagothur 1/16/2013
 					GetClientAbsOrigin(target,victimvec);
 					TF2_AddCondition(target, TFCond_Jarated, 5.0);
 					AttachThrowAwayParticle(target, "waterfall_bottomwaves", victimvec, "", 2.0);
@@ -176,11 +176,11 @@ public OnAbilityCommand(client,ability,bool:pressed)
 						GetClientAbsOrigin(i,VictimPos);
 						if(GetVectorDistance(AttackerPos,VictimPos)<RoarRadius)
 						{
-							if(GetClientTeam(i)!=AttackerTeam&&!W3HasImmunity(client,Immunity_Skills))
+							if(GetClientTeam(i)!=AttackerTeam&&!W3HasImmunity(i,Immunity_Skills)) //fixed immunity; this was checking if the dragonborn had skill immunity rather than the target - Dagothur 1/16/2013
 							{
 								//TF2_StunPlayer(client, Float:duration, Float:slowdown=0.0, stunflags, attacker=0);
 								EmitSoundToAll(roarsound,client);
-								EmitSoundToAll(roarsound,client);
+								EmitSoundToAll(roarsound,i); //fixed playing the roar sound to the affected player; this used to play it to the client, which as you can see above, resulted in it being played twice - Dagothur 1/16/2013
 								TF2_StunPlayer(i, RoarDuration[skilllvl], _, TF_STUNFLAGS_GHOSTSCARE,client);
 								War3_CooldownMGR(client,RoarCooldownTime,thisRaceID,SKILL_ROAR,_,_);
 								GetClientAbsOrigin(client,dragvec);
