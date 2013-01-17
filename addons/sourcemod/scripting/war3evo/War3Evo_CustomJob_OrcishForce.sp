@@ -272,6 +272,7 @@ public DoChain(client,Float:distance,dmg,bool:first_call,last_target)
 			// alright, time to cooldown
 			new Float:cooldown=GetConVarFloat(ultCooldownCvar);
 			War3_CooldownMGR(client,cooldown,thisRaceID,ULT_LIGHTNING,_,_);
+			War3_SetBuff(client,bDisarm,thisRaceID,true); //since this is where the cooldown activates it seems appropriate to activate the disarm here - Dagothur 1/16/2013
 			//DP("CD %f %d %d",cooldown,thisRaceID,ULT_LIGHTNING);
 		}
 	}
@@ -317,7 +318,7 @@ public OnUltimateCommand(client,race,bool:pressed)
 				new Float:distance=ChainDistance[skill];
 				// Dochange was 60 damage:
 				DoChain(client,distance,90,true,0); // This function should also handle if there aren't targets
-				War3_SetBuff(client,bDisarm,thisRaceID,true);
+				
 				CreateTimer(DischargeDelay[skill],Enable_Attack,GetClientUserId(client));
 			}
 		}
