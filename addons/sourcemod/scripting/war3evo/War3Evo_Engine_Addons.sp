@@ -29,7 +29,7 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
-	CreateConVar("war3evo_shopmenu1",PLUGIN_VERSION,"War3evo shopmenu",FCVAR_PLUGIN);
+	CreateConVar("war3evo_Engine_Addons",PLUGIN_VERSION,"War3evo Engine Addons",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 
 	g_maxplayers = CreateConVar("War3Evo_maxplayers", "24", "The max amount of players your server can hold.");
 	g_addbots = CreateConVar("War3Evo_addbots", "10", "When players are at or  below this number, set tf_bot_quota to this number.");

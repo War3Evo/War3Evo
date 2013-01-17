@@ -23,7 +23,7 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
-	CreateConVar("war3evo_AddonLevelUpParticle",PLUGIN_VERSION,"War3evo Addon Level Up Particle",FCVAR_PLUGIN);
+	//CreateConVar("war3evo_AddonLevelUpParticle",PLUGIN_VERSION,"War3evo Addon Level Up Particle",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 
 	LoadTranslations("w3s.addon.levelupparticle.phrases");	
 }
@@ -57,52 +57,5 @@ public OnWar3Event(W3EVENT:event, client)
 			}
 		}
 		
-	}
-}
-
-// Create Effect for Counter Strike Source:
-public Action:CSParticle(const client, const level)
-{
-	new particle = CreateEntityByName("env_smokestack");
-	if(IsValidEdict(particle) && IsClientInGame(client))
-	{
-		decl String:Name[32], Float:fPos[3];
-		Format(Name, sizeof(Name), "CSParticle_%i_%i", client, level);
-		GetEntPropVector(client, Prop_Send, "m_vecOrigin", fPos);
-		fPos[2] += 28.0;
-		new Float:fAng[3] = {0.0, 0.0, 0.0};
-		
-		// Set Key Values
-		DispatchKeyValueVector(particle, "Origin", fPos);
-		DispatchKeyValueVector(particle, "Angles", fAng);
-		DispatchKeyValueFloat(particle, "BaseSpread", 15.0);
-		DispatchKeyValueFloat(particle, "StartSize", 2.0);
-		DispatchKeyValueFloat(particle, "EndSize", 6.0);
-		DispatchKeyValueFloat(particle, "Twist", 0.0);
-		
-		DispatchKeyValue(particle, "Name", Name);
-		DispatchKeyValue(particle, "SmokeMaterial", "effects/combinemuzzle2.vmt");
-		DispatchKeyValue(particle, "RenderColor", "252 232 131");
-		DispatchKeyValue(particle, "SpreadSpeed", "10");
-		DispatchKeyValue(particle, "RenderAmt", "200");
-		DispatchKeyValue(particle, "JetLength", "13");
-		DispatchKeyValue(particle, "RenderMode", "0");
-		DispatchKeyValue(particle, "Initial", "0");
-		DispatchKeyValue(particle, "Speed", "10");
-		DispatchKeyValue(particle, "Rate", "173");
-		DispatchSpawn(particle);
-		
-		// Set Entity Inputs
-		SetVariantString("!activator");
-		AcceptEntityInput(particle, "SetParent", client, particle, 0);
-		AcceptEntityInput(particle, "TurnOn");
-		particle = EntIndexToEntRef(particle);
-		SetVariantString("OnUser1 !self:Kill::3.5:-1");
-		AcceptEntityInput(particle, "AddOutput");
-		AcceptEntityInput(particle, "FireUser1");
-	}
-	else
-	{
-		LogError("Failed to create env_smokestack!");
 	}
 }

@@ -109,13 +109,14 @@ And that’s the art of the test!
 #pragma semicolon 1
 
 
-#define VERSION_NUM "1.2.4.0"
-#define eVERSION_NUM "1.0.1.9 (1/9/2013)"
-#define REVISION_NUM 12321 //increment every release
+#define VERSION_NUM "1.2.4.1"
+#define eVERSION_NUM "1.0.2.0 (1/17/2013)"
+//#define REVISION_NUM 12321 //increment every release
+#define REVISION_NUM 12410 //increment every release
 
 //DO NOT REMOVE THE OFFICIAL AUTHORS. YOU SHALL NOT DEPRIVE THEM OF THE CREDIT THEY DESERVE
 #define AUTHORS "PimpinJuice and Ownz (DarkEnergy)"
-#define eAUTHORS "El Diablo and Axin"
+#define eAUTHORS "El Diablo|Dagothur|Axin"
 
 //used for some special things in interface
 #define WAR3MAIN

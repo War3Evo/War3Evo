@@ -7,7 +7,7 @@
  *-- El Diablo
  *-- www.war3evo.com
  */
-#define PLUGIN_VERSION "0.0.0.1"
+#define PLUGIN_VERSION "0.0.0.2 (1/17/2013)"
  
 #pragma semicolon 1
 
@@ -50,8 +50,8 @@ enum{
 	ANTIWARD,
 	INSTAUBER,
 	ARMOR_PIERCING,
-	DIAMOND_CONVERTER,
-	DIAMOND_CONVERTER2
+	//DIAMOND_CONVERTER,
+	//DIAMOND_CONVERTER2
 }
 
 new shopItem[MAXITEMS];//
@@ -94,7 +94,7 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
-	CreateConVar("war3evo_shopmenu1",PLUGIN_VERSION,"War3evo shopmenu1",FCVAR_PLUGIN);
+	CreateConVar("war3evo_shopmenu1",PLUGIN_VERSION,"War3evo shopmenu1",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 
 	MyWeaponsOffset=FindSendPropOffs("CBaseCombatCharacter","m_hMyWeapons");
 	
@@ -192,11 +192,11 @@ public OnWar3LoadRaceOrItemOrdered(num)
 		shopItem[ARMOR_PIERCING]=War3_CreateShopItem("Physical Armor Piercing","piercing",
 		"Upgrades your weapons with ability to penetrate physical armor.\nRequires Oil of Penetration",20,3500);
 
-		shopItem[DIAMOND_CONVERTER]=War3_CreateShopItem("1000 Gold to 1 Diamond","cgold1k",
-		"1,000 Gold to 1 Diamond",10000,3500);
+		//shopItem[DIAMOND_CONVERTER]=War3_CreateShopItem("1000 Gold to 1 Diamond","cgold1k",
+		//"1,000 Gold to 1 Diamond",10000,3500);
 
-		shopItem[DIAMOND_CONVERTER2]=War3_CreateShopItem("10000 Gold to 10 Diamond","cgold10k",
-		"10,000 Gold to 10 Diamonds",10000,3500);
+		//shopItem[DIAMOND_CONVERTER2]=War3_CreateShopItem("10000 Gold to 10 Diamond","cgold10k",
+		//"10,000 Gold to 10 Diamonds",10000,3500);
 	}
 }
 public OnMapStart()
@@ -391,7 +391,7 @@ public OnItemPurchase(client,item)
 			//War3_SetBuffItem(client,fArmorPhysical,item,6.0);
 		}
 	}
-	if(item==shopItem[DIAMOND_CONVERTER]&&ValidPlayer(client))
+/*	if(item==shopItem[DIAMOND_CONVERTER]&&ValidPlayer(client))
 	{
 		new newgold = War3_GetGold(client) - 1000;
 		if(newgold<0)
@@ -424,7 +424,7 @@ public OnItemPurchase(client,item)
 			War3_ChatMessage(client,"You now have %i gold and %i diamonds.",newgold,newdiamonds);
 		}
 		War3_SetOwnsItem(client,shopItem[DIAMOND_CONVERTER2],false);
-	}
+	} */
 }
 
 //deactivate BUFFS AND PASSIVES

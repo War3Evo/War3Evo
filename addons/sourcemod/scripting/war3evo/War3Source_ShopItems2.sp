@@ -92,7 +92,7 @@ public Plugin:myinfo =
 public OnPluginStart()
 {
 
-	CreateConVar("war3evo_shopmenu2",PLUGIN_VERSION,"War3evo shopmenu 2",FCVAR_PLUGIN);
+	CreateConVar("war3evo_shopmenu2",PLUGIN_VERSION,"War3evo shopmenu 2",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	//CreateTimer(1.0,test,_,TIMER_REPEAT);
 	//W3CreateCvar("w3shop2items","loaded","is the shop2 loaded");
 	cvarAmount = CreateConVar("sm_cashregen_amount", "20", "Amount of money generated per increment", _, true, 0.0, true, 1000.0);

@@ -53,7 +53,7 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
-	CreateConVar("war3evo_HumanStronghold",PLUGIN_VERSION,"War3evo Job Human Stronghold",FCVAR_PLUGIN);
+	CreateConVar("war3evo_HumanStronghold",PLUGIN_VERSION,"War3evo Job Human Stronghold",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 
 	ultCooldownCvar=CreateConVar("war3_human_ultimate_cooldown","30.0","Cooldown between teleports");
 	

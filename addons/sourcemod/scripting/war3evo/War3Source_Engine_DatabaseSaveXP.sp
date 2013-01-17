@@ -1,14 +1,7 @@
-
+#define PLUGIN_VERSION "0.0.0.1"
 
 #include <sourcemod>
 #include "W3SIncs/War3Source_Interface"
-
-
-
-
-
-
-
 
 
 new Handle:hDB;
@@ -46,6 +39,8 @@ public bool:InitNativesForwards()
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_DataBaseSaveXP",PLUGIN_VERSION,"War3evo DataBase Save XP",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+
 	m_SaveXPConVar=CreateConVar("war3_savexp","1");
 	W3SetVar(hSaveEnabledCvar,m_SaveXPConVar);
 
@@ -492,7 +487,11 @@ public T_CallbackSelectPDataMain(Handle:owner,Handle:hndl,const String:error[],a
 					}
 				}
 				War3_SetRace(client,newrace);
-				War3_SetLevel(client, newrace, W3GetRaceMaxLevel(newrace));
+
+				new SetRaceLevel = 10;
+				if(W3GetRaceMaxLevel(newrace)<10)
+					SetRaceLevel = W3GetRaceMaxLevel(newrace);
+				War3_SetLevel(client, newrace, SetRaceLevel);
 			}
 			
 		}

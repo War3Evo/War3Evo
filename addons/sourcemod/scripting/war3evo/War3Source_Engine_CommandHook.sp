@@ -19,7 +19,7 @@ public Plugin:myinfo=
 
 public OnPluginStart()
 {
-	CreateConVar("war3evo_CommandHook",PLUGIN_VERSION,"War3evo Chat Command Hooks",FCVAR_PLUGIN);
+	CreateConVar("war3evo_CommandHook",PLUGIN_VERSION,"War3evo Chat Command Hooks",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 
 	Cvar_ChatBlocking=CreateConVar("war3_command_blocking","0","block chat commands from showing up");
 

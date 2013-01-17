@@ -32,7 +32,7 @@ public Plugin:myinfo=
 
 public OnPluginStart()
 {
-	CreateConVar("war3evo_BuffSystem",PLUGIN_VERSION,"War3evo Buff System",FCVAR_PLUGIN);
+	CreateConVar("war3evo_BuffSystem",PLUGIN_VERSION,"War3evo Buff System",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	
 	InitiateBuffPropertiesArray(BuffProperties);
 	

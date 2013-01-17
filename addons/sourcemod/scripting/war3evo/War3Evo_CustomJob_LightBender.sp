@@ -39,7 +39,7 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
-	CreateConVar("war3evo_LightBender",PLUGIN_VERSION,"War3evo Job Light Bender",FCVAR_PLUGIN);
+	CreateConVar("war3evo_LightBender",PLUGIN_VERSION,"War3evo Job Light Bender",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 }
 
 

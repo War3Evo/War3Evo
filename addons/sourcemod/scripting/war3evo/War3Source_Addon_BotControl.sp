@@ -37,7 +37,7 @@ new Handle:botBuysRandomMultipleChance;
 new Handle:botsetraces;
 public OnPluginStart()
 {
-	CreateConVar("war3evo_botcontrol",PLUGIN_VERSION,"War3Evo Bot Control",FCVAR_PLUGIN|FCVAR_DONTRECORD);
+	CreateConVar("war3evo_botcontrol",PLUGIN_VERSION,"War3Evo Bot Control",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD|FCVAR_DONTRECORD);
 	//SetFailState("BROKEN");
 	
 	// ########################## BOT EVASION ################################

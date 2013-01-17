@@ -75,7 +75,7 @@ public Plugin:myinfo =
 };
 public OnPluginStart()
 {
-	CreateConVar("war3evo_HyperCyborg",PLUGIN_VERSION,"War3evo Hyper Cyborg",FCVAR_PLUGIN);
+	CreateConVar("war3evo_HyperCyborg",PLUGIN_VERSION,"War3evo Hyper Cyborg",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	// To do: add translations
 	//LoadTranslations("w3s.race.mage.phrases");
 	ownerOffset = FindSendPropInfo("CBaseObject", "m_hBuilder");

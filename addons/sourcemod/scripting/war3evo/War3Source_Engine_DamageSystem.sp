@@ -62,7 +62,7 @@ public Plugin:myinfo=
 
 public OnPluginStart()
 {
-	CreateConVar("war3evo_DamageSystem",PLUGIN_VERSION,"War3evo Damage System",FCVAR_PLUGIN);
+	CreateConVar("war3evo_DamageSystem",PLUGIN_VERSION,"War3evo Damage System",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 
 	HookEvent("player_hurt", EventPlayerHurt);
 	if(War3_IsL4DEngine())
