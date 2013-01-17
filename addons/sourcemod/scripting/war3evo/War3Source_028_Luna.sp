@@ -138,7 +138,7 @@ public OnW3TakeDmgBullet( victim, attacker, Float:damage )
 			new race_attacker = War3_GetRace( attacker );
 			new skill_level = War3_GetSkillLevel( attacker, thisRaceID, SKILL_MOONBEAM );
 			new skill_level2 = War3_GetSkillLevel( attacker, thisRaceID, SKILL_BOUNCE );
-			if( race_attacker == thisRaceID &&!Hexed(attacker))
+			if( race_attacker == thisRaceID &&!Hexed(attacker) && W3Chance(W3ChanceModifier(attacker))) //skill activation chance modifier; damage was out of control on pyro just like crypt lord's beetles - Dagothur 1/16/2013
 			{
 				// So that players' sentry does not proc this skill
 				// Less chance to Proc for based on your class.
