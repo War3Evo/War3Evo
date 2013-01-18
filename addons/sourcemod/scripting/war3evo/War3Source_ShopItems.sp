@@ -1,3 +1,4 @@
+#define PLUGIN_VERSION "0.0.0.3 (1/18/2013)"
 /**
  * File: War3Source_ShopItems.sp
  * Description: The shop items that come with War3Source.
@@ -7,8 +8,7 @@
  *-- El Diablo
  *-- www.war3evo.com
  */
-#define PLUGIN_VERSION "0.0.0.2 (1/17/2013)"
- 
+
 #pragma semicolon 1
 
 #include <sourcemod>
@@ -708,7 +708,7 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 				
 				//SetEntityHealth(victim,new_hp);
 				//DP("%f",W3ChanceModifier(attacker));
-				if(W3ChanceModifier(attacker)<0.99){
+				if(W3Chance(W3ChanceModifier(attacker))){
 				dmg*=W3ChanceModifier(attacker);
 				}
 				else{
