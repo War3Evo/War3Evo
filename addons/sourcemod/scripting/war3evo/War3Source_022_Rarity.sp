@@ -1,3 +1,5 @@
+#define PLUGIN_VERSION "0.0.0.2 (1/18/2013)"
+
 #pragma semicolon 1    ///WE RECOMMEND THE SEMICOLON
 
 #include <sourcemod>
@@ -56,6 +58,8 @@ public OnWar3LoadRaceOrItemOrdered(num)
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_rarity",PLUGIN_VERSION,"War3evo Job Rarity",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+
 	LoadTranslations("w3s.race.rarity.phrases");
 }
 
