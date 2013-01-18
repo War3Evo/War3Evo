@@ -10,7 +10,7 @@ public Plugin:myinfo =
 	name = "Race - Rarity",
 	author = "OWNAGE",
 	description = "",
-	version = "1.0",
+	version = "1.1",
 	url = "http://ownageclan.com/"
 };
 
@@ -71,7 +71,7 @@ public OnWar3EventSpawn(client){
 
 public OnW3TakeDmgBulletPre(victim,attacker,Float:damage)
 {
-	if(ValidPlayer(victim)&&ValidPlayer(attacker)&&attacker!=victim )
+	if(ValidPlayer(victim)&&ValidPlayer(attacker)&&attacker!=victim && !W3HasImmunity(attacker,Immunity_Skills) ) //fixed a bug where attacking a mesmerized player when holding holy shield would still result in transfer of stun - Dagothur 1/17/2013
 	{
 		if(GetClientTeam(victim)!=GetClientTeam(attacker))
 		{
