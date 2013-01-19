@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "0.0.0.1"
+#define PLUGIN_VERSION "0.0.0.2 (1/18/2013) 10:40pm EST"
 /**
  * File: War3Source_Light_Bender.sp
 * Description: The Light Bender race for SourceCraft.
@@ -97,9 +97,10 @@ public OnWar3EventDeath( victim, attacker )
 	W3ResetAllBuffRace( victim, thisRaceID );
 }
 
-public OnWar3EventPostHurt( victim, attacker, damage )
+//public OnWar3EventPostHurt( victim, attacker, damage )
+public OnW3TakeDmgAll(victim,attacker,Float:damage)
 {
-	if( W3GetDamageIsBullet() && ValidPlayer( victim, true ) && ValidPlayer( attacker, true ) && GetClientTeam( victim ) != GetClientTeam( attacker ) )
+	if(!W3IsOwnerSentry(attacker) && W3GetDamageIsBullet() && ValidPlayer( victim, true ) && ValidPlayer( attacker, true ) && GetClientTeam( victim ) != GetClientTeam( attacker ) )
 	{
 		if( War3_GetRace( attacker ) == thisRaceID && !W3HasImmunity(victim,Immunity_Skills) )
 		{
