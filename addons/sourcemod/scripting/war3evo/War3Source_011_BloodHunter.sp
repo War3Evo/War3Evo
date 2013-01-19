@@ -43,7 +43,7 @@ public Plugin:myinfo =
 	name = "Race - Blood Hunter",
 	author = "Ownz (DarkEnergy)",
 	description = "Blood Hunter for War3Source.",
-	version = "1.0",
+	version = "1.1",
 	url = "War3Source.com"
 };
 
@@ -210,7 +210,7 @@ public Action:BloodCrazyDOTLoop(Handle:h,any:data)
 				
 }
 public OnW3TakeDmgBulletPre(victim,attacker,Float:damage){
-	if(ValidPlayer(victim)&&ValidPlayer(attacker)&&victim!=attacker&&GetClientTeam(victim)!=GetClientTeam(attacker)){
+	if(ValidPlayer(victim)&&ValidPlayer(attacker)&&victim!=attacker&&GetClientTeam(victim)!=GetClientTeam(attacker)&&!W3HasImmunity(victim,Immunity_Skills)){ //fixed blood hunter not respecting skill immunity - Dagothur 1/19/2013
 		if(War3_GetRace(attacker)==thisRaceID&&!Hexed(attacker,false)){
 			new skilllevel=War3_GetSkillLevel(attacker,thisRaceID,SKILL_CRAZY);
 			if(skilllevel>0){
