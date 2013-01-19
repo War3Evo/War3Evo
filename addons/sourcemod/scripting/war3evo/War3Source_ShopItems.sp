@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "0.0.0.3 (1/18/2013)"
+#define PLUGIN_VERSION "0.0.0.4 (1/19/2013) 7:10AM EST"
 /**
  * File: War3Source_ShopItems.sp
  * Description: The shop items that come with War3Source.

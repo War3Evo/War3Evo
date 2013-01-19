@@ -110,9 +110,9 @@ And that’s the art of the test!
 
 
 #define VERSION_NUM "1.2.4.1"
-#define eVERSION_NUM "1.0.2.1 (1/18/2013)"
+#define eVERSION_NUM "1.0.2.2 (1/19/2013)"
 //#define REVISION_NUM 12321 //increment every release
-#define REVISION_NUM 12411 //increment every release
+#define REVISION_NUM 12412 //increment every release
 
 //DO NOT REMOVE THE OFFICIAL AUTHORS. YOU SHALL NOT DEPRIVE THEM OF THE CREDIT THEY DESERVE
 #define AUTHORS "PimpinJuice and Ownz (DarkEnergy)"
