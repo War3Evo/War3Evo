@@ -45,22 +45,22 @@ public OnPluginStart()
 	g_hImmunity                               = CreateConVar("sm_classrestrict_immunity",      "1",  "Enable/disable admins being immune for restricted classes in TF2.");
 	g_hLimits[TF_TEAM_BLU][TF_CLASS_DEMOMAN]  = CreateConVar("sm_classrestrict_blu_demomen",   "3", "Limit for Blu demomen in TF2.");
 	g_hLimits[TF_TEAM_BLU][TF_CLASS_ENGINEER] = CreateConVar("sm_classrestrict_blu_engineers", "3", "Limit for Blu engineers in TF2.");
-	g_hLimits[TF_TEAM_BLU][TF_CLASS_HEAVY]    = CreateConVar("sm_classrestrict_blu_heavies",   "3", "Limit for Blu heavies in TF2.");
+	g_hLimits[TF_TEAM_BLU][TF_CLASS_HEAVY]    = CreateConVar("sm_classrestrict_blu_heavies",   "2", "Limit for Blu heavies in TF2.");
 	g_hLimits[TF_TEAM_BLU][TF_CLASS_MEDIC]    = CreateConVar("sm_classrestrict_blu_medics",    "3", "Limit for Blu medics in TF2.");
 	g_hLimits[TF_TEAM_BLU][TF_CLASS_PYRO]     = CreateConVar("sm_classrestrict_blu_pyros",     "3", "Limit for Blu pyros in TF2.");
-	g_hLimits[TF_TEAM_BLU][TF_CLASS_SCOUT]    = CreateConVar("sm_classrestrict_blu_scouts",    "3", "Limit for Blu scouts in TF2.");
-	g_hLimits[TF_TEAM_BLU][TF_CLASS_SNIPER]   = CreateConVar("sm_classrestrict_blu_snipers",   "3", "Limit for Blu snipers in TF2.");
+	g_hLimits[TF_TEAM_BLU][TF_CLASS_SCOUT]    = CreateConVar("sm_classrestrict_blu_scouts",    "2", "Limit for Blu scouts in TF2.");
+	g_hLimits[TF_TEAM_BLU][TF_CLASS_SNIPER]   = CreateConVar("sm_classrestrict_blu_snipers",   "2", "Limit for Blu snipers in TF2.");
 	g_hLimits[TF_TEAM_BLU][TF_CLASS_SOLDIER]  = CreateConVar("sm_classrestrict_blu_soldiers",  "3", "Limit for Blu soldiers in TF2.");
-	g_hLimits[TF_TEAM_BLU][TF_CLASS_SPY]      = CreateConVar("sm_classrestrict_blu_spies",     "3", "Limit for Blu spies in TF2.");
+	g_hLimits[TF_TEAM_BLU][TF_CLASS_SPY]      = CreateConVar("sm_classrestrict_blu_spies",     "2", "Limit for Blu spies in TF2.");
 	g_hLimits[TF_TEAM_RED][TF_CLASS_DEMOMAN]  = CreateConVar("sm_classrestrict_red_demomen",   "3", "Limit for Red demomen in TF2.");
 	g_hLimits[TF_TEAM_RED][TF_CLASS_ENGINEER] = CreateConVar("sm_classrestrict_red_engineers", "3", "Limit for Red engineers in TF2.");
-	g_hLimits[TF_TEAM_RED][TF_CLASS_HEAVY]    = CreateConVar("sm_classrestrict_red_heavies",   "3", "Limit for Red heavies in TF2.");
+	g_hLimits[TF_TEAM_RED][TF_CLASS_HEAVY]    = CreateConVar("sm_classrestrict_red_heavies",   "2", "Limit for Red heavies in TF2.");
 	g_hLimits[TF_TEAM_RED][TF_CLASS_MEDIC]    = CreateConVar("sm_classrestrict_red_medics",    "3", "Limit for Red medics in TF2.");
 	g_hLimits[TF_TEAM_RED][TF_CLASS_PYRO]     = CreateConVar("sm_classrestrict_red_pyros",     "3", "Limit for Red pyros in TF2.");
-	g_hLimits[TF_TEAM_RED][TF_CLASS_SCOUT]    = CreateConVar("sm_classrestrict_red_scouts",    "3", "Limit for Red scouts in TF2.");
-	g_hLimits[TF_TEAM_RED][TF_CLASS_SNIPER]   = CreateConVar("sm_classrestrict_red_snipers",   "3", "Limit for Red snipers in TF2.");
+	g_hLimits[TF_TEAM_RED][TF_CLASS_SCOUT]    = CreateConVar("sm_classrestrict_red_scouts",    "2", "Limit for Red scouts in TF2.");
+	g_hLimits[TF_TEAM_RED][TF_CLASS_SNIPER]   = CreateConVar("sm_classrestrict_red_snipers",   "2", "Limit for Red snipers in TF2.");
 	g_hLimits[TF_TEAM_RED][TF_CLASS_SOLDIER]  = CreateConVar("sm_classrestrict_red_soldiers",  "3", "Limit for Red soldiers in TF2.");
-	g_hLimits[TF_TEAM_RED][TF_CLASS_SPY]      = CreateConVar("sm_classrestrict_red_spies",     "3", "Limit for Red spies in TF2.");
+	g_hLimits[TF_TEAM_RED][TF_CLASS_SPY]      = CreateConVar("sm_classrestrict_red_spies",     "2", "Limit for Red spies in TF2.");
 	
 	HookEvent("player_changeclass", Event_PlayerClass);
 	HookEvent("player_spawn",       Event_PlayerSpawn);
@@ -81,7 +81,7 @@ public Event_PlayerClass(Handle:event, const String:name[], bool:dontBroadcast)
 	if(!(GetConVarBool(g_hImmunity) && IsImmune(iClient)) && IsFull(iTeam, iClass))
 	{
 		ShowVGUIPanel(iClient, iTeam == TF_TEAM_BLU ? "class_blue" : "class_red");
-		PrintToChat(iClient,"That class is at capacity!");
+		PrintCenterText(iClient,"That class is at capacity!");
 		TF2_SetPlayerClass(iClient, TFClassType:g_iClass[iClient]);
 	}
 }
@@ -94,7 +94,7 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 	if(!(GetConVarBool(g_hImmunity) && IsImmune(iClient)) && IsFull(iTeam, (g_iClass[iClient] = _:TF2_GetPlayerClass(iClient))))
 	{
 		ShowVGUIPanel(iClient, iTeam == TF_TEAM_BLU ? "class_blue" : "class_red");
-		PrintToChat(iClient,"That class is at capacity!");
+		PrintCenterText(iClient,"That class is at capacity!");
 		PickClass(iClient);
 	}
 }
@@ -107,7 +107,7 @@ public Event_PlayerTeam(Handle:event,  const String:name[], bool:dontBroadcast)
 	if(!(GetConVarBool(g_hImmunity) && IsImmune(iClient)) && IsFull(iTeam, g_iClass[iClient]))
 	{
 		ShowVGUIPanel(iClient, iTeam == TF_TEAM_BLU ? "class_blue" : "class_red");
-		PrintToChat(iClient,"That class is at capacity!");
+		PrintCenterText(iClient,"That class is at capacity!");
 		PickClass(iClient);
 	}
 }
@@ -138,7 +138,7 @@ bool:IsFull(iTeam, iClass)
 	// Loop through all clients
 	for(new i = 1, iCount = 0; i <= MaxClients; i++)
 	{
-		if (!(GetConVarBool(g_hImmunity) && IsImmune(i)))
+		if ((GetConVarBool(g_hImmunity) && IsImmune(i)))
 			continue;
 
 		// If client is in game, on this team, has this class and limit has been reached, class is full
