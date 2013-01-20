@@ -33,9 +33,9 @@ new Handle:g_hEnabled;
 new Handle:g_hFlags;
 new Handle:g_hImmunity;
 new Handle:g_hLimits[4][10];
-new String:g_sSounds[10][24] = {"", "vo/scout_no03.wav",   "vo/sniper_no04.wav", "vo/soldier_no01.wav",
-																		"vo/demoman_no03.wav", "vo/medic_no03.wav",  "vo/heavy_no02.wav",
-																		"vo/pyro_no01.wav",    "vo/spy_no02.wav",    "vo/engineer_no03.wav"};
+//new String:g_sSounds[10][24] = {"", "vo/scout_no03.wav",   "vo/sniper_no04.wav", "vo/soldier_no01.wav",
+//																		"vo/demoman_no03.wav", "vo/medic_no03.wav",  "vo/heavy_no02.wav",
+//																		"vo/pyro_no01.wav",    "vo/spy_no02.wav",    "vo/engineer_no03.wav"};
 
 public OnPluginStart()
 {
@@ -67,17 +67,6 @@ public OnPluginStart()
 	HookEvent("player_team",        Event_PlayerTeam);
 }
 
-public OnMapStart()
-{
-	decl i, String:sSound[32];
-	for(i = 1; i < sizeof(g_sSounds); i++)
-	{
-		Format(sSound, sizeof(sSound), "sound/%s", g_sSounds[i]);
-		PrecacheSound(g_sSounds[i]);
-		AddFileToDownloadsTable(sSound);
-	}
-}
-
 public OnClientPutInServer(client)
 {
 	g_iClass[client] = TF_CLASS_UNKNOWN;
@@ -92,8 +81,7 @@ public Event_PlayerClass(Handle:event, const String:name[], bool:dontBroadcast)
 	if(!(GetConVarBool(g_hImmunity) && IsImmune(iClient)) && IsFull(iTeam, iClass))
 	{
 		ShowVGUIPanel(iClient, iTeam == TF_TEAM_BLU ? "class_blue" : "class_red");
-		//EmitSoundToClient(iClient, g_sSounds[iClass]);
-		PrintToChat(iClient,"That class is at capactiy!");
+		PrintToChat(iClient,"That class is at capacity!");
 		TF2_SetPlayerClass(iClient, TFClassType:g_iClass[iClient]);
 	}
 }
@@ -106,8 +94,7 @@ public Event_PlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
 	if(!(GetConVarBool(g_hImmunity) && IsImmune(iClient)) && IsFull(iTeam, (g_iClass[iClient] = _:TF2_GetPlayerClass(iClient))))
 	{
 		ShowVGUIPanel(iClient, iTeam == TF_TEAM_BLU ? "class_blue" : "class_red");
-		//EmitSoundToClient(iClient, g_sSounds[g_iClass[iClient]]);
-		PrintToChat(iClient,"That class is at capactiy!");
+		PrintToChat(iClient,"That class is at capacity!");
 		PickClass(iClient);
 	}
 }
@@ -120,8 +107,7 @@ public Event_PlayerTeam(Handle:event,  const String:name[], bool:dontBroadcast)
 	if(!(GetConVarBool(g_hImmunity) && IsImmune(iClient)) && IsFull(iTeam, g_iClass[iClient]))
 	{
 		ShowVGUIPanel(iClient, iTeam == TF_TEAM_BLU ? "class_blue" : "class_red");
-		//EmitSoundToClient(iClient, g_sSounds[g_iClass[iClient]]);
-		PrintToChat(iClient,"That class is at capactiy!");
+		PrintToChat(iClient,"That class is at capacity!");
 		PickClass(iClient);
 	}
 }
@@ -152,7 +138,7 @@ bool:IsFull(iTeam, iClass)
 	// Loop through all clients
 	for(new i = 1, iCount = 0; i <= MaxClients; i++)
 	{
-		if (!(GetConVarBool(g_hImmunity) && IsImmune(iClient)))
+		if (!(GetConVarBool(g_hImmunity) && IsImmune(i)))
 			continue;
 
 		// If client is in game, on this team, has this class and limit has been reached, class is full
@@ -167,6 +153,9 @@ bool:IsImmune(iClient)
 {
 	if(!iClient || !IsClientInGame(iClient))
 		return false;
+
+	if(IsFakeClient(iClient))
+		return true;
 	
 	decl String:sFlags[32];
 	GetConVarString(g_hFlags, sFlags, sizeof(sFlags));
