@@ -1,3 +1,4 @@
+#define PLUGIN_VERSION "0.0.0.1 (1/20/2013) 9:12AM EST"
 /**
  * 
  * Description:   BH from HON
@@ -49,6 +50,7 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_BloodHunter",PLUGIN_VERSION,"War3evo Job Blood Hunter",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	ultCooldownCvar=CreateConVar("war3_bh_ult_cooldown","20","Cooldown time for Ultimate.");
 	CreateTimer(0.1,RuptureCheckLoop,_,TIMER_REPEAT);
 	CreateTimer(0.5,BloodCrazyDOTLoop,_,TIMER_REPEAT);

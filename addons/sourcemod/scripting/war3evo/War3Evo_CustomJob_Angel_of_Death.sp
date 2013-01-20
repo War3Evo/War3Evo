@@ -1,3 +1,4 @@
+#define PLUGIN_VERSION "0.0.0.1 (1/20/2013) 9:10AM EST"
 /* ========================================================================== */
 /*                                                                            */
 /*   Angel of Death                                                           */
@@ -94,6 +95,7 @@ public OnWar3LoadRaceOrItemOrdered2(num)
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_Angel_of_Death",PLUGIN_VERSION,"War3evo Job Angel of Death",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 //Create race specific Cvars here
 	ultCooldownCvar_angel=CreateConVar("war3_angel_of_death_ult_cooldown","240.0",
      "Angel of Death Ultimate Cooldown.");
@@ -256,6 +258,10 @@ public OnW3PlayerAuraStateChanged(client,aura,bool:inAura,level)
 	if(aura==thisAuraID && !W3HasImmunity(client,Immunity_Skills)) //i am completely unsure if this will cause doom to respect skill immunities; currently it does not - Dagothur 1/19/2013
 	{
 		War3_SetBuff(client,fHPDecay,thisRaceID,inAura?Doom_dmg_others[level]:0.0);
+	}
+	else // Needs to add this else just in case someone buys immunity during a game, when they didnt have it before.
+	{
+		War3_SetBuff(client,fHPDecay,thisRaceID,0.0);
 	}
 }
 
