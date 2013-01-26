@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "0.0.0.1"
+#define PLUGIN_VERSION "0.0.0.2 (1/26/2013) 8:22AM EST"
 /**
  * File: War3Source_CustomRace_OrcishForce.sp
  * Description: The Orcish Force Horde race.
@@ -329,7 +329,7 @@ public Action:Enable_Attack(Handle:timer,any:userid)
 }
 
 
-new int:totalChecks;
+new totalChecks;   // dont use int:totalChecks; gave tagmismatch
 new checkArray[20][4];
 
 public OnMapStart()
