@@ -1697,15 +1697,15 @@
 		"#format"	"{1:d}"
 		"en"		"You Stole {1} gold"
 	}
-	"You revived {player}"
+	"You revived {player}. +{gold} gold +{xp} xp."
 	{
-		"#format"	"{1:s}"
-		"en"		"You revived {1}"
+		"#format"	"{1:s},{2:d},{3:d}"
+		"en"		"You revived {1}. +{2} gold +{3} xp."
 	}
-	"{player} revived you"
+	"{player} revived you. +{heal} HP bonus."
 	{
-		"#format"	"{1:s}"
-		"en"		"{1} revived you"
+		"#format"	"{1:s},{2:d}"
+		"en"		"{1} revived you. +{2} HP bonus."
 	}
 	"Activated Voodoo!"
 	{

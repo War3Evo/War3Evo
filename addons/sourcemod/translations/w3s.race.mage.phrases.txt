@@ -17,6 +17,15 @@
 	{
 		"en"		"#1# chance to revive your teammates that die.\nEach time you revive, chance is reduced by half\nto a minimum of #2#"
 	}
+	
+	"mage_skill_ImprovedBM"
+	{
+		"en"		"Improved Pheonix"
+	}
+	"mage_skill_ImprovedBM_desc"
+	{
+		"en"		"When a teammate is revived you gain some experience and gold. They gain some bonus HP."
+	}
 
 	"mage_skill_Banish"
 	{

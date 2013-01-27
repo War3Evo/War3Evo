@@ -2740,15 +2740,14 @@ stock W3MsgStoleGold(victim, attacker, gold) {
 			gold);
 	PrintHintText(attacker, "%T", "You Stole {gold} gold", attacker, gold);
 }
-stock W3MsgRevivedBM(playerrevived, savior) {
+stock W3MsgRevivedBM(playerrevived, savior, gold, xp, heal) {
 	new String:clientName[64];
 	GetClientName(playerrevived, clientName, sizeof(clientName));
 	new String:saviorName[64];
 	GetClientName(savior, saviorName, sizeof(saviorName));
 
-	PrintHintText(savior, "%T", "You revived {player}", savior, clientName);
-	War3_ChatMessage(playerrevived, "%T", "{player} revived you",
-			playerrevived, saviorName);
+	PrintHintText(savior, "%T", "You revived {player}. +{gold} gold +{xp} xp.", savior, clientName, gold, xp);
+	War3_ChatMessage(playerrevived, "%T", "{player} revived you. +{heal} HP bonus.", playerrevived, saviorName, heal);
 }
 stock W3MsgUsingVoodoo(client) {
 	PrintHintText(client, "%T", "Activated Voodoo!", client);

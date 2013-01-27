@@ -20,7 +20,7 @@ public W3ONLY(){} //unload this?
 
 new thisRaceID;
 
-new SKILL_REVIVE, SKILL_BANISH, SKILL_MONEYSTEAL,ULT_FLAMESTRIKE;
+new SKILL_REVIVE, SKILL_BANISH, SKILL_MONEYSTEAL,ULT_FLAMESTRIKE,SKILL_IMPROVEDBM;
 
 //skill 1
 new Float:MaxRevivalChance[MAXPLAYERSCUSTOM]; //chance for first attempt at revival
@@ -41,7 +41,7 @@ new Float:BanishChancesArr[5]={0.00,0.05,0.10,0.15,0.20};
 new Float:CreditStealChanceTF[]={0.00,0.02,0.04,0.06,0.08};   //what are the chances of stealing
 // instead of a percent we now base it on the attacker level
 //new Float:TFCreditStealPercent=0.02;  //how much to steal
-
+new improvedBMMultiplier[]={0,1,2,3,4};
 //ultimate
 new Float:ultCooldownCvar=20.0;
 new Handle:hrevivalDelayCvar;
@@ -92,6 +92,7 @@ public OnWar3LoadRaceOrItemOrdered(num)
 		SKILL_REVIVE=War3_AddRaceSkillT(thisRaceID,"Phoenix",false,4,"20-50%","2-8%");
 		SKILL_BANISH=War3_AddRaceSkillT(thisRaceID,"Banish",false,4,"20%","0.2");
 		SKILL_MONEYSTEAL=War3_AddRaceSkillT(thisRaceID,"SiphonMana",false,4,"8%","gold","damage");
+		SKILL_IMPROVEDBM=War3_AddRaceSkillT(thisRaceID,"ImprovedBM",false,4);
 		ULT_FLAMESTRIKE=War3_AddRaceSkillT(thisRaceID,"FlameStrike",true,4,"10", "4-10", "500");
 		War3_CreateRaceEnd(thisRaceID);
 	}
@@ -400,6 +401,7 @@ public Action:DoRevival(Handle:timer,any:userid)
 	if(client>0)
 	{
 		new savior = RevivedBy[client];
+		new skill_level2=War3_GetSkillLevel(savior,thisRaceID,SKILL_IMPROVEDBM);
 		if(ValidPlayer(savior,true) && ValidPlayer(client))
 		{
 			if(GetClientTeam(savior)==GetClientTeam(client)&&!IsPlayerAlive(client))
@@ -408,8 +410,20 @@ public Action:DoRevival(Handle:timer,any:userid)
 				//SetEntityMoveType(client, MOVETYPE_NOCLIP);
 				War3_SpawnPlayer(client);
 				W3EmitSoundToAll(reviveSound,client);
+				new gold=1 * improvedBMMultiplier[skill_level2];
+				new xp = W3GetKillXP(savior) * improvedBMMultiplier[skill_level2];
+				new heal=10*skill_level2;//
 				
-				W3MsgRevivedBM(client,savior);
+				new old_XP = War3_GetXP(savior,thisRaceID);
+				new max=W3GetMaxGold();
+				new old_credits=War3_GetGold(savior);
+				new new_credits = old_credits + gold;
+				if (new_credits > max)
+					new_credits = max;
+				War3_SetGold(savior,new_credits);
+				War3_SetXP(savior,thisRaceID,old_XP+xp);
+
+				W3MsgRevivedBM(client,savior,gold,xp,heal);
 					
 				new Float:VecPos[3];
 				new Float:Angles[3];
@@ -418,6 +432,9 @@ public Action:DoRevival(Handle:timer,any:userid)
 				
 				
 				
+				
+				
+				War3_HealToBuffHP(client,heal);
 				
 				TeleportEntity(client, VecPos, Angles, NULL_VECTOR);
 
