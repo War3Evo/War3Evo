@@ -79,7 +79,7 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
-	CreateConVar("war3evo_OrcishForce",PLUGIN_VERSION,"War3evo Orcish Force",FCVAR_PLUGIN);
+	CreateConVar("war3evo_OrcishForce",PLUGIN_VERSION,"War3evo Orcish Force",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	//HookEvent("round_start",RoundStartEvent);
 	ultCooldownCvar=CreateConVar("war3_orcishforce_chain_cooldown","20.0","Cooldown time for chain lightning.");
 
