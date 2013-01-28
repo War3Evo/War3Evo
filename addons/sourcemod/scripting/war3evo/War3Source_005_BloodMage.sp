@@ -25,7 +25,10 @@ new SKILL_REVIVE, SKILL_BANISH, SKILL_MONEYSTEAL,ULT_FLAMESTRIKE,SKILL_IMPROVEDB
 //skill 1
 new Float:MaxRevivalChance[MAXPLAYERSCUSTOM]; //chance for first attempt at revival
 new Float:CurrentRevivalChance[MAXPLAYERSCUSTOM]; //decays by half per revival attempt, will stay at minimum of 10% after decays
+new reviveCount[MAXPLAYERSCUSTOM];
 new Float:RevivalChancesArr[]={0.00,0.2,0.3,0.4,0.5};
+new Float:flameStrikeRadius[5]={0.0,75.0,100.0,125.0,150.0}; //250.0,290.0,310.0,333.0 
+new Float:flameStrikeRadiusDamage[5]={0.0,25.0,50.0,75.0,100.0}; //133.0,175.0,250.0,300.0
 new RevivedBy[MAXPLAYERSCUSTOM];
 new bool:bRevived[MAXPLAYERSCUSTOM];
 new Float:fLastRevive[MAXPLAYERSCUSTOM];
@@ -46,7 +49,7 @@ new improvedBMMultiplier[]={0,1,2,3,4};
 new Float:ultCooldownCvar=20.0;
 new Handle:hrevivalDelayCvar;
 
-new Float:UltimateMaxDistance[]={0.0,500.0,500.0,500.0,500.0}; //max distance u can target your ultimate
+new Float:UltimateMaxDistance[]={0.0,750.0,750.0,750.0,750.0}; //max distance u can target your ultimate
 new UltimateDamageDuration[]={0,4,6,8,10}; ///how many times damage is taken (like pyro's fire)
 
 new BurnsRemaining[MAXPLAYERSCUSTOM]; //burn count for victims
@@ -160,33 +163,62 @@ public OnUltimateCommand(client,race,bool:pressed)
 			//	W3MsgNoCastDuringFreezetime(client);
 			//}
 			if(!Silenced(client)&&War3_SkillNotInCooldown(client,thisRaceID,ULT_FLAMESTRIKE,true))
-			{
-				/////Flame Strike
-				new target = War3_GetTargetInViewCone(client,UltimateMaxDistance[ult_level],false,23.0,IsBurningFilter);
-				if(target>0)
-				{
-					++UltimateUsed[client];
-					BeingBurnedBy[target]=GetClientUserId(client);
-					BurnsRemaining[target]=UltimateDamageDuration[ult_level];
-					CreateTimer(1.0,BurnLoop,GetClientUserId(target));
-					War3_CooldownMGR(client,ultCooldownCvar,thisRaceID,ULT_FLAMESTRIKE,_,_);
-					PrintHintText(client,"%T","Flame Strike!",client);
-					PrintHintText(target,"%T","You have been struck with Flame Strike!",target);
-					W3SetPlayerColor(target,thisRaceID,255,128,0,_,GLOW_ULTIMATE);
-					new Float:effect_vec[3];
-					GetClientAbsOrigin(target,effect_vec);
-					effect_vec[2]+=150.0;
-					TE_SetupGlowSprite(effect_vec, FireSprite, 2.0, 4.0, 255);
-					TE_SendToAll();
-					effect_vec[2]-=180;
-					ThrowAwayParticle("weapon_molotov_thrown_glow", effect_vec, 3.5);
-					AttachParticle(target, "burning_character", effect_vec, "rfoot");
-					effect_vec[2]+=180;
+			{   
+				if (!(reviveCount[client] < 1)) {
+					/////Flame Strike
+					new Float:dist = UltimateMaxDistance[ult_level];
+					if (reviveCount[client]) 
+						dist=dist* reviveCount[client];
+					new target = War3_GetTargetInViewCone(client,dist,false,23.0,IsBurningFilter);
+					if(target>0)
+					{
+						++UltimateUsed[client];
+						BeingBurnedBy[target]=GetClientUserId(client);
+						BurnsRemaining[target]=UltimateDamageDuration[ult_level];
+						CreateTimer(1.0,BurnLoop,GetClientUserId(target));
+						War3_CooldownMGR(client,ultCooldownCvar,thisRaceID,ULT_FLAMESTRIKE,_,_);
+						PrintHintText(client,"%T","Flame Strike!",client);
+						PrintHintText(target,"%T","You have been struck with Flame Strike!",target);
+						W3SetPlayerColor(target,thisRaceID,255,128,0,_,GLOW_ULTIMATE);
+						new Float:effect_vec[3];
+						GetClientAbsOrigin(target,effect_vec);
+						new leftOver;
+						if (reviveCount[client] > 5) {
+							leftOver = reviveCount[client] - 5;
+							reviveCount[client] = 5; // cap this bad boy at 5 - Dagothur 1/27/2013
+						} 
+						else 
+						{
+							leftOver = 0;
+						}
+						War3_SuicideBomber(client, effect_vec, flameStrikeRadiusDamage[ult_level] * reviveCount[client], -1, flameStrikeRadius[ult_level] * reviveCount[client]);
+						effect_vec[2]+=150.0;
+						TE_SetupGlowSprite(effect_vec, FireSprite, 2.0, 4.0, 255);
+						TE_SendToAll();
+						effect_vec[2]-=180;
+						ThrowAwayParticle("weapon_molotov_thrown_glow", effect_vec, 3.5);
+						AttachParticle(target, "burning_character", effect_vec, "rfoot");
+						effect_vec[2]+=180;
+						
+						reviveCount[client]=leftOver;
+						new skill_level_revive=War3_GetSkillLevel(client,thisRaceID,SKILL_REVIVE);
+						CurrentRevivalChance[client]=RevivalChancesArr[skill_level_revive];
+						
+					}
+					else
+					{
+						W3MsgNoTargetFound(client,dist); 
+						PrintHintText(client,"You have %i blood!",reviveCount[client]);
+					}
 				}
 				else
 				{
-					W3MsgNoTargetFound(client,UltimateMaxDistance[ult_level]);
+					PrintHintText(client,"You require more blood!");
 				}
+			}
+			else
+			{
+				PrintHintText(client,"You have %i blood!",reviveCount[client]);
 			}
 			
 		}
@@ -258,7 +290,10 @@ public OnW3TakeDmgBullet(victim,attacker,Float:damage)
 					new skill_level=War3_GetSkillLevel(attacker,thisRaceID,SKILL_BANISH);
 					if(skill_level>0)
 					{
-						if(!Hexed(attacker,false)&&GetRandomFloat(0.0,1.0)<=BanishChancesArr[skill_level]*chance_mod)
+						new Float:tempFloat=GetRandomFloat(0.0,1.0);
+						new Float:tempChance=BanishChancesArr[skill_level]*chance_mod;
+						PrintToConsole(attacker,"(Banish) Dice: %f Chance: %f",tempFloat,tempChance);
+						if(!Hexed(attacker,false)&&tempFloat<=tempChance)
 						{
 							if(W3HasImmunity(victim,Immunity_Skills))
 							{
@@ -272,11 +307,23 @@ public OnW3TakeDmgBullet(victim,attacker,Float:damage)
 								//oldangle[0]+=GetRandomFloat(-20.0,20.0);
 								//oldangle[1]+=GetRandomFloat(-20.0,20.0);
 								//TeleportEntity(victim, NULL_VECTOR, oldangle, NULL_VECTOR);
-								W3MsgBanished(victim,attacker);
+								PrintHintText(victim, "You have been Banished!");
+								
+								new skill_level_revive=War3_GetSkillLevel(attacker,thisRaceID,SKILL_REVIVE);
+								CurrentRevivalChance[attacker]=CurrentRevivalChance[attacker]*2;
+								if (CurrentRevivalChance[attacker] > RevivalChancesArr[skill_level_revive] || CurrentRevivalChance[attacker] == RevivalChancesArr[skill_level_revive]) 
+								{
+									CurrentRevivalChance[attacker] = RevivalChancesArr[skill_level_revive];
+									PrintHintText(attacker, "You Banished! Your Pheonix is at maximum power!");
+								}
+								else
+								{
+									PrintHintText(attacker, "You Banished! Your Pheonix grew stronger!");
+								}
 								W3FlashScreen(victim,{0,0,0,255},0.4,_,FFADE_STAYOUT);
 								CreateTimer(0.2,Unbanish,GetClientUserId(victim));
 								
-								new Float:effect_vec[3];
+								new Float:effect_vec[3];//
 								GetClientAbsOrigin(attacker,effect_vec);
 								new Float:effect_vec2[3];
 								GetClientAbsOrigin(victim,effect_vec2);
@@ -367,6 +414,7 @@ public PlayerSpawnEvent(Handle:event,const String:name[],bool:dontBroadcast)
 			if(!bRevived[client]&&skill_level_revive)
 			{
 				CurrentRevivalChance[client]=RevivalChancesArr[skill_level_revive];
+				reviveCount[client]=0;
 			}
 		}
 		bRevived[client]=false;
@@ -384,6 +432,7 @@ public RoundStartEvent(Handle:event,const String:name[],bool:dontBroadcast)
 		if(ValidPlayer(i) && skill_level_revive)
 		{
 			CurrentRevivalChance[i]=RevivalChancesArr[skill_level_revive];
+			reviveCount[i]=0;
 		}
 		//reset everyone's ultimate
 		
@@ -423,14 +472,24 @@ public Action:DoRevival(Handle:timer,any:userid)
 				War3_SetGold(savior,new_credits);
 				War3_SetXP(savior,thisRaceID,old_XP+xp);
 
-				W3MsgRevivedBM(client,savior,gold,xp,heal);
-					
+				//W3MsgRevivedBM(client,savior,gold,xp,heal,reviveCount[savior]);
+				
+				new String:clientName[64];
+				GetClientName(client, clientName, sizeof(clientName));
+				new String:saviorName[64];
+				GetClientName(savior, saviorName, sizeof(saviorName));
+
+				//PrintHintText(savior, "%T", "You revived {player}. +{gold} gold +{xp} xp.", savior, clientName, gold, xp);
+				PrintHintText(savior, "You revived %s. +%i gold +%i xp.\nYou have %i blood. Your Pheonix weakens.", clientName, gold, xp, reviveCount[savior]);
+				War3_ChatMessage(client, "%T", "{player} revived you. +{heal} HP bonus.", client, saviorName, heal);
+	
 				new Float:VecPos[3];
 				new Float:Angles[3];
-				War3_CachedAngle(client,Angles);
-				War3_CachedPosition(client,VecPos);
+				//War3_CachedAngle(client,Angles);
+				//War3_CachedPosition(client,VecPos);
 				
-				
+				GetClientAbsOrigin(savior,VecPos);
+				GetClientEyeAngles(savior,Angles);
 				
 				
 				
@@ -451,6 +510,7 @@ public Action:DoRevival(Handle:timer,any:userid)
 			{
 				//this guy changed team?
 				CurrentRevivalChance[savior]*=2.0;
+				reviveCount[savior]--;
 				RevivedBy[client]=0;
 				bRevived[client]=false; 
 			}
@@ -468,7 +528,7 @@ public Action:DoRevival(Handle:timer,any:userid)
 
 bool:CooldownRevive(client)
 {
-	if(GetGameTime() >= (fLastRevive[client]+30.0))
+	if(GetGameTime() >= (fLastRevive[client]+20.0))
 		return true;
 	return false;
 }
@@ -543,11 +603,16 @@ public PlayerDeathEvent(Handle:event,const String:name[],bool:dontBroadcast)
 						skillevel=War3_GetSkillLevel(i,thisRaceID,SKILL_REVIVE);
 						if(skillevel>0&&!Hexed(i,false))
 						{
-							if(GetRandomFloat(0.0,1.0)<=CurrentRevivalChance[i])
+							new Float:tempRandom=GetRandomFloat(0.0,1.0);
+							PrintToConsole(i,"(Revive) Dice: %f Chance: %f",tempRandom,CurrentRevivalChance[i]);
+							if(tempRandom<=CurrentRevivalChance[i])
 							{
+								
+								reviveCount[i]++;
 								CurrentRevivalChance[i]/=2.0;
-								if(CurrentRevivalChance[i]<0.020*skillevel){
-									CurrentRevivalChance[i]=0.020*skillevel;
+								if(CurrentRevivalChance[i]<0.020*(skillevel*1.000) || CurrentRevivalChance[i]==0.020*(skillevel*1.000)){
+									CurrentRevivalChance[i]=0.020*(skillevel*1.000);
+									PrintHintText(i, "Your Pheonix is at minimum power!");
 								}
 								RevivedBy[victim]=i;
 								bRevived[victim]=true;

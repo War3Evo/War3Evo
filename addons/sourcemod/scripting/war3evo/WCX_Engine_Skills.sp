@@ -106,6 +106,7 @@ public Action:SuicideAction(Handle:timer,any:client)
 	{
 		new Float:radius = SuicideRadius[client];
 		new our_team = SuicideTeam[client];
+
 		if(SuicideEffects[client])
 		{
 			TE_SetupExplosion(SuicideLocation[client],ExplosionModel,10.0,1,0,RoundToFloor(radius),160);
@@ -122,7 +123,7 @@ public Action:SuicideAction(Handle:timer,any:client)
 			TE_SendToAll();
 			
 			new beamcolor[]={0,200,255,255}; //blue //secondary ring
-			if(our_team==2)
+			if(our_team==2 || SuicideSkillID[client] == -1)
 			{ //TERRORISTS/RED in TF?
 				beamcolor[0]=255;
 				beamcolor[1]=0;
@@ -159,7 +160,9 @@ public Action:SuicideAction(Handle:timer,any:client)
 					new damage;
 					damage=RoundFloat(SuicideDamage[client]*factor);
 					War3_DealDamage(x,damage,client,_,"suicidebomber",W3DMGORIGIN_ULTIMATE,W3DMGTYPE_PHYSICAL);	
-				
+					new String:buffer[512];
+					GetClientName(x, buffer, sizeof(buffer));
+					PrintToConsole(client,"Dealt %i damage to %s",damage,buffer);
 					War3_ShakeScreen(x,3.0*factor,250.0*factor,30.0);
 					W3FlashScreen(x,RGBA_COLOR_RED);
 				}
