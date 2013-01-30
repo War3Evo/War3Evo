@@ -15,16 +15,7 @@
 	}
 	"mage_skill_Phoenix_desc"
 	{
-		"en"		"#1# chance to revive your teammates that die.\nEach time you revive, chance is reduced by half\nto a minimum of #2#\nYou collect blood from each revived teammate."
-	}
-	
-	"mage_skill_ImprovedBM"
-	{
-		"en"		"Improved Pheonix"
-	}
-	"mage_skill_ImprovedBM_desc"
-	{
-		"en"		"When a teammate is revived you gain some experience and gold. They gain some bonus HP."
+		"en"		"#1# chance to revive your teammates that die.\nEach time you revive, chance is reduced by half\nto a minimum of #2#"
 	}
 
 	"mage_skill_Banish"
@@ -33,7 +24,7 @@
 	}
 	"mage_skill_Banish_desc"
 	{
-		"en"		"#1# of making enemy blind and disoriented for #2# seconds.\nYour Pheonix feeds off of banished souls!"
+		"en"		"#1# of making enemy blind and disoriented for #2# seconds"
 	}
 
 	"mage_skill_SiphonMana"
@@ -51,7 +42,7 @@
 	}
 	"mage_skill_FlameStrike_desc"
 	{
-		"en"		"Devestates the enemy by consuming collected blood. (Min. 1)\nRadius and damage increases based on collected blood. (Max 5)\nResets Pheonix revive probability.\n"
+		"en"		"Burn the enemy over time for #1# damage #1# times.\n#3# range"
 	}
 
 	"Flame Strike!"
