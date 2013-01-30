@@ -152,6 +152,7 @@ public OnRaceChanged(client,oldrace,newrace)
 	}
 }
 new FireEntityEffect[MAXPLAYERSCUSTOM];
+new ultimateCaller=0;
 public OnUltimateCommand(client,race,bool:pressed)
 {
 	new userid=GetClientUserId(client);
@@ -165,6 +166,7 @@ public OnUltimateCommand(client,race,bool:pressed)
 			//{
 			//	W3MsgNoCastDuringFreezetime(client);
 			//}
+			ultimateCaller=client;
 			if(!Silenced(client)&&War3_SkillNotInCooldown(client,thisRaceID,ULT_FLAMESTRIKE,true))
 			{   
 				if (!(reviveCount[client] < 1)) {
@@ -233,6 +235,12 @@ public OnUltimateCommand(client,race,bool:pressed)
 }
 public bool:IsBurningFilter(client)
 {
+	if (W3HasImmunity(client,Immunity_Ultimates))
+	{
+		new String:clientName[64];
+		GetClientName(client, clientName, sizeof(clientName));
+		War3_ChatMessage(ultimateCaller,"%s is immune to your Flame Strike!", clientName);
+	}
 	return (BurnsRemaining[client]<=0 && !W3HasImmunity(client,Immunity_Ultimates));
 }
 public Action:BurnLoop(Handle:timer,any:userid)
