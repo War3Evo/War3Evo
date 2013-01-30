@@ -1,0 +1,66 @@
+"Phrases"
+{
+	//<shortname>_RaceName
+	"bloodlord_RaceName"
+	{
+		"en"		"Blood Lord"
+	}
+
+	//skills:
+	//<shortname>_skill_<SkillNameIdentifier> for the skill name
+	//<shortname>_skill_<SkillNameIdentifier>_desc for the skill description
+	"bloodlord_skill_Phoenix"
+	{
+		"en"		"Phoenix"
+	}
+	"bloodlord_skill_Phoenix_desc"
+	{
+		"en"		"#1# chance to revive your teammates that die.\nEach time you revive, chance is reduced by half\nto a minimum of #2#\nYou collect blood from each revived teammate."
+	}
+	
+	"bloodlord_skill_ImprovedBM"
+	{
+		"en"		"Improved Pheonix"
+	}
+	"bloodlord_skill_ImprovedBM_desc"
+	{
+		"en"		"When a teammate is revived you gain some experience and gold. They gain some bonus HP."
+	}
+
+	"bloodlord_skill_Banish"
+	{
+		"en"		"Banish"
+	}
+	"bloodlord_skill_Banish_desc"
+	{
+		"en"		"#1# of making enemy blind and disoriented for #2# seconds.\nYour Pheonix feeds off of banished souls!"
+	}
+
+	"bloodlord_skill_SiphonMana"
+	{
+		"en"		"Siphon Mana"
+	}
+	"bloodlord_skill_SiphonMana_desc"
+	{
+		"en"		"up to #1# chance of stealing #2# based on victim's level via #3#"
+	}
+
+	"bloodlord_skill_FlameStrike"
+	{
+		"en"		"Flame Strike"
+	}
+	"bloodlord_skill_FlameStrike_desc"
+	{
+		"en"		"Devestates the enemy by consuming collected blood. (Min. 1)\nRadius and damage increases based on collected blood. (Max 5)\nResets Pheonix revive probability.\n"
+	}
+
+	"Flame Strike!"
+	{
+		"en"		"Flame Strike!"
+	}
+	"You have been struck with Flame Strike!"
+	{
+		"en"		"You've been struck with Flame Strike!"
+	}
+	
+}
