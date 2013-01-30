@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "0.0.0.1"
+#define PLUGIN_VERSION "0.0.0.1 (1/30/2013) 4:40AM EST"
 /* ============================================================================ */
 /*										                                        */
 /*   naix.sp									                                */
@@ -61,7 +61,7 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
-	CreateConVar("war3evo_Naix",PLUGIN_VERSION,"War3evo Job Naix",FCVAR_PLUGIN);
+	CreateConVar("war3evo_Naix",PLUGIN_VERSION,"War3evo Job Naix",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 
 	ultCooldownCvar=CreateConVar("war3_naix_ult_cooldown","20","Cooldown time for Rage.");
 	
