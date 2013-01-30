@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "0.0.0.1"
+#define PLUGIN_VERSION "0.0.0.2 (1/30/2013) 4:30AM EST"
 /**
 * File: War3Source_BloodMage.sp
 * Description: The Blood Mage race for War3Source.
@@ -66,11 +66,11 @@ new BloodSpray,BloodDrop;
 
 public Plugin:myinfo =
 {
-	name = "Race - Blood Mage",
-	author = "PimpinJuice & Ownz (DarkEnergy)",
-	description = "The Blood Mage race for War3Source.",
-	version = "1.0.0.0",
-	url = "http://Www.OwnageClan.Com"
+	name = "Race - Blood Lord",
+	author = "PimpinJuice & Ownz (DarkEnergy) & Modified by Dagothur",
+	description = "The Blood Lord race for War3Evo.",
+	version = "1.0.0.1",
+	url = "http://Www.War3Evo.Com"
 };
 
 public OnPluginStart()
