@@ -180,8 +180,7 @@ public OnUltimateCommand(client,race,bool:pressed)
 						BurnsRemaining[target]=UltimateDamageDuration[ult_level];
 						CreateTimer(1.0,BurnLoop,GetClientUserId(target));
 						War3_CooldownMGR(client,ultCooldownCvar,thisRaceID,ULT_FLAMESTRIKE,_,_);
-						PrintHintText(client,"%T","Flame Strike!",client);
-						PrintHintText(target,"%T","You have been struck with Flame Strike!",target);
+						PrintHintText(target,"You have been struck with a devestating Flame Strike!");
 						W3SetPlayerColor(target,thisRaceID,255,128,0,_,GLOW_ULTIMATE);
 						new Float:effect_vec[3];
 						GetClientAbsOrigin(target,effect_vec);
@@ -194,6 +193,7 @@ public OnUltimateCommand(client,race,bool:pressed)
 						{
 							leftOver = 0;
 						}
+						PrintHintText(client,"Flame Strike! %i blood consumed.",reviveCount[client]);
 						War3_SuicideBomber(client, effect_vec, flameStrikeRadiusDamage[ult_level] * reviveCount[client], -1, flameStrikeRadius[ult_level] * reviveCount[client]);
 						effect_vec[2]+=150.0;
 						TE_SetupGlowSprite(effect_vec, FireSprite, 2.0, 4.0, 255);
@@ -317,7 +317,8 @@ public OnW3TakeDmgBullet(victim,attacker,Float:damage)
 								if (CurrentRevivalChance[attacker] > RevivalChancesArr[skill_level_revive] || CurrentRevivalChance[attacker] == RevivalChancesArr[skill_level_revive]) 
 								{
 									CurrentRevivalChance[attacker] = RevivalChancesArr[skill_level_revive];
-									PrintHintText(attacker, "You Banished! Your Pheonix is at maximum power!");
+									PrintHintText(attacker, "You Banished! Your Pheonix is at maximum power! +1 blood.");
+									reviveCount[attacker]++;
 								}
 								else
 								{
@@ -417,7 +418,7 @@ public PlayerSpawnEvent(Handle:event,const String:name[],bool:dontBroadcast)
 			if(!bRevived[client]&&skill_level_revive)
 			{
 				CurrentRevivalChance[client]=RevivalChancesArr[skill_level_revive];
-				reviveCount[client]=0;
+				reviveCount[client]++;
 			}
 		}
 		bRevived[client]=false;
@@ -484,7 +485,7 @@ public Action:DoRevival(Handle:timer,any:userid)
 
 				//PrintHintText(savior, "%T", "You revived {player}. +{gold} gold +{xp} xp.", savior, clientName, gold, xp);
 				PrintHintText(savior, "You revived %s. +%i gold +%i xp.\nYou have %i blood. Your Pheonix weakens.", clientName, gold, xp, reviveCount[savior]);
-				War3_ChatMessage(client, "%T", "{player} revived you. +{heal} HP bonus.", client, saviorName, heal);
+				War3_ChatMessage(client,"%s revived you. +%i HP bonus.", saviorName, heal);
 	
 				new Float:VecPos[3];
 				new Float:Angles[3];
