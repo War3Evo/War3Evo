@@ -76,4 +76,8 @@
 	{
 		"en"		"You are no longer in rage mode"
 	}
+	"NoEmptyLocation"
+	{		
+		"en"		"No empty location found"
+	}
 }
