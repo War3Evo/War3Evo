@@ -2740,7 +2740,7 @@ stock W3MsgStoleGold(victim, attacker, gold) {
 			gold);
 	PrintHintText(attacker, "%T", "You Stole {gold} gold", attacker, gold);
 }
-stock W3MsgRevivedBM(playerrevived, savior, gold, xp, heal) {
+stock W3MsgRevivedBM(playerrevived, savior, gold=0, xp=0, heal=0) {
 	new String:clientName[64];
 	GetClientName(playerrevived, clientName, sizeof(clientName));
 	new String:saviorName[64];
