@@ -163,11 +163,15 @@ public Action:SuicideAction(Handle:timer,any:client)
 					new String:buffer[512];
 					GetClientName(x, buffer, sizeof(buffer));
 					PrintToConsole(client,"Dealt %i damage to %s",damage,buffer);
+					War3_ChatMessage(client,"(Damage) %i to %s!",damage,buffer);
 					War3_ShakeScreen(x,3.0*factor,250.0*factor,30.0);
 					W3FlashScreen(x,RGBA_COLOR_RED);
 				}
 				else
 				{
+					new String:buffer[512];
+					GetClientName(x, buffer, sizeof(buffer));
+					War3_ChatMessage(client,"(Damage) %s was immune!",buffer);
 					PrintToConsole(client,"%T","Could not damage player {player} due to immunity",client,x);
 				}
 				

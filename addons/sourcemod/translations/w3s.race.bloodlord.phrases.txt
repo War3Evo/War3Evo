@@ -9,6 +9,15 @@
 	//skills:
 	//<shortname>_skill_<SkillNameIdentifier> for the skill name
 	//<shortname>_skill_<SkillNameIdentifier>_desc for the skill description
+
+	"bloodlord_skill_BloodSacrifice"
+	{
+		"en"		"Blood Sacrifice"
+	}
+	"bloodlord_skill_BloodSacrifice_desc"
+	{
+		"en"		"Consume 1 blood to heal up to 40 health to self and nearby allies.\nRange is increased by total blood carried."
+	}
 	"bloodlord_skill_Phoenix"
 	{
 		"en"		"Phoenix"
@@ -33,7 +42,7 @@
 	}
 	"bloodlord_skill_Banish_desc"
 	{
-		"en"		"#1# of making enemy blind and disoriented for #2# seconds.\nYour Pheonix feeds off of banished souls!"
+		"en"		"#1# of making enemy blind and disoriented for #2# seconds.\nYour Pheonix feeds off of banished souls!\nIf Pheonix probability isn't at max, it's doubled.\nIf Pheonix probability is maxed, you gain blood."
 	}
 
 	"bloodlord_skill_SiphonMana"
@@ -51,7 +60,7 @@
 	}
 	"bloodlord_skill_FlameStrike_desc"
 	{
-		"en"		"Devestates the enemy by consuming collected blood. (Min. 1)\nRadius and damage increases based on collected blood. (Max 5)\nResets Pheonix revive probability.\n"
+		"en"		"Devestates the enemy by consuming collected blood. (Min. 1)\nRadius and damage increases based on collected blood. (Max 10)\nResets Pheonix revive probability.\n"
 	}
 
 	"Flame Strike!"

@@ -21,7 +21,12 @@ public W3ONLY(){} //unload this?
 
 new thisRaceID;
 
-new SKILL_REVIVE, SKILL_BANISH, SKILL_MONEYSTEAL,ULT_FLAMESTRIKE,SKILL_IMPROVEDBM;
+new SKILL_REVIVE, SKILL_BANISH, SKILL_MONEYSTEAL,ULT_FLAMESTRIKE,SKILL_IMPROVEDBM,SKILL_JUDGE;
+
+new JudgementAmount[5]={0,10,20,30,40};
+new Float:JudgementCooldownTime=5.0;
+new JudgementRange=50;
+new String:judgesnd[]="war3source/sr/judgement.mp3";
 
 //skill 1
 new Float:MaxRevivalChance[MAXPLAYERSCUSTOM]; //chance for first attempt at revival
@@ -94,11 +99,13 @@ public OnWar3LoadRaceOrItemOrdered(num)
 {
 	if(num==40)
 	{
+	
 		thisRaceID=War3_CreateNewRaceT("bloodlord");
 		SKILL_REVIVE=War3_AddRaceSkillT(thisRaceID,"Phoenix",false,4,"20-50%","2-8%");
 		SKILL_BANISH=War3_AddRaceSkillT(thisRaceID,"Banish",false,4,"20%","0.2");
 		SKILL_MONEYSTEAL=War3_AddRaceSkillT(thisRaceID,"SiphonMana",false,4,"8%","gold","damage");
 		SKILL_IMPROVEDBM=War3_AddRaceSkillT(thisRaceID,"ImprovedBM",false,4);
+		SKILL_JUDGE=War3_AddRaceSkillT(thisRaceID,"BloodSacrifice",false,4);
 		ULT_FLAMESTRIKE=War3_AddRaceSkillT(thisRaceID,"FlameStrike",true,4,"10", "4-10", "500");
 		War3_CreateRaceEnd(thisRaceID);
 	}
@@ -118,6 +125,7 @@ public OnMapStart()
 	FireSprite	 = PrecacheModel("materials/sprites/fireburst.vmt");
 
 	War3_PrecacheSound(reviveSound);
+	War3_PrecacheSound(judgesnd);
 
 	// Reset Can Player Revive
 	for(new i=1;i<=MAXPLAYERSCUSTOM;i++)
@@ -195,7 +203,12 @@ public OnUltimateCommand(client,race,bool:pressed)
 						{
 							leftOver = 0;
 						}
+						new String:saviorName[64];
+						GetClientName(target, saviorName, sizeof(saviorName));
 						PrintHintText(client,"Flame Strike! %i blood consumed.",reviveCount[client]);
+						War3_ChatMessage(client,"(Flame Strike) Activated on %s! %i blood consumed!",saviorName,reviveCount[client]);
+
+						
 						War3_SuicideBomber(client, effect_vec, flameStrikeRadiusDamage[ult_level] * reviveCount[client], -1, flameStrikeRadius[ult_level] * reviveCount[client]);
 						effect_vec[2]+=150.0;
 						TE_SetupGlowSprite(effect_vec, FireSprite, 2.0, 4.0, 255);
@@ -206,6 +219,8 @@ public OnUltimateCommand(client,race,bool:pressed)
 						effect_vec[2]+=180;
 						
 						reviveCount[client]=leftOver;
+						War3_ChatMessage(client,"Blood=%i",reviveCount[client]);
+
 						new skill_level_revive=War3_GetSkillLevel(client,thisRaceID,SKILL_REVIVE);
 						CurrentRevivalChance[client]=RevivalChancesArr[skill_level_revive];
 						
@@ -214,15 +229,20 @@ public OnUltimateCommand(client,race,bool:pressed)
 					{
 						W3MsgNoTargetFound(client,dist); 
 						PrintHintText(client,"You have %i blood!",reviveCount[client]);
+						War3_ChatMessage(client,"(Flame Strike) No valid target!");
+						War3_ChatMessage(client,"Blood=%i",reviveCount[client]);
 					}
 				}
 				else
 				{
 					PrintHintText(client,"You require more blood!");
+					War3_ChatMessage(client,"(Flame Strike) Not enough blood!");
 				}
 			}
 			else
 			{
+				War3_ChatMessage(client,"(Flame Strike) Cooling down!");
+				War3_ChatMessage(client,"Blood=%i",reviveCount[client]);
 				PrintHintText(client,"You have %i blood!",reviveCount[client]);
 			}
 			
@@ -233,13 +253,71 @@ public OnUltimateCommand(client,race,bool:pressed)
 		}
 	}
 }
+
+public OnAbilityCommand(client,ability,bool:pressed)
+{
+	if(War3_GetRace(client)==thisRaceID && ability==0 && pressed && IsPlayerAlive(client))
+	{
+		new skill_level=War3_GetSkillLevel(client,thisRaceID,SKILL_JUDGE);
+		if(skill_level>0)
+		{
+			
+			if(!Silenced(client)&&War3_SkillNotInCooldown(client,thisRaceID,SKILL_JUDGE,true))
+			{
+				if (reviveCount[client] > 0) {
+					new amount=JudgementAmount[skill_level];
+					new newRange;
+					new Float:playerOrigin[3];
+					GetClientAbsOrigin(client,playerOrigin);
+					
+					new team = GetClientTeam(client);
+					new Float:otherVec[3];
+					for(new i=1;i<=MaxClients;i++){
+						if(ValidPlayer(i,true)){
+							GetClientAbsOrigin(i,otherVec);
+							newRange=JudgementRange*reviveCount[client];
+							if(GetVectorDistance(playerOrigin,otherVec)<newRange)
+							{
+								if(GetClientTeam(i)==team){
+									War3_HealToMaxHP(i,amount);
+									new String:clientName[64];
+									GetClientName(i, clientName, sizeof(clientName));
+									new String:saviorName[64];
+									GetClientName(client, saviorName, sizeof(saviorName));
+									War3_ChatMessage(i,"(Blood Sacrifice) +%i HP from %s!",amount,saviorName);
+									War3_ChatMessage(client,"(Blood Sacrifice) +%i HP to %s!",amount,clientName);
+								}
+								else{
+									//War3_DealDamage(i,amount,client,DMG_BURN,"judgement",W3DMGORIGIN_SKILL);
+								}
+								
+							}
+						}
+					}
+					PrintHintText(client,"+ %i HP. %i range. -1 blood.",amount,newRange);
+					reviveCount[client]--;
+					War3_ChatMessage(client,"(Blood Sacrifice) -1 blood.");
+					War3_ChatMessage(client,"Blood=%i",reviveCount[client]);
+					W3EmitSoundToAll(judgesnd,client);
+					//EmitSoundToAll(judgesnd,client);
+					War3_CooldownMGR(client,JudgementCooldownTime,thisRaceID,SKILL_JUDGE,true,true);
+				}
+				else
+				{
+					PrintHintText(client,"Not enough blood!");
+					War3_ChatMessage(client,"(Blood Sacrifice) Not enough blood!");
+				}
+			}
+		}
+	}
+}
 public bool:IsBurningFilter(client)
 {
 	if (W3HasImmunity(client,Immunity_Ultimates))
 	{
 		new String:clientName[64];
 		GetClientName(client, clientName, sizeof(clientName));
-		War3_ChatMessage(ultimateCaller,"%s is immune to your Flame Strike!", clientName);
+		War3_ChatMessage(ultimateCaller,"(Flame Strike) %s is immune!", clientName);
 	}
 	return (BurnsRemaining[client]<=0 && !W3HasImmunity(client,Immunity_Ultimates));
 }
@@ -321,17 +399,21 @@ public OnW3TakeDmgBullet(victim,attacker,Float:damage)
 								PrintHintText(victim, "You have been Banished!");
 								
 								new skill_level_revive=War3_GetSkillLevel(attacker,thisRaceID,SKILL_REVIVE);
-								CurrentRevivalChance[attacker]=CurrentRevivalChance[attacker]*2;
+								
 								if (CurrentRevivalChance[attacker] > RevivalChancesArr[skill_level_revive] || CurrentRevivalChance[attacker] == RevivalChancesArr[skill_level_revive]) 
 								{
 									CurrentRevivalChance[attacker] = RevivalChancesArr[skill_level_revive];
 									PrintHintText(attacker, "You Banished! Your Pheonix is at maximum power! +1 blood.");
 									reviveCount[attacker]++;
+									War3_ChatMessage(attacker,"(Banish) +1 blood.");
+									War3_ChatMessage(attacker,"Blood=%i",reviveCount[attacker]);
 								}
 								else
 								{
+									War3_ChatMessage(attacker,"(Banish) Your Pheonix grew stronger!");
 									PrintHintText(attacker, "You Banished! Your Pheonix grew stronger!");
 								}
+								CurrentRevivalChance[attacker]=CurrentRevivalChance[attacker]*2;
 								W3FlashScreen(victim,{0,0,0,255},0.4,_,FFADE_STAYOUT);
 								CreateTimer(0.2,Unbanish,GetClientUserId(victim));
 								
@@ -426,9 +508,11 @@ public PlayerSpawnEvent(Handle:event,const String:name[],bool:dontBroadcast)
 			if(!bRevived[client]&&skill_level_revive)
 			{
 				CurrentRevivalChance[client]=RevivalChancesArr[skill_level_revive];
-				reviveCount[client]=reviveCount[client]-5;
+				War3_ChatMessage(client,"(Respawn Penalty) -1 blood.");
+				reviveCount[client]=reviveCount[client]-1;
 				if (reviveCount[client] < 0)
 					reviveCount[client] = 0;
+				War3_ChatMessage(client,"Blood=%i",reviveCount[client]);
 			}
 		}
 		bRevived[client]=false;
@@ -495,6 +579,9 @@ public Action:DoRevival(Handle:timer,any:userid)
 
 				//PrintHintText(savior, "%T", "You revived {player}. +{gold} gold +{xp} xp.", savior, clientName, gold, xp);
 				PrintHintText(savior, "You revived %s. +%i gold +%i xp.\nYou have %i blood. Your Pheonix weakens.", clientName, gold, xp, reviveCount[savior]);
+				reviveCount[savior]++;
+				War3_ChatMessage(savior,"(Pheonix) +1 blood. %s was revived to your side.",clientName);
+				War3_ChatMessage(savior,"Blood=%i",reviveCount[savior]);
 				War3_ChatMessage(client,"%s revived you. +%i HP bonus.", saviorName, heal);
 	
 				new Float:VecPos[3];
@@ -524,7 +611,6 @@ public Action:DoRevival(Handle:timer,any:userid)
 			{
 				//this guy changed team?
 				CurrentRevivalChance[savior]*=2.0;
-				reviveCount[savior]--;
 				RevivedBy[client]=0;
 				bRevived[client]=false; 
 			}
@@ -622,7 +708,8 @@ public PlayerDeathEvent(Handle:event,const String:name[],bool:dontBroadcast)
 							if(tempRandom<=CurrentRevivalChance[i])
 							{
 								
-								reviveCount[i]++;
+								
+
 								CurrentRevivalChance[i]/=2.0;
 								if(CurrentRevivalChance[i]<0.020*(skillevel*1.000) || CurrentRevivalChance[i]==0.020*(skillevel*1.000)){
 									CurrentRevivalChance[i]=0.020*(skillevel*1.000);
