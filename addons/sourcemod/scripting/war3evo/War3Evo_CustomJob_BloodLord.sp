@@ -29,7 +29,7 @@ new Float:CurrentRevivalChance[MAXPLAYERSCUSTOM]; //decays by half per revival a
 new reviveCount[MAXPLAYERSCUSTOM];
 new Float:RevivalChancesArr[]={0.00,0.2,0.3,0.4,0.5};
 new Float:flameStrikeRadius[5]={0.0,75.0,100.0,125.0,150.0}; //250.0,290.0,310.0,333.0 
-new Float:flameStrikeRadiusDamage[5]={0.0,25.0,50.0,75.0,100.0}; //133.0,175.0,250.0,300.0
+new Float:flameStrikeRadiusDamage[5]={0.0,25.0,30.0,45.0,50.0}; //133.0,175.0,250.0,300.0
 new RevivedBy[MAXPLAYERSCUSTOM];
 new bool:bRevived[MAXPLAYERSCUSTOM];
 new Float:fLastRevive[MAXPLAYERSCUSTOM];
@@ -187,9 +187,9 @@ public OnUltimateCommand(client,race,bool:pressed)
 						new Float:effect_vec[3];
 						GetClientAbsOrigin(target,effect_vec);
 						new leftOver;
-						if (reviveCount[client] > 5) {
-							leftOver = reviveCount[client] - 5;
-							reviveCount[client] = 5; // cap this bad boy at 5 - Dagothur 1/27/2013
+						if (reviveCount[client] > 10) {
+							leftOver = reviveCount[client] - 10;
+							reviveCount[client] = 10; // cap this bad boy at 5 - Dagothur 1/27/2013 nerfed! -Dagothur 1/27/2013
 						} 
 						else 
 						{
@@ -426,7 +426,9 @@ public PlayerSpawnEvent(Handle:event,const String:name[],bool:dontBroadcast)
 			if(!bRevived[client]&&skill_level_revive)
 			{
 				CurrentRevivalChance[client]=RevivalChancesArr[skill_level_revive];
-				reviveCount[client]++;
+				reviveCount[client]=reviveCount[client]-5;
+				if (reviveCount[client] < 0)
+					reviveCount[client] = 0;
 			}
 		}
 		bRevived[client]=false;
