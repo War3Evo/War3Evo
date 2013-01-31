@@ -131,6 +131,7 @@ public OnMapStart()
 	for(new i=1;i<=MAXPLAYERSCUSTOM;i++)
 	{
 		Can_Player_Revive[i]=true;
+		reviveCount[i]=0;
 	}
 }
 
@@ -139,6 +140,7 @@ public OnWar3PlayerAuthed(client)
 {
 	fLastRevive[client]=0.0;
 	Can_Player_Revive[client]=true;
+	reviveCount[client]=0;
 }
 
 public OnRaceChanged(client,oldrace,newrace)
