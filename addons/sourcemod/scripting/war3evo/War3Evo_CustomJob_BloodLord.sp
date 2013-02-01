@@ -268,6 +268,7 @@ public OnAbilityCommand(client,ability,bool:pressed)
 			{
 				if (reviveCount[client] > 0) {
 					new amount=JudgementAmount[skill_level];
+					new amount2=amount/2;
 					new newRange;
 					new Float:playerOrigin[3];
 					GetClientAbsOrigin(client,playerOrigin);
@@ -290,7 +291,7 @@ public OnAbilityCommand(client,ability,bool:pressed)
 									War3_ChatMessage(client,"(Blood Sacrifice) +%i HP to %s!",amount,clientName);
 								}
 								else{
-									//War3_DealDamage(i,amount,client,DMG_BURN,"judgement",W3DMGORIGIN_SKILL);
+									War3_DealDamage(i,amount2,client,DMG_BURN,"judgement",W3DMGORIGIN_SKILL);
 								}
 								
 							}

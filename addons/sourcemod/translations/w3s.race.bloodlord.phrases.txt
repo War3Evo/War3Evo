@@ -16,7 +16,7 @@
 	}
 	"bloodlord_skill_BloodSacrifice_desc"
 	{
-		"en"		"Consume 1 blood to heal up to 40 health to self and nearby allies.\nRange is increased by total blood carried."
+		"en"		"Consumes 1 blood.\nUp to 40 health is returned to in range allies.\nUp to 20 damage is dealt to in range enemies.\nRange is increased by total blood carried."
 	}
 	"bloodlord_skill_Phoenix"
 	{
