@@ -911,6 +911,10 @@
 	{
 		"en"		"Back to jobinfo"
 	}
+	"Change to this Job"
+	{
+		"en"		"Change to this Job"
+	}
 	"See all players with job {racename}"
 	{
 		"#format"	"{1:s}"

@@ -1,4 +1,4 @@
-
+#define PLUGIN_VERSION "0.0.0.1 (2/1/2013) 2:01AM EST"
 
 
 //#pragma tabsize 0     // doesn't mess with how you format your lines
@@ -22,6 +22,7 @@ new Handle:ShowTargetSelfPlayerItemsCvar;
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_MenuRacePlayerInfo",PLUGIN_VERSION,"War3evo Menu Core",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	// No Spendskill level restrictions on non-ultimates (Requires mapchange)
 	ShowOtherPlayerItemsCvar=CreateConVar("war3_show_playerinfo_other_player_items","1","0 disables showing other players items using playerinfo. [default 1]");
 	//war3_show_playerinfo_targetself_items 0
@@ -154,6 +155,7 @@ public War3_ShowParticularRaceInfoMenu(client,raceid){
 	SetTrans(client);
 	new Handle:hMenu=CreateMenu(War3_particularraceinfoSelected);
 	SetMenuExitButton(hMenu,true);
+	SetMenuExitBackButton(hMenu,true);
 	
 	new String:racename[64];
 	new String:skilldesc[1000];
@@ -169,7 +171,7 @@ public War3_ShowParticularRaceInfoMenu(client,raceid){
 	SetMenuTitle(hMenu,"%T\n \n","[War3Source] Information for job: {racename} (LVL {amount}/{amount})",client,racename,War3_GetLevel(client,raceid),W3GetRaceMaxLevel(raceid));
 		
 
-	
+
 	new level;
 	new SkillCount = War3_GetRaceSkillCount(raceid);
 	for(new x=1;x<=SkillCount;x++)
@@ -208,22 +210,39 @@ public War3_ShowParticularRaceInfoMenu(client,raceid){
 		
 		AddMenuItem(hMenu,selectioninfo,str);
 	}
-	
-	Format(selectioninfo,sizeof(selectioninfo),"%d,raceinfo,%d",raceid,0);
-	new String:str[100];
-	Format(str,sizeof(str),"%T \n \n","Back to jobinfo",client);
-	AddMenuItem(hMenu,selectioninfo,str);
-	
-	Format(selectioninfo,sizeof(selectioninfo),"%d,0,%d",raceid,0);
-	AddMenuItem(hMenu,selectioninfo,"",ITEMDRAW_NOTEXT); //empty line
-	
-	new String:selectionDisplayBuff[64];
-	Format(selectionDisplayBuff,sizeof(selectionDisplayBuff),"%T \n \n","See all players with job {racename}",client,racename) ;
-	Format(selectioninfo,sizeof(selectioninfo),"%d,seeall,%d",raceid,0);	
-	AddMenuItem(hMenu,selectioninfo,selectionDisplayBuff);
- 
-	
-	
+
+	while(SkillCount<6)
+	{
+		Format(selectioninfo,sizeof(selectioninfo),"%d,0,%d",raceid,0);
+		AddMenuItem(hMenu,selectioninfo,"",ITEMDRAW_NOTEXT); //empty line
+		SkillCount++;
+	}
+
+	if(CanSelectRace(client,raceid,true))
+	{
+		Format(selectioninfo,sizeof(selectioninfo),"%d,changejob,%d",7,raceid);
+		new String:str[100];
+		Format(str,sizeof(str),"%T \n","Change to this Job",client);
+		AddMenuItem(hMenu,selectioninfo,str);
+	}
+
+	//Format(selectioninfo,sizeof(selectioninfo),"%d,raceinfo,%d",raceid,0);  //raceinfo ??
+
+	//Format(selectioninfo,sizeof(selectioninfo),"%d,jobinfo,%d",8,0);
+	//new String:str[100];
+	//Format(str,sizeof(str),"%T \n","Back to jobinfo",client);
+	//AddMenuItem(hMenu,selectioninfo,str);
+
+	//Format(selectioninfo,sizeof(selectioninfo),"%d,0,%d",raceid,0);
+	//AddMenuItem(hMenu,selectioninfo,"",ITEMDRAW_NOTEXT); //empty line
+
+	//new String:selectionDisplayBuff[64];
+	//Format(selectionDisplayBuff,sizeof(selectionDisplayBuff),"%T \n \n","See all players with job {racename}",client,racename) ;
+	//Format(selectioninfo,sizeof(selectioninfo),"%d,seeall,%d",raceid,0);
+	//AddMenuItem(hMenu,selectioninfo,selectionDisplayBuff);
+
+
+
 	DisplayMenu(hMenu,client,MENU_TIME_FOREVER);
 }
 
@@ -268,16 +287,38 @@ public War3_particularraceinfoSelected(Handle:menu,MenuAction:action,client,sele
 				War3_ShowParticularRaceInfoMenu(client,raceid);
 		
 			}
-			else if(StrEqual(exploded[1],"raceinfo")){
-				ShowMenuRaceinfo(client);
+			//else if(StrEqual(exploded[1],"jobinfo")){
+			//	ShowMenuRaceinfo(client);
+			//}
+			else if(StrEqual(exploded[1],"changejob")){
+				new jobnum=StringToInt(exploded[2]);
+				decl String:buf[192];
+				War3_GetRaceName(jobnum,buf,sizeof(buf));
+
+				//new bool:allowChooseRace=bool:CanSelectRace(client,jobnum); //this is the deny system W3Denyable
+				//if(allowChooseRace==false){
+					//War3_ChatMessage(client,"You can not change to %s.",buf);
+					//ShowMenuRaceinfo(client);
+				//}
+				W3SetPendingRace(client,jobnum);
+				//War3_SetRace(client, jobnum);
+				ForcePlayerSuicide(client);
+				//War3_ChatMessage(client,"%T","You will be {racename} after death or spawn",GetTrans(),buf);
 			}
-			else if(StrEqual(exploded[1],"seeall")){
+			//else if(StrEqual(exploded[1],"seeall")){
 				//show all players with this raceid
 				
 				
-				War3_playersWhoAreThisRaceMenu(client,raceid);
-			}
+			//	War3_playersWhoAreThisRaceMenu(client,raceid);
+			//}
 			
+		}
+	}
+	if(action==MenuAction_Cancel)
+	{
+		if(selection==MenuCancel_ExitBack)
+		{
+			ShowMenuRaceinfo(client);
 		}
 	}
 	if(action==MenuAction_End)

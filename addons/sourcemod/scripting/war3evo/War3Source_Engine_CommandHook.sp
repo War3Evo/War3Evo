@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "0.0.0.1"
+#define PLUGIN_VERSION "0.0.0.2 (2/1/2013) 2:01AM EST"
 
 #include <sourcemod>
 #include "W3SIncs/War3Source_Interface"
@@ -466,7 +466,7 @@ bool:Internal_War3Source_SayCommand(client,String:arg1[256])
 		CloseHandle(array);
 		return returnblocking;
 	}
-	else if(CommandCheck(arg1,"jobinfo")||CommandCheck(arg1,"raceinfo"))
+	else if(CommandCheck(arg1,"jobinfo")||CommandCheck(arg1,"raceinfo")||CommandCheck(arg1,"job"))
 	{
 		W3CreateEvent(DoShowRaceinfoMenu,client);
 		return returnblocking;

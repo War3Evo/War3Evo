@@ -2014,8 +2014,9 @@ stock bool:W3Denyable(W3DENY:event,client) {
 }
 native W3Deny();
 
-stock bool:CanSelectRace(client,race) {
+stock bool:CanSelectRace(client,race,bool:silence=false) {
 	W3SetVar(EventArg1,race);
+	W3SetVar(EventArg2,silence);
 	new bool:value=W3Denyable(DN_CanSelectRace,client);
 	//DP("dp %d",value);
 	if(value==false && W3IsDeveloper(client)) {

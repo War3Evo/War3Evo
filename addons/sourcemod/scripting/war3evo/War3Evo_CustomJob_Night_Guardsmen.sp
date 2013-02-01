@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "0.0.0.1"
+#define PLUGIN_VERSION "0.0.0.2 (2/1/2013) 2:01AM EST"
 
 #pragma semicolon 1    ///WE RECOMMEND THE SEMICOLON
 #pragma tabsize 0     // doesn't mess with how you format your lines
