@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "0.0.0.2 (1/30/2013) 4:30AM EST"
+#define PLUGIN_VERSION "0.0.0.3 (1/31/2013) 10:30PM EST"
 /**
 * File: War3Source_BloodMage.sp
 * Description: The Blood Mage race for War3Source.
