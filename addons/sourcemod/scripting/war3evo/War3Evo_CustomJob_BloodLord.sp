@@ -25,13 +25,13 @@ new SKILL_REVIVE, SKILL_BANISH, SKILL_MONEYSTEAL,ULT_FLAMESTRIKE,SKILL_IMPROVEDB
 
 new JudgementAmount[5]={0,10,20,30,40};
 new Float:JudgementCooldownTime=5.0;
-new JudgementRange=50;
+new JudgementRange=100;
 new String:judgesnd[]="war3source/sr/judgement.mp3";
 
 //skill 1
 new Float:MaxRevivalChance[MAXPLAYERSCUSTOM]; //chance for first attempt at revival
 new Float:CurrentRevivalChance[MAXPLAYERSCUSTOM]; //decays by half per revival attempt, will stay at minimum of 10% after decays
-new reviveCount[MAXPLAYERSCUSTOM];
+new reviveCount[MAXPLAYERSCUSTOM+1];
 new Float:RevivalChancesArr[]={0.00,0.2,0.3,0.4,0.5};
 new Float:flameStrikeRadius[5]={0.0,75.0,100.0,125.0,150.0}; //250.0,290.0,310.0,333.0 
 new Float:flameStrikeRadiusDamage[5]={0.0,25.0,30.0,45.0,50.0}; //133.0,175.0,250.0,300.0
@@ -287,10 +287,12 @@ public OnAbilityCommand(client,ability,bool:pressed)
 									GetClientName(i, clientName, sizeof(clientName));
 									new String:saviorName[64];
 									GetClientName(client, saviorName, sizeof(saviorName));
-									War3_ChatMessage(i,"(Blood Sacrifice) +%i HP from %s!",amount,saviorName);
+									if (i != client)
+										War3_ChatMessage(i,"(Blood Sacrifice) +%i HP from %s!",amount,saviorName);
 									War3_ChatMessage(client,"(Blood Sacrifice) +%i HP to %s!",amount,clientName);
 								}
 								else{
+									//War3_DealDamage(i,300,client,DMG_BURN,"judgement",W3DMGORIGIN_SKILL);
 									War3_DealDamage(i,amount2,client,DMG_BURN,"judgement",W3DMGORIGIN_SKILL);
 								}
 								
@@ -316,7 +318,10 @@ public OnAbilityCommand(client,ability,bool:pressed)
 }
 public bool:IsBurningFilter(client)
 {
-	if (W3HasImmunity(client,Immunity_Ultimates))
+
+	new team = GetClientTeam(client);
+	new team2 = GetClientTeam(ultimateCaller);
+	if (W3HasImmunity(client,Immunity_Ultimates) && team!=team2)
 	{
 		new String:clientName[64];
 		GetClientName(client, clientName, sizeof(clientName));
@@ -581,8 +586,9 @@ public Action:DoRevival(Handle:timer,any:userid)
 				GetClientName(savior, saviorName, sizeof(saviorName));
 
 				//PrintHintText(savior, "%T", "You revived {player}. +{gold} gold +{xp} xp.", savior, clientName, gold, xp);
-				PrintHintText(savior, "You revived %s. +%i gold +%i xp.\nYou have %i blood. Your Pheonix weakens.", clientName, gold, xp, reviveCount[savior]);
+
 				reviveCount[savior]++;
+				PrintHintText(savior, "You revived %s. +%i gold +%i xp.\nYou have %i blood. Your Pheonix weakens.", clientName, gold, xp, reviveCount[savior]);
 				War3_ChatMessage(savior,"(Pheonix) +1 blood. %s was revived to your side.",clientName);
 				War3_ChatMessage(savior,"Blood=%i",reviveCount[savior]);
 				War3_ChatMessage(client,"%s revived you. +%i HP bonus.", saviorName, heal);
