@@ -74,11 +74,13 @@ public OnClientPutInServer(client)
 
 public Event_PlayerClass(Handle:event, const String:name[], bool:dontBroadcast)
 {
+	//DP("A Player Changed Class");
+
 	new iClient = GetClientOfUserId(GetEventInt(event, "userid")),
 			iClass  = GetEventInt(event, "class"),
 			iTeam   = GetClientTeam(iClient);
 	
-	if(!(GetConVarBool(g_hImmunity) && IsImmune(iClient)) && IsFull(iTeam, iClass, 0))
+	if(!(GetConVarBool(g_hImmunity) && IsImmune(iClient)) && IsFull(iTeam, iClass, false))
 	{
 		ShowVGUIPanel(iClient, iTeam == TF_TEAM_BLU ? "class_blue" : "class_red");
 		PrintCenterText(iClient,"That class is at capacity!");
@@ -112,7 +114,7 @@ public Event_PlayerTeam(Handle:event,  const String:name[], bool:dontBroadcast)
 	}
 }
 
-bool:IsFull(iTeam, iClass, countImmunes=1)
+bool:IsFull(iTeam, iClass, bool:countImmunes=true)
 {
 	// If plugin is disabled, or team or class is invalid, class is not full
 	if(!GetConVarBool(g_hEnabled) || iTeam < TF_TEAM_RED || iClass < TF_CLASS_SCOUT)
@@ -138,8 +140,11 @@ bool:IsFull(iTeam, iClass, countImmunes=1)
 	// Loop through all clients
 	for(new i = 1, iCount = 0; i <= MaxClients; i++)
 	{
-		if (GetConVarBool(g_hImmunity) && IsImmune(i) && countImmunes)
-			continue;
+		if(!countImmunes)
+		{
+			if (GetConVarBool(g_hImmunity) && IsImmune(i))
+				continue;
+		}
 
 		// If client is in game, on this team, has this class and limit has been reached, class is full
 		if(IsClientInGame(i) && GetClientTeam(i) == iTeam && _:TF2_GetPlayerClass(i) == iClass && ++iCount > iLimit)
