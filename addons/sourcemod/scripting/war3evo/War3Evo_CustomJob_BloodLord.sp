@@ -281,10 +281,11 @@ public OnAbilityCommand(client,ability,bool:pressed)
 							newRange=JudgementRange*reviveCount[client];
 							if(GetVectorDistance(playerOrigin,otherVec)<newRange)
 							{
+								new String:clientName[64];
+								GetClientName(i, clientName, sizeof(clientName));
 								if(GetClientTeam(i)==team){
 									War3_HealToMaxHP(i,amount);
-									new String:clientName[64];
-									GetClientName(i, clientName, sizeof(clientName));
+
 									new String:saviorName[64];
 									GetClientName(client, saviorName, sizeof(saviorName));
 									if (i != client)
@@ -293,13 +294,15 @@ public OnAbilityCommand(client,ability,bool:pressed)
 								}
 								else{
 									//War3_DealDamage(i,300,client,DMG_BURN,"judgement",W3DMGORIGIN_SKILL);
+									War3_ChatMessage(client,"(Blood Sacrifice) -%i HP to %s!",amount2,clientName);
 									War3_DealDamage(i,amount2,client,DMG_BURN,"judgement",W3DMGORIGIN_SKILL);
 								}
 								
 							}
 						}
 					}
-					PrintHintText(client,"+ %i HP. %i range. -1 blood.",amount,newRange);
+					
+					PrintHintText(client,"+ %i HP. %i range. -1 blood.",amount,newRange/10);
 					reviveCount[client]--;
 					War3_ChatMessage(client,"(Blood Sacrifice) -1 blood.");
 					War3_ChatMessage(client,"Blood=%i",reviveCount[client]);
