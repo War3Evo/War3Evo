@@ -25,7 +25,7 @@ new SKILL_REVIVE, SKILL_BANISH, SKILL_MONEYSTEAL,ULT_FLAMESTRIKE,SKILL_IMPROVEDB
 
 new JudgementAmount[5]={0,10,20,30,40};
 new Float:JudgementCooldownTime=5.0;
-new JudgementRange=100;
+new JudgementRange=200;
 new String:judgesnd[]="war3source/sr/judgement.mp3";
 
 //skill 1
