@@ -34,7 +34,8 @@ new Float:CurrentRevivalChance[MAXPLAYERSCUSTOM]; //decays by half per revival a
 new reviveCount[MAXPLAYERSCUSTOM+1];
 new Float:RevivalChancesArr[]={0.00,0.2,0.3,0.4,0.5};
 new Float:flameStrikeRadius[5]={0.0,75.0,100.0,125.0,150.0}; //250.0,290.0,310.0,333.0 
-new Float:flameStrikeRadiusDamage[5]={0.0,25.0,30.0,45.0,50.0}; //133.0,175.0,250.0,300.0
+new Float:flameStrikeRadiusDamage[5]={0.0,12.5,15.0,22.5,25.0}; //133.0,175.0,250.0,300.0
+
 new RevivedBy[MAXPLAYERSCUSTOM];
 new bool:bRevived[MAXPLAYERSCUSTOM];
 new Float:fLastRevive[MAXPLAYERSCUSTOM];
@@ -192,14 +193,14 @@ public OnUltimateCommand(client,race,bool:pressed)
 						BurnsRemaining[target]=UltimateDamageDuration[ult_level];
 						CreateTimer(1.0,BurnLoop,GetClientUserId(target));
 						War3_CooldownMGR(client,ultCooldownCvar,thisRaceID,ULT_FLAMESTRIKE,_,_);
-						PrintHintText(target,"You have been struck with a devestating Flame Strike!");
+						PrintHintText(target,"You have been struck with a devastating Flame Strike!");
 						W3SetPlayerColor(target,thisRaceID,255,128,0,_,GLOW_ULTIMATE);
 						new Float:effect_vec[3];
 						GetClientAbsOrigin(target,effect_vec);
 						new leftOver;
-						if (reviveCount[client] > 10) {
-							leftOver = reviveCount[client] - 10;
-							reviveCount[client] = 10; // cap this bad boy at 5 - Dagothur 1/27/2013 nerfed! -Dagothur 1/27/2013
+						if (reviveCount[client] > 20) {
+							leftOver = reviveCount[client] - 20;
+							reviveCount[client] = 20;
 						} 
 						else 
 						{
@@ -210,8 +211,10 @@ public OnUltimateCommand(client,race,bool:pressed)
 						PrintHintText(client,"Flame Strike! %i blood consumed.",reviveCount[client]);
 						War3_ChatMessage(client,"(Flame Strike) Activated on %s! %i blood consumed!",saviorName,reviveCount[client]);
 
-						
-						War3_SuicideBomber(client, effect_vec, flameStrikeRadiusDamage[ult_level] * reviveCount[client], -1, flameStrikeRadius[ult_level] * reviveCount[client]);
+						new Float:thisRadius = flameStrikeRadiusDamage[ult_level] * reviveCount[client];
+						if (thisRadius > 500)
+							thisRadius=500.0;
+						War3_SuicideBomber(client, effect_vec, thisRadius, -1, flameStrikeRadius[ult_level] * reviveCount[client]);
 						effect_vec[2]+=150.0;
 						TE_SetupGlowSprite(effect_vec, FireSprite, 2.0, 4.0, 255);
 						TE_SendToAll();
