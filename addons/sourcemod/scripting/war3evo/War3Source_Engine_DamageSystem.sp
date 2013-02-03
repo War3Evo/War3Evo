@@ -1,4 +1,4 @@
-
+#define PLUGIN_VERSION "0.0.0.1"
 
 
 //DAMAGE SYSTEM
@@ -21,6 +21,9 @@ new Handle:FHOnW3TakeDmgAll;
 new Handle:FHOnW3TakeDmgBullet;
 
 new Handle:g_OnWar3EventPostHurtFH;
+
+new Handle:PyroW3ChanceModifierCvar;
+new Handle:HeavyW3ChanceModifierCvar;
 
 new g_CurDamageType=-99;
 new g_CurInflictor=-99; //variables from sdkhooks, natives retrieve them if needed
@@ -62,6 +65,10 @@ public Plugin:myinfo=
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_DamageSystem",PLUGIN_VERSION,"War3evo Damage System",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+	PyroW3ChanceModifierCvar=CreateConVar("war3_pyro_w3chancemod","0.500","Float 0.0 - 1.0");
+	HeavyW3ChanceModifierCvar=CreateConVar("war3_heavy_w3chancemod","0.666","Float 0.0 - 1.0");
+
 	HookEvent("player_hurt", EventPlayerHurt);
 	if(War3_IsL4DEngine())
 	{
@@ -104,16 +111,14 @@ public bool:InitNativesForwards()
 
 	ChanceModifierSentry=CreateConVar("war3_chancemodifier_sentry","","None to use attack rate dependent chance modifier. Set from 0.0 to 1.0 chance modifier for sentry, this will override time dependent chance modifier");
 	ChanceModifierSentryRocket=CreateConVar("war3_chancemodifier_sentryrocket","","None to use attack rate dependent chance modifier. Set from 0.0 to 1.0 chance modifier for sentry, this will override time dependent chance modifier");
-	
-	
-	
+
 	return true;
 }
 
 public Native_War3_DamageModPercent(Handle:plugin,numParams)
 {
 	if(!g_CanSetDamageMod){
-		LogError("    ");
+		LogError("	");
 		ThrowError("You may not set damage mod percent here, use ....Pre forward");
 		//W3LogError("You may not set damage mod percent here, use ....Pre forward");
 		//PrintPluginError(plugin);
@@ -181,8 +186,8 @@ public Native_W3IsOwnerSentry(Handle:plugin,numParams)
 
 			if (strcmp(netclass, "CObjectSentrygun") == 0 || strcmp(netclass, "CObjectTeleporter") == 0 || strcmp(netclass, "CObjectDispenser") == 0)
 			{
-				if (GetEntDataEnt2(pSentry, ownerOffset) == client)
-					return true;
+	if (GetEntDataEnt2(pSentry, ownerOffset) == client)
+		return true;
 			}
 		}
 	}
@@ -199,7 +204,20 @@ public Native_W3ChanceModifier(Handle:plugin,numParams)
 		return _:1.0;
 	}
 
-
+	new Float:tempChance = GetRandomFloat(0.0,1.0);
+	switch (TF2_GetPlayerClass(attacker))
+	{
+		case TFClass_Heavy:
+		{
+			if (tempChance <= GetConVarFloat(HeavyW3ChanceModifierCvar)) //heavy cvar here, replaces 0.666
+				return _:0.0;
+		}
+		case TFClass_Pyro:
+		{
+			if (tempChance <= GetConVarFloat(PyroW3ChanceModifierCvar)) //pyro cvar here, replaces 0.500
+				return _:0.0;
+		}
+	}
 	return _:ChanceModifier[attacker];
 }
 
@@ -260,10 +278,10 @@ public Action:SDK_Forwarded_OnTakeDamage(victim,&attacker,&inflictor,&Float:dama
 			
 			new Float:value=now-LastDamageDealtTime[attacker];
 			if(value>1.0||value<0.0){
-				ChanceModifier[attacker]=1.0;
+	ChanceModifier[attacker]=1.0;
 			}
 			else{
-				ChanceModifier[attacker]=value;
+	ChanceModifier[attacker]=value;
 			}
 			//DP("%f",ChanceModifier[attacker]);
 			LastDamageDealtTime[attacker]=GetGameTime();
@@ -272,18 +290,18 @@ public Action:SDK_Forwarded_OnTakeDamage(victim,&attacker,&inflictor,&Float:dama
 		{
 			if(inflictor>0 && IsValidEdict(inflictor))
 			{
-				new String:ent_name[64];
-				GetEdictClassname(inflictor,ent_name,64);
+	new String:ent_name[64];
+	GetEdictClassname(inflictor,ent_name,64);
 			//	DP("ent name %s",ent_name);
-				if(StrContains(ent_name,"obj_sentrygun",false)==0    &&!CvarEmpty(ChanceModifierSentry))
-				{
-					ChanceModifier[attacker]=GetConVarFloat(ChanceModifierSentry);
-				}
-				else if(StrContains(ent_name,"tf_projectile_sentryrocket",false)==0 &&!CvarEmpty(ChanceModifierSentryRocket))
-				{
-					ChanceModifier[attacker]=GetConVarFloat(ChanceModifierSentryRocket);
-				}
-				
+	if(StrContains(ent_name,"obj_sentrygun",false)==0	&&!CvarEmpty(ChanceModifierSentry))
+	{
+		ChanceModifier[attacker]=GetConVarFloat(ChanceModifierSentry);
+	}
+	else if(StrContains(ent_name,"tf_projectile_sentryrocket",false)==0 &&!CvarEmpty(ChanceModifierSentryRocket))
+	{
+		ChanceModifier[attacker]=GetConVarFloat(ChanceModifierSentryRocket);
+	}
+	
 			}
 		}
 	//	DP("%f",ChanceModifier[attacker]);
@@ -323,12 +341,12 @@ public Action:SDK_Forwarded_OnTakeDamage(victim,&attacker,&inflictor,&Float:dama
 			
 			
 			if(!g_CurDamageIsWarcraft){
-				Call_StartForward(FHOnW3TakeDmgBullet);
-				Call_PushCell(victim);
-				Call_PushCell(attacker);
-				Call_PushCell(damage);
-				Call_Finish(dummyresult); //this will be returned to
-				
+	Call_StartForward(FHOnW3TakeDmgBullet);
+	Call_PushCell(victim);
+	Call_PushCell(attacker);
+	Call_PushCell(damage);
+	Call_Finish(dummyresult); //this will be returned to
+	
 			}
 		}
 		g_CanSetDamageMod=old_CanSetDamageMod;
@@ -454,7 +472,7 @@ stock DP2(const String:szMessage[], any:...)
 	new String:szBuffer[1000];
 	new String:pre[132];
 	for(new i=0;i<damagestack;i++){
-		StrCat(pre,sizeof(pre),"    ");
+		StrCat(pre,sizeof(pre),"	");
 	}
 	VFormat(szBuffer, sizeof(szBuffer), szMessage, 2);
 	PrintToServer("[DP2] %s%s %s",pre,szBuffer,W3GetDamageIsBullet()?"B":"",!g_NextDamageIsWarcraftDamage?"NB":"");
@@ -477,14 +495,14 @@ stock DP2(const String:szMessage[], any:...)
 
 //dealdamage reaches far into the stack:
 /*
-[DP2]     playerHurt 1->10  dmg [34]  B
-[DP2]     dealdamage 10->1 { 
-[DP2]         sdktakedamage 10->1 atrace Night Elf damage [6.00] 
-[DP2]         sdktakedamage 10->1 END dmg [6.00] 
-[DP2]         PlayerHurt 10->1  dmg [3]  
-[DP2]         PlayerHurt 10->1  dmg [3] END  
-				^^^^coplies the damage to global
-[DP2]     dealdamage 10->1 } B
+[DP2]	 playerHurt 1->10  dmg [34]  B
+[DP2]	 dealdamage 10->1 { 
+[DP2]		 sdktakedamage 10->1 atrace Night Elf damage [6.00] 
+[DP2]		 sdktakedamage 10->1 END dmg [6.00] 
+[DP2]		 PlayerHurt 10->1  dmg [3]  
+[DP2]		 PlayerHurt 10->1  dmg [3] END  
+	^^^^coplies the damage to global
+[DP2]	 dealdamage 10->1 } B
 [*/
 public Native_War3_DealDamage(Handle:plugin,numParams)
 {
@@ -495,7 +513,7 @@ public Native_War3_DealDamage(Handle:plugin,numParams)
 		noWarning = GetNativeCell(9);
 	
 	if(!g_CanDealDamage && !noWarning){
-		LogError("    ");
+		LogError("	");
 		ThrowError("War3_DealDamage called when DealDamage is not suppose to be called, please use the non PRE forward");
 		//LogError("War3_DealDamage called when DealDamage is not suppose to be called, please use the non PRE forward");
 		//W3LogError("War3_DealDamage called when DealDamage is not suppose to be called, please use the non PRE forward");
@@ -540,36 +558,36 @@ public Native_War3_DealDamage(Handle:plugin,numParams)
 		
 		if(ValidPlayer(victim) && respectVictimImmunity){
 			switch(W3DMGORIGIN){
-				case W3DMGORIGIN_SKILL:  {
-					if(W3HasImmunity(victim,Immunity_Skills) ){
-						return false;
-					}
-				}
-				case W3DMGORIGIN_ULTIMATE:  {
-					if(W3HasImmunity(victim,Immunity_Ultimates) ){
-						return false;
-					}
-				}
-				case W3DMGORIGIN_ITEM:  {
-					if(W3HasImmunity(victim,Immunity_Items) ){
-						return false;
-					}
-				}
-				
+	case W3DMGORIGIN_SKILL:  {
+		if(W3HasImmunity(victim,Immunity_Skills) ){
+			return false;
+		}
+	}
+	case W3DMGORIGIN_ULTIMATE:  {
+		if(W3HasImmunity(victim,Immunity_Ultimates) ){
+			return false;
+		}
+	}
+	case W3DMGORIGIN_ITEM:  {
+		if(W3HasImmunity(victim,Immunity_Items) ){
+			return false;
+		}
+	}
+	
 			}
 			
 			
 			switch(WAR3_DMGTYPE){
-				case W3DMGTYPE_PHYSICAL:  {
-					if(W3HasImmunity(victim,Immunity_PhysicalDamage) ){
-						return false;
-					}
-				}
-				case W3DMGTYPE_MAGIC:  {
-					if(W3HasImmunity(victim,Immunity_MagicDamage) ){
-						return false;
-					}
-				}
+	case W3DMGTYPE_PHYSICAL:  {
+		if(W3HasImmunity(victim,Immunity_PhysicalDamage) ){
+			return false;
+		}
+	}
+	case W3DMGTYPE_MAGIC:  {
+		if(W3HasImmunity(victim,Immunity_MagicDamage) ){
+			return false;
+		}
+	}
 			}
 		}
 		new bool:countAsFirstTriggeredDamage;
@@ -609,10 +627,10 @@ public Native_War3_DealDamage(Handle:plugin,numParams)
 			DispatchKeyValue(pointHurt,"DamageType",dmg_type_str);
 			if(!StrEqual(weapon,""))
 			{
-				DispatchKeyValue(pointHurt,"classname",weapon);
+	DispatchKeyValue(pointHurt,"classname",weapon);
 			}
 			else{
-				DispatchKeyValue(pointHurt,"classname","war3_point_hurt");
+	DispatchKeyValue(pointHurt,"classname","war3_point_hurt");
 			}
 			DispatchSpawn(pointHurt);
 			AcceptEntityInput(pointHurt,"Hurt",(attacker>0)?attacker:-1);

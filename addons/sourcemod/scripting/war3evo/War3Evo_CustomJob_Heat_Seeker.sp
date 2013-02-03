@@ -1,3 +1,4 @@
+#define PLUGIN_VERSION "0.0.0.1"
 /* ========================================================================== */
 /*                                                                            */
 /*   War3source_001_Vanilla.sp                                              */
@@ -59,6 +60,7 @@ public Plugin:myinfo =
 };
 public OnPluginStart()
 {
+	CreateConVar("war3evo_HeatSeeker",PLUGIN_VERSION,"War3evo Job Heat Seeker",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	// To do: add translations
 	//LoadTranslations("w3s.race.mage.phrases");
 	HEATROCKET_CONVAR = CreateConVar("hs_rocketspeed", "1100.0", "0.0 - 1100.0");

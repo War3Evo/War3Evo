@@ -122,7 +122,7 @@ public Action:War3Source_CMDSetXP(client,args)
 		ReplyToCommand(client,"No Access");
 	}
 	else if(args!=2)
-		PrintToConsole(client,"%T","[War3Source] The syntax of the command is: war3_setxp <player> <xp>",client);
+		PrintToConsole(client,"%T","[War3Evo] The syntax of the command is: war3_setxp <player> <xp>",client);
 	else
 	{
 		decl String:match[64];
@@ -148,13 +148,13 @@ public Action:War3Source_CMDSetXP(client,args)
 			if(race>0)
 			{
 				War3_SetXP(playerlist[x],race,xp);
-				PrintToConsole(client,"%T","[War3Source] You just set {player} XP to {amount}",client,name,xp);
+				PrintToConsole(client,"%T","[War3Evo] You just set {player} XP to {amount}",client,name,xp);
 				War3_ChatMessage(playerlist[x],"%T","Admin {player} set your XP to {amount}",playerlist[x],adminname,xp);
 				W3DoLevelCheck(playerlist[x]);
 			}
 		}
 		if(results==0)
-			PrintToConsole(client,"%T","[War3Source] No players matched your query",client);
+			PrintToConsole(client,"%T","[War3Evo] No players matched your query",client);
 	}
 	return Plugin_Handled;
 }
@@ -165,7 +165,7 @@ public Action:War3Source_CMD_GiveXP(client,args)
 		ReplyToCommand(client,"No Access");
 	}
 	else if(args!=2)
-		PrintToConsole(client,"%T","[War3Source] The syntax of the command is: war3_givexp <player> <xp>",client);
+		PrintToConsole(client,"%T","[War3Evo] The syntax of the command is: war3_givexp <player> <xp>",client);
 	else
 	{
 
@@ -196,7 +196,7 @@ public Action:War3Source_CMD_GiveXP(client,args)
 				
 				new oldxp=War3_GetXP(playerlist[x],race);
 				War3_SetXP(playerlist[x],race,oldxp+xp);
-				PrintToConsole(client,"%T","[War3Source] You just gave {amount} XP to {player}",client,xp,name);
+				PrintToConsole(client,"%T","[War3Evo] You just gave {amount} XP to {player}",client,xp,name);
 				War3_ChatMessage(playerlist[x],"%T","Admin {player} gave you {amount} XP",playerlist[x],adminname,xp);
 				W3DoLevelCheck(playerlist[x]);
 				
@@ -204,7 +204,7 @@ public Action:War3Source_CMD_GiveXP(client,args)
 			
 		}
 		if(results==0)
-			PrintToConsole(client,"%T","[War3Source] No players matched your query",client);
+			PrintToConsole(client,"%T","[War3Evo] No players matched your query",client);
 	}
 	return Plugin_Handled;
 }
@@ -215,7 +215,7 @@ public Action:War3Source_CMD_RemoveXP(client,args)
 		ReplyToCommand(client,"No Access");
 	}
 	else if(args!=2)
-		PrintToConsole(client,"%T","[War3Source] The syntax of the command is: war3_removexp <player> <xp>",client);
+		PrintToConsole(client,"%T","[War3Evo] The syntax of the command is: war3_removexp <player> <xp>",client);
 	else
 	{
 		decl String:match[64];
@@ -244,13 +244,13 @@ public Action:War3Source_CMD_RemoveXP(client,args)
 				if(newxp<0)
 					newxp=0;
 				War3_SetXP(playerlist[x],race,newxp);
-				PrintToConsole(client,"%T","[War3Source] You just removed {amount} XP from {player}",client,xp,name);
+				PrintToConsole(client,"%T","[War3Evo] You just removed {amount} XP from {player}",client,xp,name);
 				War3_ChatMessage(playerlist[x],"%T","Admin {player} removed {amount} XP from you",playerlist[x],adminname,xp);
 				W3DoLevelCheck(playerlist[x]);
 			}
 		}
 		if(results==0)
-			PrintToConsole(client,"%T","[War3Source] No players matched your query",client);
+			PrintToConsole(client,"%T","[War3Evo] No players matched your query",client);
 	}
 	return Plugin_Handled;
 }
@@ -261,7 +261,7 @@ public Action:War3Source_CMD_War3_SetLevel(client,args)
 		ReplyToCommand(client,"No Access");
 	}
 	else if(args!=2)
-		PrintToConsole(client,"%T","[War3Source] The syntax of the command is: war3_setlevel <player> <level>",client);
+		PrintToConsole(client,"%T","[War3Evo] The syntax of the command is: war3_setlevel <player> <level>",client);
 	else
 	{
 		decl String:match[64];
@@ -298,7 +298,7 @@ public Action:War3Source_CMD_War3_SetLevel(client,args)
 					level=W3GetRaceMaxLevel(race);
 				}
 				War3_SetLevel(playerlist[x],race,level);
-				PrintToConsole(client,"%T","[War3Source] You just set player {player} level to {amount}",client,name,level);
+				PrintToConsole(client,"%T","[War3Evo] You just set player {player} level to {amount}",client,name,level);
 				War3_ChatMessage(playerlist[x],"%T","Admin {player} set your level to {amount}, re-pick your skills",playerlist[x],adminname,level);
 				
 			
@@ -308,7 +308,7 @@ public Action:War3Source_CMD_War3_SetLevel(client,args)
 			}
 		}
 		if(results==0)
-			PrintToConsole(client,"%T","[War3Source] No players matched your query",client);
+			PrintToConsole(client,"%T","[War3Evo] No players matched your query",client);
 		
 	}
 	return Plugin_Handled;
@@ -320,7 +320,7 @@ public Action:War3Source_CMD_GiveLevel(client,args)
 		ReplyToCommand(client,"No Access");
 	}
 	else if(args!=1)
-		PrintToConsole(client,"%T","[War3Source] The syntax of the command is: war3_givelevel <player>",client);
+		PrintToConsole(client,"%T","[War3Evo] The syntax of the command is: war3_givelevel <player>",client);
 	else
 	{
 		decl String:match[64];
@@ -344,11 +344,11 @@ public Action:War3Source_CMD_GiveLevel(client,args)
 			{
 				new newlevel=War3_GetLevel(playerlist[x],race)+1;
 				if(newlevel>W3GetRaceMaxLevel(race))
-					PrintToConsole(client,"%T","[War3Source] Player {player} is already at their max level",client,name);
+					PrintToConsole(client,"%T","[War3Evo] Player {player} is already at their max level",client,name);
 				else
 				{
 					War3_SetLevel(playerlist[x],race,newlevel);
-					PrintToConsole(client,"%T","[War3Source] You just gave player {player} a level",client,name);
+					PrintToConsole(client,"%T","[War3Evo] You just gave player {player} a level",client,name);
 					War3_ChatMessage(playerlist[x],"%T","Admin {player} gave you a level",playerlist[x],adminname);
 					W3DoLevelCheck(playerlist[x]);
 				}
@@ -356,7 +356,7 @@ public Action:War3Source_CMD_GiveLevel(client,args)
 			
 		}
 		if(results==0)
-			PrintToConsole(client,"%T","[War3Source] No players matched your query",client);
+			PrintToConsole(client,"%T","[War3Evo] No players matched your query",client);
 		
 	}
 	return Plugin_Handled;
@@ -369,7 +369,7 @@ public Action:War3Source_CMD_RemoveLevel(client,args)
 		ReplyToCommand(client,"No Access");
 	}
 	else if(args!=1)
-		PrintToConsole(client,"%T","[War3Source] The syntax of the command is: war3_removelevel <player>",client);
+		PrintToConsole(client,"%T","[War3Evo] The syntax of the command is: war3_removelevel <player>",client);
 	else
 	{
 		decl String:match[64];
@@ -393,13 +393,13 @@ public Action:War3Source_CMD_RemoveLevel(client,args)
 			{
 				new newlevel=War3_GetLevel(playerlist[x],race)-1;
 				if(newlevel<0)
-					PrintToConsole(client,"%T","[War3Source] Player {player} is already at level 0",client,name);
+					PrintToConsole(client,"%T","[War3Evo] Player {player} is already at level 0",client,name);
 				else
 				{
 					W3ClearSkillLevels(playerlist[x],race);
 					
 					War3_SetLevel(playerlist[x],race,newlevel);
-					PrintToConsole(client,"%T","[War3Source] You just removed a level from player {player}",client,name);
+					PrintToConsole(client,"%T","[War3Evo] You just removed a level from player {player}",client,name);
 					War3_ChatMessage(playerlist[x],"%T","Admin {player} removed a level from you, re-pick your skills",playerlist[x],adminname);
 					W3DoLevelCheck(playerlist[x]);
 				}
@@ -407,7 +407,7 @@ public Action:War3Source_CMD_RemoveLevel(client,args)
 			
 		}
 		if(results==0)
-			PrintToConsole(client,"%T","[War3Source] No players matched your query",client);
+			PrintToConsole(client,"%T","[War3Evo] No players matched your query",client);
 		
 	}
 	return Plugin_Handled;
@@ -419,7 +419,7 @@ public Action:War3Source_CMD_War3_SetGold(client,args)
 		ReplyToCommand(client,"No Access");
 	}
 	else if(args!=2)
-		PrintToConsole(client,"%T","[War3Source] The syntax of the command is: war3_War3_SetGold <player> <gold>",client);
+		PrintToConsole(client,"%T","[War3Evo] The syntax of the command is: war3_War3_SetGold <player> <gold>",client);
 	else
 	{
 		decl String:match[64];
@@ -447,12 +447,12 @@ public Action:War3Source_CMD_War3_SetGold(client,args)
 			
 			
 			War3_SetGold(playerlist[x],gold);
-			PrintToConsole(client,"%T","[War3Source] You just set player {player} gold to {amount}",client,name,gold);
+			PrintToConsole(client,"%T","[War3Evo] You just set player {player} gold to {amount}",client,name,gold);
 			War3_ChatMessage(playerlist[x],"%T","Admin {player} set your gold to {amount}",playerlist[x],adminname,gold);
 		
 		}
 		if(results==0)
-			PrintToConsole(client,"%T","[War3Source] No players matched your query",client);
+			PrintToConsole(client,"%T","[War3Evo] No players matched your query",client);
 
 	}
 	return Plugin_Handled;
@@ -465,7 +465,7 @@ public Action:War3Source_CMD_SetDiamonds(client,args)
 		ReplyToCommand(client,"No Access");
 	}
 	else if(args!=2)
-		PrintToConsole(client,"[War3Source] The syntax of the command is: war3_War3_Setdiamonds <player> <gold>");
+		PrintToConsole(client,"[War3Evo] The syntax of the command is: war3_War3_Setdiamonds <player> <gold>");
 	else
 	{
 		decl String:match[64];
@@ -493,12 +493,12 @@ public Action:War3Source_CMD_SetDiamonds(client,args)
 
 
 			War3_SetDiamonds(playerlist[x],gold);
-			PrintToConsole(client,"%T","[War3Source] You just set player {player} diamonds to {amount}",client,name,gold);
+			PrintToConsole(client,"%T","[War3Evo] You just set player {player} diamonds to {amount}",client,name,gold);
 			War3_ChatMessage(playerlist[x],"%T","Admin {player} set your diamonds to {amount}",playerlist[x],adminname,gold);
 
 		}
 		if(results==0)
-			PrintToConsole(client,"%T","[War3Source] No players matched your query",client);
+			PrintToConsole(client,"%T","[War3Evo] No players matched your query",client);
 
 	}
 	return Plugin_Handled;
@@ -510,7 +510,7 @@ public Action:War3Source_CMD_GiveGold(client,args)
 		ReplyToCommand(client,"No Access");
 	}
 	else if(args!=2)
-		PrintToConsole(client,"%T","[War3Source] The syntax of the command is: war3_givegold <player> <gold>",client);
+		PrintToConsole(client,"%T","[War3Evo] The syntax of the command is: war3_givegold <player> <gold>",client);
 	else
 	{
 		decl String:match[64];
@@ -542,12 +542,12 @@ public Action:War3Source_CMD_GiveGold(client,args)
 			if(newgold>maxgold)
 				newgold=maxgold;
 			War3_SetGold(playerlist[x],newgold);
-			PrintToConsole(client,"%T","[War3Source] You just gave player {player} {amount} gold",client,name,gold);
+			PrintToConsole(client,"%T","[War3Evo] You just gave player {player} {amount} gold",client,name,gold);
 			War3_ChatMessage(playerlist[x],"%T","Admin {player} give you {amount} gold",playerlist[x],adminname,gold);
 		
 		}
 		if(results==0)
-			PrintToConsole(client,"%T","[War3Source] No players matched your query",client);
+			PrintToConsole(client,"%T","[War3Evo] No players matched your query",client);
 
 	}
 	return Plugin_Handled;
@@ -559,7 +559,7 @@ public Action:War3Source_CMD_RemoveGold(client,args)
 		ReplyToCommand(client,"No Access");
 	}
 	else if(args!=2)
-		PrintToConsole(client,"%T","[War3Source] The syntax of the command is: war3_givegold <player> <gold>",client);
+		PrintToConsole(client,"%T","[War3Evo] The syntax of the command is: war3_givegold <player> <gold>",client);
 	else
 	{
 		decl String:match[64];
@@ -590,12 +590,12 @@ public Action:War3Source_CMD_RemoveGold(client,args)
 			if(newcreds>maxgold)
 				newcreds=maxgold;
 			War3_SetGold(playerlist[x],newcreds);
-			PrintToConsole(client,"%T","[War3Source] You just removed {amount} gold from player {player}",client,gold,name);
+			PrintToConsole(client,"%T","[War3Evo] You just removed {amount} gold from player {player}",client,gold,name);
 			War3_ChatMessage(playerlist[x],"%T","Admin {player} removed {amount} gold from you",playerlist[x],adminname,gold);
 		
 		}
 		if(results==0)
-			PrintToConsole(client,"%T","[War3Source] No players matched your query",client);
+			PrintToConsole(client,"%T","[War3Evo] No players matched your query",client);
 	}
 	return Plugin_Handled;
 }

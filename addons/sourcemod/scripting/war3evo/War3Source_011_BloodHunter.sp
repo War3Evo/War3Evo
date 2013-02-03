@@ -1,3 +1,4 @@
+#define PLUGIN_VERSION "0.0.0.1 (1/20/2013) 9:12AM EST"
 /**
  * 
  * Description:   BH from HON
@@ -43,12 +44,13 @@ public Plugin:myinfo =
 	name = "Race - Blood Hunter",
 	author = "Ownz (DarkEnergy)",
 	description = "Blood Hunter for War3Source.",
-	version = "1.0",
+	version = "1.1",
 	url = "War3Source.com"
 };
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_BloodHunter",PLUGIN_VERSION,"War3evo Job Blood Hunter",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	ultCooldownCvar=CreateConVar("war3_bh_ult_cooldown","20","Cooldown time for Ultimate.");
 	CreateTimer(0.1,RuptureCheckLoop,_,TIMER_REPEAT);
 	CreateTimer(0.5,BloodCrazyDOTLoop,_,TIMER_REPEAT);
@@ -210,7 +212,7 @@ public Action:BloodCrazyDOTLoop(Handle:h,any:data)
 				
 }
 public OnW3TakeDmgBulletPre(victim,attacker,Float:damage){
-	if(ValidPlayer(victim)&&ValidPlayer(attacker)&&victim!=attacker&&GetClientTeam(victim)!=GetClientTeam(attacker)){
+	if(ValidPlayer(victim)&&ValidPlayer(attacker)&&victim!=attacker&&GetClientTeam(victim)!=GetClientTeam(attacker)&&!W3HasImmunity(victim,Immunity_Skills)){ //fixed blood hunter not respecting skill immunity - Dagothur 1/19/2013
 		if(War3_GetRace(attacker)==thisRaceID&&!Hexed(attacker,false)){
 			new skilllevel=War3_GetSkillLevel(attacker,thisRaceID,SKILL_CRAZY);
 			if(skilllevel>0){

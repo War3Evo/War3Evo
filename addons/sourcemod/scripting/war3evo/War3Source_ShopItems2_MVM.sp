@@ -91,23 +91,23 @@ public OnPluginStart()
 
 	if(!HookEventEx("mvm_begin_wave", MVM_OnRoundStart))
 	{
-		PrintToServer("[War3Source] Could not hook the mvm_begin_wave event.");
+		PrintToServer("[War3Evo] Could not hook the mvm_begin_wave event.");
 	}
 	if(!HookEventEx("teamplay_round_win", MVM_OnTeamplayRoundWin))
 	{
-		PrintToServer("[War3Source] Could not hook the teamplay_round_win event.");
+		PrintToServer("[War3Evo] Could not hook the teamplay_round_win event.");
 	}
 	if(!HookEventEx("mvm_wave_complete", MVM_OnRoundEnd))
 	{
-		PrintToServer("[War3Source] Could not hook the mvm_wave_complete event.");
+		PrintToServer("[War3Evo] Could not hook the mvm_wave_complete event.");
 	}
 	if(!HookEventEx("mvm_mission_complete", MVM_OnRoundComplete))
 	{
-		PrintToServer("[War3Source] Could not hook the mvm_mission_complete event.");
+		PrintToServer("[War3Evo] Could not hook the mvm_mission_complete event.");
 	}
 	if(!HookEventEx("mvm_pickup_currency", War3Source_MvMCurrencyEvent))
 	{
-		PrintToServer("[War3Source] Could not hook the mvm_pickup_currency event.");
+		PrintToServer("[War3Evo] Could not hook the mvm_pickup_currency event.");
 	}
 
 //	HookEvent("teamplay_setup_finished", OnTeamplaySetupFinished);

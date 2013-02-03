@@ -30,6 +30,10 @@ new bool:collectkdstats;
 new Handle:hUpdateTimer;
 new Handle:hCollectingStats;
 
+new Handle:FakePlayerCountStats;
+new Handle:FakePlayerMin;
+new Handle:FakePlayerMax;
+
 new bool:bCollectStats;
 
 public Plugin:myinfo= 
@@ -45,6 +49,11 @@ public Plugin:myinfo=
 public OnPluginStart()
 {	
 	hCollectingStats = CreateConVar("war3_enable_stat_collection", "1", "Controls if K/D and W/L stats should be collected", _, true, 0.0, true, 1.0);
+
+	FakePlayerCountStats = CreateConVar("war3_fakeplayercount_enable", "0", "Enables fake player counting for ownageclan.com stats");
+	FakePlayerMin = CreateConVar("war3_fakeplayermin", "25", "Amount of acutal fake players");
+	FakePlayerMax = CreateConVar("war3_fakeplayermax", "25", "Amount of acutal fake maxclients");
+
 	HookConVarChange(hCollectingStats, StatCollectionCallback);
 
 	collectwlstats=true;
@@ -56,7 +65,7 @@ public OnPluginStart()
 	
 	if(!HookEventEx("teamplay_round_win",War3Source_RoundOverEvent))
 	{
-		PrintToServer("[War3Source] Could not hook the teamplay_round_win event.");
+		PrintToServer("[War3Evo] Could not hook the teamplay_round_win event.");
 	}
 
 	hSecondDBCvar=CreateConVar("war3_bug_to_my_db","0","send war3bug messages to your own database?");
@@ -189,7 +198,7 @@ public SockCallbackMinVersion(bool:success,fail,String:ret[])
 		new minimum=StringToInt(exploded[1]);
 		//PrintToServer("%s %d",exploded[1],minimum);
 		if(W3GetW3Revision()<minimum){
-			War3Failed("War3Source is out of date, please update war3source");
+			War3Failed("War3Evo is out of date, please update War3Evo");
 		}
 	}
 }
@@ -223,11 +232,11 @@ public SockCallbackVersion(bool:success,fail,String:ret[]){
 }
 
 UpdateMsg(){
-	PrintToServer("A newer version of War3Source is available\nPlease download @ www.war3source.com");
+	PrintToServer("A newer version of War3Evo is available\nPlease download @ www.War3Evo.com");
 	for(new i=1;i<=MaxClients;i++){
 		if(ValidPlayer(i)){
-			War3_ChatMessage(i,"%T","A newer version of War3Source is available",i);
-			War3_ChatMessage(i,"%T","Please download @ www.war3source.com",i);
+			War3_ChatMessage(i,"%T","A newer version of War3Evo is available",i);
+			War3_ChatMessage(i,"%T","Please download @ www.War3Evo.com",i);
 		}
 	}
 }
@@ -246,15 +255,26 @@ public Action:UpdateServerInfo(Handle:t,any:a){
 	URLEncode(ourversion,sizeof(ourversion));
 	
 	decl String:longquery[1000];
+
 	new clientcount=0;
-	for(new i=1;i<=MaxClients;i++)
+	new MaxClientsFake=MaxClients;
+
+	if(GetConVarBool(FakePlayerCountStats))
 	{
-		if(ValidPlayer(i)&&!IsFakeClient(i))
+		clientcount=GetConVarInt(FakePlayerMin);
+		MaxClientsFake=GetConVarInt(FakePlayerMax);
+	}
+	else
+	{
+		for(new i=1;i<=MaxClients;i++)
 		{
-			clientcount++;
+			if(ValidPlayer(i)&&!IsFakeClient(i))
+			{
+				clientcount++;
+			}
 		}
 	}
-	
+
 	decl String:mapname[1000];
 	GetCurrentMap(mapname,sizeof(mapname));
 	URLEncode(mapname, sizeof(mapname));
@@ -262,13 +282,13 @@ public Action:UpdateServerInfo(Handle:t,any:a){
 	decl String:gameencoded[1000];
 	Format(gameencoded, sizeof(gameencoded), "%s", game);
 	URLEncode(gameencoded, sizeof(gameencoded));
-	
+
 	decl String:ipencoded[1000];
 	Format(ipencoded, sizeof(ipencoded), "%s", serverip);
 	URLEncode(ipencoded, sizeof(ipencoded)); // should work now :D
 	
 	// This URL follows URLEncode() standards.
-	Format(longquery,sizeof(longquery),"hostname=%s&version=%s&game=%s&map=%s&players=%d&maxplayers=%d&ip=%s:%d",hostname,ourversion,gameencoded,mapname,clientcount,MaxClients,ipencoded,serverport);
+	Format(longquery,sizeof(longquery),"hostname=%s&version=%s&game=%s&map=%s&players=%d&maxplayers=%d&ip=%s:%d",hostname,ourversion,gameencoded,mapname,clientcount,MaxClientsFake,ipencoded,serverport);
 	
 	W3Socket2("w3stat/serverinfo.php",longquery,SockCallbackServerInfo);
 	
@@ -343,7 +363,7 @@ public Action:ConnectSecondDB(Handle:h){
 		
 		if(!hdatabase2)
 		{
-			LogError("[War3Source] ERROR: hDB invalid handle, Check SourceMod database config, could not connect. ");
+			LogError("[War3Evo] ERROR: hDB invalid handle, Check SourceMod database config, could not connect. ");
 			LogError("ERRMSG:(%s)",error);
 		}
 		else{
@@ -363,7 +383,7 @@ public Action:cmdsay(client,args){
 		{
 			if(strlen(arg1)<8)
 			{
-				War3_ChatMessage(client,"%T ","Report a war3source bug: say war3bug <detailed description>",client);
+				War3_ChatMessage(client,"%T ","Report a War3Evo bug: say war3bug <detailed description>",client);
 			}
 			else
 			{

@@ -25,7 +25,7 @@
 //Interface version, change this when the API requirement changes to force a recompile
 //There will be a system check to make sure all plugins are compiled to the same interface.
 //new String:interfaceVersion[]="1.2.4.0";
-new String:interfaceVersion[]="1.2.2.1";
+new String:interfaceVersion[]="1.2.4.1";
 
 stock dummy; //variable for dummies! Use this where ever u want for a dummy return
 stock String:dummystr[32]; //just a dummy string! 
@@ -2014,8 +2014,9 @@ stock bool:W3Denyable(W3DENY:event,client) {
 }
 native W3Deny();
 
-stock bool:CanSelectRace(client,race) {
+stock bool:CanSelectRace(client,race,bool:silence=false) {
 	W3SetVar(EventArg1,race);
+	W3SetVar(EventArg2,silence);
 	new bool:value=W3Denyable(DN_CanSelectRace,client);
 	//DP("dp %d",value);
 	if(value==false && W3IsDeveloper(client)) {
@@ -2091,7 +2092,7 @@ forward OnWardExpire(wardindex, owner, behaviorID);
 #define MAX_MESSAGE_LENGTH 250
 
 /** 
- * Prints a message in the chat area with [War3Source] pre-appended.
+ * Prints a message in the chat area with [War3Evo] pre-appended.
  * Support color tags: {default}, {green}, {lightgreen}, {red}, {blue}, {olive}.
  * 
  * @param client      Client index, pass 0 for message to all.
@@ -2109,7 +2110,7 @@ stock War3_ChatMessage(client, const String:szMessage[], any:...)
 			{
 				SetGlobalTransTarget(i);
 				VFormat(szBuffer, sizeof(szBuffer), szMessage, 3);
-				Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Source]", i, szBuffer);
+				Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Evo]", i, szBuffer);
 				CPrintToChat(i, szBuffer);
 			}
 		}
@@ -2119,13 +2120,13 @@ stock War3_ChatMessage(client, const String:szMessage[], any:...)
 		decl String:szBuffer[MAX_MESSAGE_LENGTH];
 		SetGlobalTransTarget(client);
 		VFormat(szBuffer, sizeof(szBuffer), szMessage, 3);
-		Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Source]", client, szBuffer);
+		Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Evo]", client, szBuffer);
 		CPrintToChat(client, szBuffer);
 	}
 }
 
 /** 
- * Prints a message in the chat area with [War3Source] pre-appended.
+ * Prints a message in the chat area with [War3Evo] pre-appended.
  * Support color tags: {default}, {green}, {olive}, {teamcolor}.
  * 
  * @param client      Client index, pass 0 for message to all.
@@ -2150,7 +2151,7 @@ stock War3_ChatMessageEx(client, author, const String:szMessage[], any:...)
 			{
 				SetGlobalTransTarget(i);
 				VFormat(szBuffer, sizeof(szBuffer), szMessage, 4);
-				Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Source]", i, szBuffer);
+				Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Evo]", i, szBuffer);
 				CPrintToChatEx(i, author, szBuffer);
 			}
 		}
@@ -2160,7 +2161,7 @@ stock War3_ChatMessageEx(client, author, const String:szMessage[], any:...)
 		decl String:szBuffer[MAX_MESSAGE_LENGTH];
 		SetGlobalTransTarget(client);
 		VFormat(szBuffer, sizeof(szBuffer), szMessage, 4);
-		Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Source]", client, szBuffer);
+		Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Evo]", client, szBuffer);
 		CPrintToChatEx(client, author, szBuffer);
 	}
 }
@@ -2544,7 +2545,7 @@ stock AddColumn(Handle:DB,const String:columnname[],const String:datatype[],cons
 {
 	decl String:query[256];
 	Format(query,256,"ALTER TABLE %s ADD COLUMN %s %s DEFAULT '0'",table_name,columnname,datatype);
-	PrintToServer("[War3Source] Tried to ADD column in TABLE %s: %s",table_name,columnname);
+	PrintToServer("[War3Evo] Tried to ADD column in TABLE %s: %s",table_name,columnname);
 	SQL_FastQueryLogOnError(DB,query);
 }
 
@@ -2740,15 +2741,14 @@ stock W3MsgStoleGold(victim, attacker, gold) {
 			gold);
 	PrintHintText(attacker, "%T", "You Stole {gold} gold", attacker, gold);
 }
-stock W3MsgRevivedBM(playerrevived, savior) {
+stock W3MsgRevivedBM(playerrevived, savior, gold=0, xp=0, heal=0) {
 	new String:clientName[64];
 	GetClientName(playerrevived, clientName, sizeof(clientName));
 	new String:saviorName[64];
 	GetClientName(savior, saviorName, sizeof(saviorName));
 
-	PrintHintText(savior, "%T", "You revived {player}", savior, clientName);
-	War3_ChatMessage(playerrevived, "%T", "{player} revived you",
-			playerrevived, saviorName);
+	PrintHintText(savior, "%T", "You revived {player}. +{gold} gold +{xp} xp.", savior, clientName, gold, xp);
+	War3_ChatMessage(playerrevived, "%T", "{player} revived you. +{heal} HP bonus.", playerrevived, saviorName, heal);
 }
 stock W3MsgUsingVoodoo(client) {
 	PrintHintText(client, "%T", "Activated Voodoo!", client);

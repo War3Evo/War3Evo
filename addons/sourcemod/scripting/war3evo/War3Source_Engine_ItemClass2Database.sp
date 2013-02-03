@@ -57,18 +57,18 @@ CheckTable(Handle:hDB){
 	new Handle:query=SQL_Query(hDB,"SELECT * from war3source_item2 LIMIT 1");
 	if(query==INVALID_HANDLE)
 	{   //query failed no result, (table doesnt exist)
-		PrintToServer("[War3Source] TABLE war3source_item2  not found, creating it") ;
+		PrintToServer("[War3Evo] TABLE war3source_item2  not found, creating it") ;
 		//SQL_FastQueryLogOnError(hDB,"DROP TABLE war3source_item2");
 		
 		new String:createtable[3000];
 		Format(createtable,sizeof(createtable),"CREATE TABLE war3source_item2 (steamid varchar(64) , itemshort varchar(64), expiretime int) %s", War3SQLType:W3GetVar(hDatabaseType)==SQLType_MySQL?"DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci":"");
 		if(!SQL_FastQueryLogOnError(hDB, createtable ))
 		{
-			War3Failed("[War3Source] ERROR in the creation of the SQL table war3source_item2.");
+			War3Failed("[War3Evo] ERROR in the creation of the SQL table war3source_item2.");
 		}
 		if(!SQL_FastQueryLogOnError(hDB,"CREATE UNIQUE INDEX steamid_itemshort ON war3source_item2 (steamid,itemshort)"  ))
 		{
-			War3Failed("[War3Source] ERROR in the creation of the SQL table war3source_item2.");
+			War3Failed("[War3Evo] ERROR in the creation of the SQL table war3source_item2.");
 		}
 	}
 	else
@@ -80,7 +80,7 @@ CheckTable(Handle:hDB){
 		if(!SQL_FieldNameToNum(query, "expiretime", dummyfield))
 		{
 			AddColumn(hDB,"expiretime","int","war3source_item2");
-			PrintToServer("[War3Source] Tried to ADD column in TABLE %s: %s","war3source_item2","expiretime");
+			PrintToServer("[War3Evo] Tried to ADD column in TABLE %s: %s","war3source_item2","expiretime");
 		}
 		
 		CloseHandle(query);
@@ -90,7 +90,7 @@ CheckTable(Handle:hDB){
 INTERNALGetItem2ExpireTimes(client){
 	new Handle:hDB=W3GetVar(hDatabase);
 	if(hDB!=INVALID_HANDLE){
-		PrintToConsole(client,"[War3Source] Getting your items");
+		PrintToConsole(client,"[War3Evo] Getting your items");
 		new String:longquery[4000];
 		
 		new String:steamid[32];
@@ -110,7 +110,7 @@ public T_CallbackSelectData(Handle:owner,Handle:hndl,const String:error[],any:cl
 	
 	if(hndl==INVALID_HANDLE)
 	{
-		LogError("[War3Source] ERROR: SELECT player data failed! Check DATABASE settings!");
+		LogError("[War3Evo] ERROR: SELECT player data failed! Check DATABASE settings!");
 	}
 	
 	else
@@ -122,7 +122,7 @@ public T_CallbackSelectData(Handle:owner,Handle:hndl,const String:error[],any:cl
 			if(!SQL_FetchRow(hndl))
 			{
 				//This would be pretty fucked to occur here
-				LogError("[War3Source] Unexpected error loading player data, could not FETCH row. Check DATABASE settings!");
+				LogError("[War3Evo] Unexpected error loading player data, could not FETCH row. Check DATABASE settings!");
 				return;
 			}
 			else{
@@ -136,7 +136,7 @@ public T_CallbackSelectData(Handle:owner,Handle:hndl,const String:error[],any:cl
 					W3SetVar(TheItemBoughtOrLost,item);
 					W3CreateEvent(DoForwardClientBoughtItem2,client);
 					W3SetItem2ExpireTime(client,item,expiretime);
-					PrintToConsole(client,"[War3Source] You have item: %s %d",itemshort,NOW()-expiretime);
+					PrintToConsole(client,"[War3Evo] You have item: %s %d",itemshort,NOW()-expiretime);
 				}
 			}
 		}

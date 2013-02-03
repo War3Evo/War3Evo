@@ -787,12 +787,12 @@ War3_LoadWCSRaces()
 		{
 			if(FileExists(racesPath))
 			{
-				PrintToServer("[War3Source] Error opening configs/races.ini even though it exists.");
+				PrintToServer("[War3Evo] Error opening configs/races.ini even though it exists.");
 			}
 		}
 		else if(ecode==2)
 		{
-			PrintToServer("[War3Source] Error parsing WCS race file at line %d.", lnum);
+			PrintToServer("[War3Evo] Error parsing WCS race file at line %d.", lnum);
 		}
 	}
 	else

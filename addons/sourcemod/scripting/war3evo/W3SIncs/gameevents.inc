@@ -12,17 +12,17 @@ public bool:War3Source_HookEvents()
 	// Events for all games
 	if(!HookEventEx("player_spawn",War3Source_PlayerSpawnEvent,EventHookMode_Pre)) //,EventHookMode_Pre
 	{
-		PrintToServer("[War3Source] Could not hook the player_spawn event.");
+		PrintToServer("[War3Evo] Could not hook the player_spawn event.");
 		return false;
 	}
 	if(!HookEventEx("player_death",War3Source_PlayerDeathEvent,EventHookMode_Pre))
 	{
-		PrintToServer("[War3Source] Could not hook the player_death event.");
+		PrintToServer("[War3Evo] Could not hook the player_death event.");
 		return false;
 	}
 	if(!HookEventEx("teamplay_round_win",War3Source_RoundOverEvent))
 	{
-		PrintToServer("[War3Source] Could not hook the teamplay_round_win event.");
+		PrintToServer("[War3Evo] Could not hook the teamplay_round_win event.");
 		return false;
 	}
 

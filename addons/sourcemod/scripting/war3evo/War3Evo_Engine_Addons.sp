@@ -1,13 +1,15 @@
-// war3evo ondeath
+#define PLUGIN_VERSION "0.0.0.1"
 
 #include <sourcemod>
 #include "W3SIncs/War3Source_Interface"
 
 #pragma semicolon 1
-#define PLUGIN_VERSION "1.0b"
+//#define PLUGIN_VERSION "1.0b"
 
 new Handle:g_maxplayers = INVALID_HANDLE;
 new Handle:g_addbots = INVALID_HANDLE;
+
+new g_DiamondChecker[MAXPLAYERSCUSTOM];
 
 //new bool:mapstarted;
 
@@ -27,9 +29,12 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_Engine_Addons",PLUGIN_VERSION,"War3evo Engine Addons",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+
 	g_maxplayers = CreateConVar("War3Evo_maxplayers", "24", "The max amount of players your server can hold.");
 	g_addbots = CreateConVar("War3Evo_addbots", "10", "When players are at or  below this number, set tf_bot_quota to this number.");
 	CreateTimer(10.0,Timer_Checker,TIMER_REPEAT);
+	CreateTimer(60.0,Timer_Diamonds);
 }
 
 public OnMapStart()
@@ -55,6 +60,23 @@ public Action:Timer_Checker(Handle:timer, any:userid)
 	CheckPlayers();
 }
 
+public Action:Timer_Diamonds(Handle:timer, any:userid)
+{
+	for(new i=1; i<GetMaxClients(); i++)
+	{
+		//g_DiamondChecker[i]=g_DiamondChecker[i]+1;
+		//if(g_DiamondChecker[i]>5 && ValidPlayer(i))
+		if(ValidPlayer(i))
+		{
+			//g_DiamondChecker[i]=0;
+			new GivePlayerDiamonds = War3_GetDiamonds(i) + 1;
+			//new GivePlayerDiamonds = W3GetPlayerProp(i, PlayerDiamonds) + 1;
+			War3_SetDiamonds(i, GivePlayerDiamonds);
+			//W3SetPlayerProp(i, PlayerDiamonds, GivePlayerDiamonds);
+		}
+	}
+	CreateTimer(60.0,Timer_Diamonds);
+}
 
 //HACK, THIS IS A BAD HACK - Dagothur 1/13/2013
 new String:itembuffer2[512];
@@ -292,6 +314,7 @@ SetPlayerColor(client)
 public OnClientDisconnect_Post(client)
 {
 	CheckPlayers();
+	g_DiamondChecker[client]=0;
 }
 
 public OnClientConnected(client)

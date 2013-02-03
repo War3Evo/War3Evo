@@ -1,3 +1,4 @@
+#define PLUGIN_VERSION "0.0.0.1 (1/30/2013) 4:40AM EST"
 /* ============================================================================ */
 /*										                                        */
 /*   naix.sp									                                */
@@ -35,6 +36,13 @@ new bool:bDucking[MAXPLAYERSCUSTOM];
 
 new Handle:ultCooldownCvar;
 
+new ClientTracer;
+new Float:emptypos[3];
+new Float:oldpos[MAXPLAYERSCUSTOM][3];
+new Float:teleportpos[MAXPLAYERSCUSTOM][3];
+new bool:inteleportcheck[MAXPLAYERSCUSTOM];
+
+
 new thisRaceID, SKILL_INFEST, SKILL_BLOODBATH, SKILL_FEAST, ULT_RAGE;
 
 new String:skill1snd[]="war3source/naix/predskill1.mp3";
@@ -53,6 +61,8 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_Naix",PLUGIN_VERSION,"War3evo Job Naix",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+
 	ultCooldownCvar=CreateConVar("war3_naix_ult_cooldown","20","Cooldown time for Rage.");
 	
 	LoadTranslations("w3s.race.naix.phrases");
@@ -156,8 +166,13 @@ public OnWar3EventDeath(victim,attacker){
 					
 					//CreateTimer(0.1,setlocation,attacker);
 					
-					TeleportEntity(attacker, location, NULL_VECTOR, NULL_VECTOR);
-					War3_CooldownMGR(attacker,10.0,thisRaceID,SKILL_INFEST,true,true);
+					//TeleportEntity(attacker, location, NULL_VECTOR, NULL_VECTOR);
+					new bool:success = Teleport(attacker,location);
+					if(success)
+					{
+						War3_CooldownMGR(attacker,10.0,thisRaceID,SKILL_INFEST,true,true);
+					}
+					//War3_CooldownMGR(attacker,10.0,thisRaceID,SKILL_INFEST,true,true);
 				}
 				
 				new addHealth = RoundFloat(FloatMul(float(War3_GetMaxHP(victim)),HPPercentHealPerKill[iSkillLevel]));
@@ -217,3 +232,191 @@ public Action:stopRage(Handle:t,any:client){
 		PrintHintText(client,"%T","You are no longer in rage mode",client);
 	}
 }
+
+//Teleportation
+
+
+//bool:Teleport(client,Float:distance){
+bool:Teleport(client,Float:endpos[3]){
+	if(!inteleportcheck[client])
+	{
+		inteleportcheck[client]=false;
+		new Float:angle[3];
+		GetClientEyeAngles(client,angle);
+		//new Float:endpos[3];
+		new Float:startpos[3];
+		GetClientEyePosition(client,startpos);
+		//new Float:dir[3];
+		//GetAngleVectors(angle, dir, NULL_VECTOR, NULL_VECTOR);
+
+		//ScaleVector(dir, distance);
+
+		//AddVectors(startpos, dir, endpos);
+
+		GetClientAbsOrigin(client,oldpos[client]);
+
+
+		ClientTracer=client;
+		TR_TraceRayFilter(startpos,endpos,MASK_ALL,RayType_EndPoint,AimTargetFilter);
+		TR_GetEndPosition(endpos);
+/*
+		if(enemyImmunityInRange(client,endpos)){
+			W3MsgEnemyHasImmunity(client);
+			return false;
+		}
+*/
+		//new Float:distanceteleport=GetVectorDistance(startpos,endpos);
+		//if(distanceteleport<200.0){
+			//new String:buffer[100];
+			//Format(buffer, sizeof(buffer), "%T", "Distance too short.", client);
+			//PrintHintText(client,buffer);
+		//	return false;
+		//}
+		//GetAngleVectors(angle, dir, NULL_VECTOR, NULL_VECTOR);///get dir again
+		//ScaleVector(dir, distanceteleport-33.0);
+
+		//AddVectors(startpos,dir,endpos);
+
+
+
+		emptypos[0]=0.0;
+		emptypos[1]=0.0;
+		emptypos[2]=0.0;
+
+		endpos[2]-=30.0;
+		getEmptyLocationHull(client,endpos);
+
+		if(GetVectorLength(emptypos)<1.0){
+			new String:buffer[100];
+			Format(buffer, sizeof(buffer), "%T", "NoEmptyLocation", client);
+			PrintHintText(client,buffer);
+			return false; //it returned 0 0 0
+		}
+
+		TeleportEntity(client,emptypos,NULL_VECTOR,NULL_VECTOR);
+		//TeleportEntity(client,endpos,NULL_VECTOR,NULL_VECTOR);
+		//EmitSoundToAll(teleportSound,client);
+		//EmitSoundToAll(teleportSound,client);
+
+		teleportpos[client][0]=emptypos[0];
+		teleportpos[client][1]=emptypos[1];
+		teleportpos[client][2]=emptypos[2];
+
+		inteleportcheck[client]=true;
+		CreateTimer(0.14,checkTeleport,client);
+
+		return true;
+	}
+
+	return false;
+}
+public Action:checkTeleport(Handle:h,any:client){
+	inteleportcheck[client]=false;
+	new Float:pos[3];
+
+	GetClientAbsOrigin(client,pos);
+
+	if(GetVectorDistance(teleportpos[client],pos)<0.001)//he didnt move in this 0.1 second
+	{
+		TeleportEntity(client,oldpos[client],NULL_VECTOR,NULL_VECTOR);
+		PrintHintText(client,"Can't Teleport Here");
+		//War3_CooldownReset(client,TPFailCDResetToRace[client],TPFailCDResetToSkill[client]);
+	}
+	else{
+		PrintHintText(client,"Teleported");
+	}
+}
+
+public bool:AimTargetFilter(entity,mask)
+{
+	return !(entity==ClientTracer);
+}
+
+
+new absincarray[]={0,4,-4,8,-8,12,-12,18,-18,22,-22,25,-25};//,27,-27,30,-30,33,-33,40,-40}; //for human it needs to be smaller
+
+public bool:getEmptyLocationHull(client,Float:originalpos[3]){
+
+
+	new Float:mins[3];
+	new Float:maxs[3];
+	GetClientMins(client,mins);
+	GetClientMaxs(client,maxs);
+
+	new absincarraysize=sizeof(absincarray);
+
+	new limit=5000;
+	for(new x=0;x<absincarraysize;x++){
+		if(limit>0){
+			for(new y=0;y<=x;y++){
+				if(limit>0){
+					for(new z=0;z<=y;z++){
+						new Float:pos[3]={0.0,0.0,0.0};
+						AddVectors(pos,originalpos,pos);
+						pos[0]+=float(absincarray[x]);
+						pos[1]+=float(absincarray[y]);
+						pos[2]+=float(absincarray[z]);
+
+						TR_TraceHullFilter(pos,pos,mins,maxs,MASK_SOLID,CanHitThis,client);
+						//new ent;
+						if(!TR_DidHit(_))
+						{
+							AddVectors(emptypos,pos,emptypos); ///set this gloval variable
+							limit=-1;
+							break;
+						}
+
+						if(limit--<0){
+							break;
+						}
+					}
+
+					if(limit--<0){
+						break;
+					}
+				}
+			}
+
+			if(limit--<0){
+				break;
+			}
+
+		}
+
+	}
+
+}
+
+public bool:CanHitThis(entityhit, mask, any:data)
+{
+	if(entityhit == data )
+	{// Check if the TraceRay hit the itself.
+		return false; // Don't allow self to be hit, skip this result
+	}
+	if(ValidPlayer(entityhit)&&ValidPlayer(data)&&GetClientTeam(entityhit)==GetClientTeam(data)){
+		return false; //skip result, prend this space is not taken cuz they on same team
+	}
+	return true; // It didn't hit itself
+}
+
+/*
+public bool:enemyImmunityInRange(client,Float:playerVec[3])
+{
+	//ELIMINATE ULTIMATE IF THERE IS IMMUNITY AROUND
+	new Float:otherVec[3];
+	new team = GetClientTeam(client);
+
+	for(new i=1;i<=MaxClients;i++)
+	{
+		if(ValidPlayer(i,true)&&GetClientTeam(i)!=team&&W3HasImmunity(i,Immunity_Ultimates))
+		{
+			GetClientAbsOrigin(i,otherVec);
+			if(GetVectorDistance(playerVec,otherVec)<350)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+*/

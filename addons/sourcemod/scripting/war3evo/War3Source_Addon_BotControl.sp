@@ -1,3 +1,4 @@
+#define PLUGIN_VERSION "0.0.0.1"
 /*
 ADD IN A MAP CHECKING FOR MVM IN THE ONMAP AREA..
 
@@ -36,7 +37,7 @@ new Handle:botBuysRandomMultipleChance;
 new Handle:botsetraces;
 public OnPluginStart()
 {
-	CreateConVar("war3evo_mvm_bots","1.0.0.1","War3Evolution MVM Bot Enhancements.",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+	CreateConVar("war3evo_botcontrol",PLUGIN_VERSION,"War3Evo Bot Control",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD|FCVAR_DONTRECORD);
 	//SetFailState("BROKEN");
 	
 	// ########################## BOT EVASION ################################
@@ -151,14 +152,14 @@ ScrambleBots()
 	if(GetConVarInt(botsetraces)){
 		if(GetConVarBool(botAnnounce))
 		{
-			//PrintToChatAll("\x01\x04[War3Source]\x01 %T","The bots races and levels have been scrambled.",LANG_SERVER);
+			//PrintToChatAll("\x01\x04[War3Evo]\x01 %T","The bots races and levels have been scrambled.",LANG_SERVER);
 				
 			for(new players = 1; players <= MaxClients; ++players)
 			{
 				if (IsClientConnected(players) && IsClientInGame(players)&& !IsFakeClient(players))
 				{
 					
-					PrintToChat(players,"\x01\x04[War3Source]\x01 %T","The bots jobs and levels have been scrambled.",players);
+					PrintToChat(players,"\x01\x04[War3Evo]\x01 %T","The bots jobs and levels have been scrambled.",players);
 				}
 			}
 		}

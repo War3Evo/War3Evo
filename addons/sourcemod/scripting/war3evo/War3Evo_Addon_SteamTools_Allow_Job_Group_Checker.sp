@@ -129,7 +129,7 @@ public Action:WelcomeAdvertTimer (Handle:timer, any:client)
 			PrintToChat(client, "\x01\x04[War3Evo]\x01 Welcome %s! Please join our Steam Group %s",ClientName,buffer2);
 			PrintToChat(client, "\x01\x04[War3Evo]\x01 Visit to join: http://steamcommunity.com/groups/war3evo");
 		}
-		//PrintToChat (client, "\x01\x04[War3Source]\x01 Welcome! Please join our Steam Group ");
+		//PrintToChat (client, "\x01\x04[War3Evo]\x01 Welcome! Please join our Steam Group ");
 	}
 
 	return Plugin_Stop;

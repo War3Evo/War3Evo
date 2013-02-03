@@ -1,7 +1,3 @@
- ////////////////////////////////////////////////////////////////////////////
-/////////NOT THE ORIGINAL FILE//////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-
  /**
  * File: War3Source_ShadowHunter.sp
  * Description: The Shadow Hunter race for War3Source.
@@ -10,6 +6,7 @@
  * War3Evo -- Modified by El Diablo
  *
  */
+#define PLUGIN_VERSION "0.0.0.1"
  
 #pragma semicolon 1
 //#pragma tabsize 0
@@ -35,14 +32,14 @@ new SKILL_HEALINGWAVE, SKILL_IMPROVEDHEALING, SKILL_HEX, SKILL_RECARN_WARD, ULT_
 
 
 //skill 1
-new Float:HealingWaveAmountArr[]={0.0,2.0,4.0,6.0,8.0,10.0,12.0,14.0,16.0};
+new Float:HealingWaveAmountArr[]={0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0}; //halved healing to compensate for Hex buff - Dagothur 1/13/2013
 //new Float:TimerHealingWaveAmountArr[]={2.0,1.9,1.7,1.5,1.3,1.1,0.9,0.7,0.5};
 //new Float:HealingWaveDistance=500.0;
-new Float:HealingWaveDistanceArr[]={0.0,50.0,100.0,150.0,200.0,250.0,300.0,350.0,400.0};
+new Float:HealingWaveDistanceArr[]={0.0,50.0,100.0,150.0,200.0,250.0,300.0,350.0,400.0}; //unchanged - Dagothur 1/13/2013
 //new ParticleEffect[MAXPLAYERSCUSTOM][MAXPLAYERSCUSTOM]; // ParticleEffect[Source][Destination]
 
 //skill 2
-new Float:HexChanceArr[]={0.00,0.02,0.050,0.075,0.100};
+new Float:HexChanceArr[]={0.00,0.25,0.50,0.75,1.00}; //buffed hex from 2.5% 5% 7.5% 10% to 25% 50% 75% 100%, bringing it in line with the Warden's Immunity ability, except for skills - Dagothur 1/13/2013
 
 //skill 3
 // Healing Ward Specific
@@ -86,7 +83,7 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
-
+	CreateConVar("war3evo_ShadowPaladin",PLUGIN_VERSION,"War3evo Job Shadow Paladin",FCVAR_PLUGIN);
 	ultCooldownCvar=CreateConVar("war3_hunter_voodoo_cooldown","20","Cooldown between Big Bad Voodoo (ultimate)");
 	CreateTimer(1.0,CalcWards,_,TIMER_REPEAT);
 	CreateTimer(1.0,CalcHexHealWaves,_,TIMER_REPEAT);
@@ -98,8 +95,6 @@ public OnWar3LoadRaceOrItemOrdered(num)
 {
 	if(num==60)
 	{
-		
-		
 		thisRaceID=War3_CreateNewRace("Shadow Paladin","hunter");
 		SKILL_HEALINGWAVE=War3_AddRaceSkill(thisRaceID,"Healing Wave",
 		"Heal teammates around you",false,4);

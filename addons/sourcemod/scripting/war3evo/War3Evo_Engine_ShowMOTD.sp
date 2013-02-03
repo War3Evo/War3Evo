@@ -1,3 +1,5 @@
+#define PLUGIN_VERSION "0.0.0.1"
+
 #pragma semicolon 1
 #include <sourcemod>
 
@@ -20,6 +22,8 @@ public Plugin:myinfo = {
 };
 
 public OnPluginStart() {
+	CreateConVar("war3evo_ShowMOTD",PLUGIN_VERSION,"War3evo Show MOTD",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+
 	RegConsoleCmd("say", Command_Say);
 	RegConsoleCmd("say_team", Command_Say);
 	//RegConsoleCmd("updates", Command_Updates);

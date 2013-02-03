@@ -138,7 +138,7 @@ public OnW3TakeDmgBullet( victim, attacker, Float:damage )
 			new race_attacker = War3_GetRace( attacker );
 			new skill_level = War3_GetSkillLevel( attacker, thisRaceID, SKILL_MOONBEAM );
 			new skill_level2 = War3_GetSkillLevel( attacker, thisRaceID, SKILL_BOUNCE );
-			if( race_attacker == thisRaceID &&!Hexed(attacker))
+			if( race_attacker == thisRaceID &&!Hexed(attacker) && W3Chance(W3ChanceModifier(attacker))) //skill activation chance modifier; damage was out of control on pyro just like crypt lord's beetles - Dagothur 1/16/2013
 			{
 				// So that players' sentry does not proc this skill
 				// Less chance to Proc for based on your class.
@@ -181,8 +181,8 @@ public OnW3TakeDmgBullet( victim, attacker, Float:damage )
 					//TE_SendToAll(0.0);
 					//TE_SetupBeamRingPoint(start_pos, 20.0, maxdist+10.0, XBeamSprite, HaloSprite, 0, 1, 1.0, 90.0, 0.0, {128,0,255,255}, 10, 0);
 					//TE_SendToAll(2.0);
-					for (new i = 1; i <= MaxClients; i++) {
-						if(ValidPlayer(i,true) && GetClientTeam(i) != GetClientTeam(attacker)&&!W3HasImmunity(i,Immunity_Wards)) {
+					for (new i = 1; i <= MaxClients; i++) { 
+						if(ValidPlayer(i,true) && GetClientTeam(i) != GetClientTeam(attacker)&&!W3HasImmunity(i,Immunity_Skills)) { //this was checking for ward immunity instead of skill immunity - Dagothur 1/16/2013
 							decl Float:TargetPos[3];
 							GetClientAbsOrigin(i, TargetPos);
 							if (GetVectorDistance(start_pos, TargetPos) <= maxdist) {

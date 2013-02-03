@@ -26,7 +26,7 @@ public bool:War3Source_InitOffset()
 	}
 	else
 	{
-		PrintToServer("[War3Source] Error, could not find configuration file for game.");
+		PrintToServer("[War3Evo] Error, could not find configuration file for game.");
 		ret=false;
 	}
 	return ret;

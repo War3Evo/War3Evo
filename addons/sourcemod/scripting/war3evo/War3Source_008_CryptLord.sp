@@ -1,3 +1,4 @@
+#define PLUGIN_VERSION "0.0.0.1"
 /**
  * File: War3Source_CryptLord.sp
  * Description: The Crypt Lord race for War3Source.
@@ -48,6 +49,7 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_cryptlord",PLUGIN_VERSION,"War3evo Job Crypt Lord",FCVAR_PLUGIN);
 	
 	//ultCooldownCvar=CreateConVar("war3_crypt_locust_cooldown","20","Cooldown between ultimate usage");
 	//ultRangeCvar=CreateConVar("war3_crypt_locust_range","800","Range of locust ultimate");
@@ -190,7 +192,7 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 				}
 			}	
 		}
-		if(War3_GetRace(attacker)==thisRaceID && W3Chance(W3ChanceModifier(attacker)))
+		if(War3_GetRace(attacker)==thisRaceID && W3Chance(W3ChanceModifier(attacker))) //added a seconed chance modifier, much like the current Naix code for Feast. I tested it out with the pyro, beatles (this skill) procs wayy too much. Naix's feast procs just the right amount. -Dagothur 1/13/2013
 		{
 			new skill_level = War3_GetSkillLevel(attacker,thisRaceID,SKILL_BEETLES);
 			if(!Hexed(attacker,false)&&GetRandomFloat(0.0,1.0)<=BeetleChanceArr[skill_level])

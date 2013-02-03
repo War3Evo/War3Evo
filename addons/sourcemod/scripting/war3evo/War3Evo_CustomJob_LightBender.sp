@@ -1,14 +1,9 @@
+#define PLUGIN_VERSION "0.0.0.2 (1/18/2013) 10:40pm EST"
 /**
- *
- *  "Nun Chuka Kata": DataTable warning: player: Out-of-range value (90.561455) in SendPropFloat 'm_angEyeAngles[0]', clamping.
- *
- *
- *
- *
-* File: War3Source_Light_Bender.sp
+ * File: War3Source_Light_Bender.sp
 * Description: The Light Bender race for SourceCraft.
 * Author(s): xDr.HaaaaaaaXx
-*/
+**/
 
 #pragma semicolon 1
 #pragma tabsize 0
@@ -41,6 +36,12 @@ public Plugin:myinfo =
 	version = "1.0.0.0",
 	url = ""
 };
+
+public OnPluginStart()
+{
+	CreateConVar("war3evo_LightBender",PLUGIN_VERSION,"War3evo Job Light Bender",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+}
+
 
 public OnMapStart()
 {
@@ -96,9 +97,10 @@ public OnWar3EventDeath( victim, attacker )
 	W3ResetAllBuffRace( victim, thisRaceID );
 }
 
-public OnWar3EventPostHurt( victim, attacker, damage )
+//public OnWar3EventPostHurt( victim, attacker, damage )
+public OnW3TakeDmgAll(victim,attacker,Float:damage)
 {
-	if( W3GetDamageIsBullet() && ValidPlayer( victim, true ) && ValidPlayer( attacker, true ) && GetClientTeam( victim ) != GetClientTeam( attacker ) )
+	if(!W3IsOwnerSentry(attacker) && W3GetDamageIsBullet() && ValidPlayer( victim, true ) && ValidPlayer( attacker, true ) && GetClientTeam( victim ) != GetClientTeam( attacker ) )
 	{
 		if( War3_GetRace( attacker ) == thisRaceID && !W3HasImmunity(victim,Immunity_Skills) )
 		{

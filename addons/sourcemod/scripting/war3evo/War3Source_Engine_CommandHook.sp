@@ -1,3 +1,5 @@
+#define PLUGIN_VERSION "0.0.0.2 (2/1/2013) 2:01AM EST"
+
 #include <sourcemod>
 #include "W3SIncs/War3Source_Interface"
 
@@ -17,6 +19,8 @@ public Plugin:myinfo=
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_CommandHook",PLUGIN_VERSION,"War3evo Chat Command Hooks",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+
 	Cvar_ChatBlocking=CreateConVar("war3_command_blocking","0","block chat commands from showing up");
 
 	RegConsoleCmd("say",War3Source_SayCommand);
@@ -438,7 +442,7 @@ bool:Internal_War3Source_SayCommand(client,String:arg1[256])
 		if(g_hCVar!=INVALID_HANDLE)
 		{
 			GetConVarString(g_hCVar, version, sizeof(version));
-			War3_ChatMessage(client,"War3Source Current Version: %s",version);
+			War3_ChatMessage(client,"War3Evo / War3Source Current Version: %s",version);
 		}
 		return returnblocking;
 	}
@@ -462,7 +466,7 @@ bool:Internal_War3Source_SayCommand(client,String:arg1[256])
 		CloseHandle(array);
 		return returnblocking;
 	}
-	else if(CommandCheck(arg1,"jobinfo")||CommandCheck(arg1,"raceinfo"))
+	else if(CommandCheck(arg1,"jobinfo")||CommandCheck(arg1,"raceinfo")||CommandCheck(arg1,"job"))
 	{
 		W3CreateEvent(DoShowRaceinfoMenu,client);
 		return returnblocking;
@@ -569,7 +573,7 @@ bool:Internal_War3Source_SayCommand(client,String:arg1[256])
 		}
 		else if(CommandCheck(arg1,"war3dev"))
 		{
-			War3_ChatMessage(client,"%T","War3Source Developers",client);
+			War3_ChatMessage(client,"%T","War3Evo Developers",client);
 			return returnblocking;
 		}
 		else if(CommandCheck(arg1,"myinfo"))

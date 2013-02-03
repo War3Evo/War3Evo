@@ -109,13 +109,20 @@ And that’s the art of the test!
 #pragma semicolon 1
 
 
-#define VERSION_NUM "1.2.4.0"
-#define eVERSION_NUM "1.0.1.9 (1/9/2013)"
-#define REVISION_NUM 12321 //increment every release
+#define VERSION_NUM "1.2.4.1"
+#define eVERSION_NUM "1.0.2.5 (2/2/2013)"
+//#define REVISION_NUM 12321 //increment every release
+#define REVISION_NUM 12415 //increment every release
 
 //DO NOT REMOVE THE OFFICIAL AUTHORS. YOU SHALL NOT DEPRIVE THEM OF THE CREDIT THEY DESERVE
-#define AUTHORS "PimpinJuice and Ownz (DarkEnergy)"
-#define eAUTHORS "El Diablo and Axin"
+//#define AUTHORS "PimpinJuice and Ownz (DarkEnergy)"
+// Removed orignal since we have been sought out for creating war3source and several
+// servers claim us DDOSing their servers and we do not own War3Source.
+// We are removing all War3Source name from our servers.  We dont wish
+// the other War3Source servers to think we own War3Source
+
+#define AUTHORS "El Diablo and LORD DAGOTHUR [X]-RATED"
+//#define eAUTHORS "El Diablo|Dagothur|Axin"
 
 //used for some special things in interface
 #define WAR3MAIN
@@ -136,27 +143,27 @@ public Plugin:myinfo=
 public APLRes:AskPluginLoad2Custom(Handle:myself,bool:late,String:error[],err_max)
 {
 	
-	PrintToServer("--------------------------AskPluginLoad2Custom----------------------\n[War3Source] Plugin loading...");
+	PrintToServer("--------------------------AskPluginLoad2Custom----------------------\n[War3Evo] Plugin loading...");
 	
 
 	new String:version[64];
 	Format(version,sizeof(version),"%s by %s",VERSION_NUM,AUTHORS);
-	new String:Eversion[64];
-	Format(Eversion,sizeof(Eversion),"%s by %s",eVERSION_NUM,eAUTHORS);
-	CreateConVar("war3_version",version,"War3Source version.",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+	//new String:Eversion[64];
+	//Format(Eversion,sizeof(Eversion),"%s by %s",eVERSION_NUM,eAUTHORS);
+	CreateConVar("war3_version",version,"War3Evo version.",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	//CreateConVar("a_war3_version",version,"War3Source version.",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
-	CreateConVar("war3evo_version",Eversion,"War3Evolution version.",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+	//CreateConVar("war3evo_version",Eversion,"War3Evolution version.",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 
 
 
 	if(!War3Source_InitNatives())
 	{
-		LogError("[War3Source] There was a failure in creating the native based functions, definately halting.");
+		LogError("[War3Evo] There was a failure in creating the native based functions, definately halting.");
 		return APLRes_Failure;
 	}
 	if(!War3Source_InitForwards())
 	{
-		LogError("[War3Source] There was a failure in creating the forward based functions, definately halting.");
+		LogError("[War3Evo] There was a failure in creating the forward based functions, definately halting.");
 		return APLRes_Failure;
 	}
 	
@@ -172,16 +179,16 @@ public OnPluginStart()
 		SetFailState("SDK Hooks is not loaded.");
 	
 	if(!War3Source_HookEvents())
-		SetFailState("[War3Source] There was a failure in initiating event hooks.");
+		SetFailState("[War3Evo] There was a failure in initiating event hooks.");
 	if(!War3Source_InitCVars()) //especially sdk hooks
-		SetFailState("[War3Source] There was a failure in initiating console variables.");
+		SetFailState("[War3Evo] There was a failure in initiating console variables.");
 
 	if(!War3Source_InitOffset())
-		SetFailState("[War3Source] There was a failure in finding the offsets required.");
+		SetFailState("[War3Evo] There was a failure in finding the offsets required.");
 
 	CreateTimer(0.1,DeciSecondLoop,_,TIMER_REPEAT);
 		
-	PrintToServer("[War3Source] Plugin finished loading.\n-------------------END OnPluginStart-------------------");
+	PrintToServer("[War3Evo] Plugin finished loading.\n-------------------END OnPluginStart-------------------");
 	
 /*	RegServerCmd("loadraces",CmdLoadRaces);
 	
@@ -457,7 +464,7 @@ public Action:OnGetGameDescription(String:gameDesc[64])
 {
 	if(GetConVarInt(hChangeGameDescCvar)>0)
 	{
-		Format(gameDesc,sizeof(gameDesc),"War3Source %s",VERSION_NUM);
+		Format(gameDesc,sizeof(gameDesc),"War3Evo %s",VERSION_NUM);
 		return Plugin_Changed;
 	}
 	return Plugin_Continue;
@@ -507,11 +514,11 @@ DelayedWar3SourceCfgExecute()
 		if(FileExists("cfg/war3source.cfg"))
 		{
 			ServerCommand("exec war3source.cfg");
-			PrintToServer("[War3Source] Executing war3source.cfg");
+			PrintToServer("[War3Evo] Executing war3source.cfg");
 		}
 		else
 		{
-			PrintToServer("[War3Source] Could not find war3source.cfg, we recommend all servers have this file");
+			PrintToServer("[War3Evo] Could not find war3source.cfg, we recommend all servers have this file");
 	}
 
 }
