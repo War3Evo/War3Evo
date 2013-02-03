@@ -63,7 +63,7 @@ ShowMenuRaceinfo(client){
 	SetTrans(client);
 	new Handle:hMenu=CreateMenu(War3_raceinfoSelected);
 	SetMenuExitButton(hMenu,true);
-	SetMenuTitle(hMenu,"%T\n ","[War3Source] Select a job for more info",client);
+	SetMenuTitle(hMenu,"%T\n ","[War3Evo] Select a job for more info",client);
 	// Iteriate through the races and print them out
 	
 	decl String:rbuf[4];
@@ -168,7 +168,7 @@ public War3_ShowParticularRaceInfoMenu(client,raceid){
 	new String:selectioninfo[32];
 	
 	
-	SetMenuTitle(hMenu,"%T\n \n","[War3Source] Information for job: {racename} (LVL {amount}/{amount})",client,racename,War3_GetLevel(client,raceid),W3GetRaceMaxLevel(raceid));
+	SetMenuTitle(hMenu,"%T\n \n","[War3Evo] Information for job: {racename} (LVL {amount}/{amount})",client,racename,War3_GetLevel(client,raceid),W3GetRaceMaxLevel(raceid));
 		
 
 
@@ -346,7 +346,7 @@ War3_playersWhoAreThisRaceMenu(client,raceid){
 	new String:racename[64];
 	War3_GetRaceName(raceid,racename,sizeof(racename));
 	
-	SetMenuTitle(hMenu,"%T\n \n","[War3Source] People who are job: {racename}",client,racename);
+	SetMenuTitle(hMenu,"%T\n \n","[War3Evo] People who are job: {racename}",client,racename);
 	
 	decl String:playername[64];
 	decl String:war3playerbuf[4];
@@ -429,7 +429,7 @@ War3_PlayerInfoMenu(client,String:arg[]){
 			//redundant code..maybe we should optmize?
 			new Handle:hMenu=CreateMenu(War3_playerinfoSelected1);
 			SetMenuExitButton(hMenu,true);
-			SetMenuTitle(hMenu,"%T\n ","[War3Source] Select a player to view its information",client);
+			SetMenuTitle(hMenu,"%T\n ","[War3Evo] Select a player to view its information",client);
 			// Iteriate through the players and print them out
 			decl String:playername[32];
 			decl String:war3playerbuf[4];
@@ -469,7 +469,7 @@ War3_PlayerInfoMenu(client,String:arg[]){
 		
 		new Handle:hMenu=CreateMenu(War3_playerinfoSelected1);
 		SetMenuExitButton(hMenu,true);
-		SetMenuTitle(hMenu,"%T\n ","[War3Source] Select a player to view its information",client);
+		SetMenuTitle(hMenu,"%T\n ","[War3Evo] Select a player to view its information",client);
 		// Iteriate through the players and print them out
 		decl String:playername[32];
 		decl String:war3playerbuf[4];
@@ -542,7 +542,7 @@ War3_playertargetMenu(client,target) {
 	
 	new String:title[3000];
 
-	Format(title,sizeof(title),"%T\n \n","[War3Source] Information for {player}",client,targetname);
+	Format(title,sizeof(title),"%T\n \n","[War3Evo] Information for {player}",client,targetname);
 	Format(title,sizeof(title),"%s%T\n \n",title,"Total levels: {amount}",client,GetClientTotalLevels(target));
 	
 	if(level<W3GetRaceMaxLevel(raceid)){

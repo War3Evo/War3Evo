@@ -48,31 +48,31 @@ public OnPluginStart()
 		g_hGameMode = FindConVar("mp_gamemode");
 		if(!HookEventEx("survival_round_start", War3Source_SurvivalStartEvent))
 		{
-			PrintToServer("[War3Source] Could not hook the survival_round_start event.");
+			PrintToServer("[War3Evo] Could not hook the survival_round_start event.");
 		}
 		if(!HookEventEx("round_end", War3Source_RoundEndEvent))
 		{
-			PrintToServer("[War3Source] Could not hook the round_end event.");
+			PrintToServer("[War3Evo] Could not hook the round_end event.");
 		}
 		if(!HookEventEx("player_entered_checkpoint", War3Source_EnterCheckEvent))
 		{
-			PrintToServer("[War3Source] Could not hook the player_entered_checkpoint event.");
+			PrintToServer("[War3Evo] Could not hook the player_entered_checkpoint event.");
 		}
 		if(!HookEventEx("player_left_checkpoint", War3Source_LeaveCheckEvent))
 		{
-			PrintToServer("[War3Source] Could not hook the player_left_checkpoint event.");
+			PrintToServer("[War3Evo] Could not hook the player_left_checkpoint event.");
 		}
 		if(!HookEventEx("player_entered_start_area", War3Source_EnterCheckEvent))
 		{
-			PrintToServer("[War3Source] Could not hook the player_entered_start_area event.");
+			PrintToServer("[War3Evo] Could not hook the player_entered_start_area event.");
 		}
 		if(!HookEventEx("player_left_start_area", War3Source_LeaveCheckEvent))
 		{
-			PrintToServer("[War3Source] Could not hook the player_left_start_area event.");
+			PrintToServer("[War3Evo] Could not hook the player_left_start_area event.");
 		}
 		if(!HookEventEx("player_first_spawn", War3Source_FirstSpawnEvent))
 		{
-			PrintToServer("[War3Source] Could not hook the player_first_spawn event.");
+			PrintToServer("[War3Evo] Could not hook the player_first_spawn event.");
 		}		
 	}
 }

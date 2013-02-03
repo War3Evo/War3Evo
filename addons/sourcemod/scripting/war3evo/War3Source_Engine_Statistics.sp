@@ -56,7 +56,7 @@ public OnPluginStart()
 	
 	if(!HookEventEx("teamplay_round_win",War3Source_RoundOverEvent))
 	{
-		PrintToServer("[War3Source] Could not hook the teamplay_round_win event.");
+		PrintToServer("[War3Evo] Could not hook the teamplay_round_win event.");
 	}
 
 	hSecondDBCvar=CreateConVar("war3_bug_to_my_db","0","send war3bug messages to your own database?");
@@ -189,7 +189,7 @@ public SockCallbackMinVersion(bool:success,fail,String:ret[])
 		new minimum=StringToInt(exploded[1]);
 		//PrintToServer("%s %d",exploded[1],minimum);
 		if(W3GetW3Revision()<minimum){
-			War3Failed("War3Source is out of date, please update war3source");
+			War3Failed("War3Evo is out of date, please update War3Evo");
 		}
 	}
 }
@@ -223,11 +223,11 @@ public SockCallbackVersion(bool:success,fail,String:ret[]){
 }
 
 UpdateMsg(){
-	PrintToServer("A newer version of War3Source is available\nPlease download @ www.war3source.com");
+	PrintToServer("A newer version of War3Evo is available\nPlease download @ www.War3Evo.com");
 	for(new i=1;i<=MaxClients;i++){
 		if(ValidPlayer(i)){
-			War3_ChatMessage(i,"%T","A newer version of War3Source is available",i);
-			War3_ChatMessage(i,"%T","Please download @ www.war3source.com",i);
+			War3_ChatMessage(i,"%T","A newer version of War3Evo is available",i);
+			War3_ChatMessage(i,"%T","Please download @ www.War3Evo.com",i);
 		}
 	}
 }
@@ -343,7 +343,7 @@ public Action:ConnectSecondDB(Handle:h){
 		
 		if(!hdatabase2)
 		{
-			LogError("[War3Source] ERROR: hDB invalid handle, Check SourceMod database config, could not connect. ");
+			LogError("[War3Evo] ERROR: hDB invalid handle, Check SourceMod database config, could not connect. ");
 			LogError("ERRMSG:(%s)",error);
 		}
 		else{
@@ -363,7 +363,7 @@ public Action:cmdsay(client,args){
 		{
 			if(strlen(arg1)<8)
 			{
-				War3_ChatMessage(client,"%T ","Report a war3source bug: say war3bug <detailed description>",client);
+				War3_ChatMessage(client,"%T ","Report a War3Evo bug: say war3bug <detailed description>",client);
 			}
 			else
 			{

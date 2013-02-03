@@ -7,7 +7,7 @@
 
 //new String:explosionSound1[]="war3source/particle_suck1.wav";
 #if defined WAR3MAIN
-		PrintToServer("[War3Source] Game set: Counter Strike Global Offensive");
+		PrintToServer("[War3Evo] Game set: Counter Strike Global Offensive");
 #endif
 
 new String:explosionSound1[256];

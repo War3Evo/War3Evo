@@ -95,7 +95,7 @@ public OnWar3Event(W3EVENT:event,client){
 
 Initialize_SQLTable()
 {
-	PrintToServer("[War3Source] Initialize_SQLTable");
+	PrintToServer("[War3Evo] Initialize_SQLTable");
 	if(hDB!=INVALID_HANDLE)
 	{
 	
@@ -105,7 +105,7 @@ Initialize_SQLTable()
 		new Handle:query=SQL_Query(hDB,"SELECT * from war3sourceraces LIMIT 1");
 		if(query!=INVALID_HANDLE) //table exists
 		{
-			PrintToServer("[War3Source] Dropping TABLE war3sourceraces and recreating it (normal)") ;
+			PrintToServer("[War3Evo] Dropping TABLE war3sourceraces and recreating it (normal)") ;
 			SQL_FastQueryLogOnError(hDB,"DROP TABLE war3sourceraces");
 		}
 		
@@ -141,7 +141,7 @@ Initialize_SQLTable()
 
 			if(!SQL_FastQueryLogOnError(hDB,createtable))
 			{
-				SetFailState("[War3Source] ERROR in the creation of the SQL table war3source.");
+				SetFailState("[War3Evo] ERROR in the creation of the SQL table war3source.");
 			}
 		}
 		else
@@ -160,7 +160,7 @@ Initialize_SQLTable()
 				}
 				else{
 					SQL_FastQueryLogOnError(hDB,"ALTER TABLE war3source CHANGE credits gold INT");
-					PrintToServer("[War3Source] Tried to change column from 'credits' to 'gold'");
+					PrintToServer("[War3Evo] Tried to change column from 'credits' to 'gold'");
 				}
 			}
 			if(!SQL_FieldNameToNum(query, "diamonds", dummy))
@@ -176,7 +176,7 @@ Initialize_SQLTable()
 		query=SQL_Query(hDB,"SELECT * from war3source_racedata1 LIMIT 1");
 		if(query==INVALID_HANDLE)
 		{   
-			PrintToServer("[War3Source] war3source_racedata1 doesnt exist, creating!!!") ;
+			PrintToServer("[War3Evo] war3source_racedata1 doesnt exist, creating!!!") ;
 			new String:longquery2[4000];
 			Format(longquery2,sizeof(longquery2),"CREATE TABLE war3source_racedata1 (steamid varchar(64)  , raceshortname varchar(16),   level int,  xp int  , last_seen int)  %s",War3SQLType:W3GetVar(hDatabaseType)==SQLType_MySQL?"DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci":"");
 			
@@ -185,7 +185,7 @@ Initialize_SQLTable()
 			!SQL_FastQueryLogOnError(hDB,"CREATE UNIQUE INDEX steamid ON war3source_racedata1 (steamid,raceshortname)")
 			)
 			{
-				SetFailState("[War3Source] ERROR in the creation of the SQL table war3source_racedata1");
+				SetFailState("[War3Evo] ERROR in the creation of the SQL table war3source_racedata1");
 			}
 			query=SQL_Query(hDB,"SELECT * from war3source_racedata1 LIMIT 1"); //get a nother handle for next table check
 		}
@@ -329,7 +329,7 @@ War3Source_LoadPlayerData(client) //war3source calls this
 		//Pass off to threaded call back at normal prority
 		SQL_TQuery(hDB,T_CallbackSelectPDataMain,longquery,client);
 		
-		PrintToConsole(client,"%T","[War3Source] XP retrieval query: sending MAIN and load all jobs request! Time: {amount}",client,GetGameTime());
+		PrintToConsole(client,"%T","[War3Evo] XP retrieval query: sending MAIN and load all jobs request! Time: {amount}",client,GetGameTime());
 		W3SetPlayerProp(client,sqlStartLoadXPTime,GetGameTime());
 		
 		//Lets get race data too
@@ -351,7 +351,7 @@ public T_CallbackSelectPDataMain(Handle:owner,Handle:hndl,const String:error[],a
 	{
 		//Well the database is fucked up
 		//TODO: add retry for select query
-		LogError("[War3Source] ERROR: SELECT player data failed! Check DATABASE settings!");
+		LogError("[War3Evo] ERROR: SELECT player data failed! Check DATABASE settings!");
 		//Don't hang up the process for now
 	}
 	
@@ -364,7 +364,7 @@ public T_CallbackSelectPDataMain(Handle:owner,Handle:hndl,const String:error[],a
 			if(!SQL_FetchRow(hndl))
 			{
 				//This would be pretty fucked to occur here
-				LogError("[War3Source] Unexpected error loading player data, could not FETCH row. Check DATABASE settings!");
+				LogError("[War3Evo] Unexpected error loading player data, could not FETCH row. Check DATABASE settings!");
 				return;
 			}
 			else{
@@ -390,11 +390,11 @@ public T_CallbackSelectPDataMain(Handle:owner,Handle:hndl,const String:error[],a
 				new String:currentrace[16];
 				if(!W3SQLPlayerString(hndl,"currentrace",currentrace,sizeof(currentrace)))
 				{
-					LogError("[War3Source] Unexpected error loading player currentrace. Check DATABASE settings!");
+					LogError("[War3Evo] Unexpected error loading player currentrace. Check DATABASE settings!");
 					return;
 				}
-				PrintToConsole(client,"%T","[War3Source] War3 MAIN retrieval: gold {amount} Time {amount}",client,cred,GetGameTime());
-				PrintToConsole(client,"[War3Source] Diamonds %d",diamonds);
+				PrintToConsole(client,"%T","[War3Evo] War3 MAIN retrieval: gold {amount} Time {amount}",client,cred,GetGameTime());
+				PrintToConsole(client,"[War3Evo] Diamonds %d",diamonds);
 				
 				new raceFound=0; // worst case senario set player to race 0 <<-- changed to 1 so that they must have a race
 				if(GetConVarInt(hSetRaceOnJoinCvar)>0)
@@ -500,7 +500,7 @@ public T_CallbackSelectPDataMain(Handle:owner,Handle:hndl,const String:error[],a
 			// this is a WTF moment here
 			//should probably purge these records and get the player to rejoin but I'm lazy
 			//and don't want to write that
-			LogError("[War3Source] Returned more than 1 record, primary or UNIQUE keys are screwed (main, rows: %d)",SQL_GetRowCount(hndl));
+			LogError("[War3Evo] Returned more than 1 record, primary or UNIQUE keys are screwed (main, rows: %d)",SQL_GetRowCount(hndl));
 		}
 	}
 }
@@ -558,7 +558,7 @@ public T_CallbackSelectPDataRace(Handle:owner,Handle:hndl,const String:error[],a
 					
 					
 					new String:printstr[500];
-					Format(printstr,sizeof(printstr),"%T","[War3Source] XP Ret: Job {race} Level {amount} XP {amount} Time {amount}...",client,raceshortname,level,pxp,GetGameTime());
+					Format(printstr,sizeof(printstr),"%T","[War3Evo] XP Ret: Job {race} Level {amount} XP {amount} Time {amount}...",client,raceshortname,level,pxp,GetGameTime());
 					
 					
 					
@@ -579,7 +579,7 @@ public T_CallbackSelectPDataRace(Handle:owner,Handle:hndl,const String:error[],a
 			}
 		} 
 		if(retrievals>0){
-			PrintToConsole(client,"%T","[War3Source] Successfully retrieved data jobs, total of {amount} jobs were returned, {amount} are running on this server",client,retrievals,usefulretrievals);
+			PrintToConsole(client,"%T","[War3Evo] Successfully retrieved data jobs, total of {amount} jobs were returned, {amount} are running on this server",client,retrievals,usefulretrievals);
 		}
 		else if(retrievals==0&&War3_GetRacesLoaded()>0){     //no xp record
 			
@@ -619,13 +619,13 @@ public T_CallbackSelectPDataRace(Handle:owner,Handle:hndl,const String:error[],a
 		}
 		if(inserts>0){
 			
-			PrintToConsole(client,"%T","[War3Source] Inserting fresh level xp data for {amount} jobs",client,inserts);
+			PrintToConsole(client,"%T","[War3Evo] Inserting fresh level xp data for {amount} jobs",client,inserts);
 		}
 
 		
 		W3SetPlayerProp(client,xpLoaded,true);
 		War3_ChatMessage(client,"%T","Successfully retrieved save data",client);
-		PrintToConsole(client,"%T","[War3Source] XP RETRIEVED IN {amount} seconds",client,GetGameTime()-Float:W3GetPlayerProp(client,sqlStartLoadXPTime)) ;
+		PrintToConsole(client,"%T","[War3Evo] XP RETRIEVED IN {amount} seconds",client,GetGameTime()-Float:W3GetPlayerProp(client,sqlStartLoadXPTime)) ;
 		DoForwardOnWar3PlayerAuthed(client);
 		
 		if(War3_GetRace(client)<=0 && desiredRaceOnJoin[client]>0){
@@ -728,7 +728,7 @@ War3_SavePlayerRace(client,race)
 			
 			new String:racename[64];
 			War3_GetRaceName(race,racename,sizeof(racename));
-			PrintToConsole(client,"%T","[War3Source] Saving XP for job {racename}: LVL {amount} XP {amount}",client,racename,level,xp);
+			PrintToConsole(client,"%T","[War3Evo] Saving XP for job {racename}: LVL {amount} XP {amount}",client,racename,level,xp);
 			
 			//XP safety?
 			//	new level=War3_GetLevel(client,x);

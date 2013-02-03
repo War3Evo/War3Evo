@@ -2092,7 +2092,7 @@ forward OnWardExpire(wardindex, owner, behaviorID);
 #define MAX_MESSAGE_LENGTH 250
 
 /** 
- * Prints a message in the chat area with [War3Source] pre-appended.
+ * Prints a message in the chat area with [War3Evo] pre-appended.
  * Support color tags: {default}, {green}, {lightgreen}, {red}, {blue}, {olive}.
  * 
  * @param client      Client index, pass 0 for message to all.
@@ -2110,7 +2110,7 @@ stock War3_ChatMessage(client, const String:szMessage[], any:...)
 			{
 				SetGlobalTransTarget(i);
 				VFormat(szBuffer, sizeof(szBuffer), szMessage, 3);
-				Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Source]", i, szBuffer);
+				Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Evo]", i, szBuffer);
 				CPrintToChat(i, szBuffer);
 			}
 		}
@@ -2120,13 +2120,13 @@ stock War3_ChatMessage(client, const String:szMessage[], any:...)
 		decl String:szBuffer[MAX_MESSAGE_LENGTH];
 		SetGlobalTransTarget(client);
 		VFormat(szBuffer, sizeof(szBuffer), szMessage, 3);
-		Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Source]", client, szBuffer);
+		Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Evo]", client, szBuffer);
 		CPrintToChat(client, szBuffer);
 	}
 }
 
 /** 
- * Prints a message in the chat area with [War3Source] pre-appended.
+ * Prints a message in the chat area with [War3Evo] pre-appended.
  * Support color tags: {default}, {green}, {olive}, {teamcolor}.
  * 
  * @param client      Client index, pass 0 for message to all.
@@ -2151,7 +2151,7 @@ stock War3_ChatMessageEx(client, author, const String:szMessage[], any:...)
 			{
 				SetGlobalTransTarget(i);
 				VFormat(szBuffer, sizeof(szBuffer), szMessage, 4);
-				Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Source]", i, szBuffer);
+				Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Evo]", i, szBuffer);
 				CPrintToChatEx(i, author, szBuffer);
 			}
 		}
@@ -2161,7 +2161,7 @@ stock War3_ChatMessageEx(client, author, const String:szMessage[], any:...)
 		decl String:szBuffer[MAX_MESSAGE_LENGTH];
 		SetGlobalTransTarget(client);
 		VFormat(szBuffer, sizeof(szBuffer), szMessage, 4);
-		Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Source]", client, szBuffer);
+		Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Evo]", client, szBuffer);
 		CPrintToChatEx(client, author, szBuffer);
 	}
 }
@@ -2545,7 +2545,7 @@ stock AddColumn(Handle:DB,const String:columnname[],const String:datatype[],cons
 {
 	decl String:query[256];
 	Format(query,256,"ALTER TABLE %s ADD COLUMN %s %s DEFAULT '0'",table_name,columnname,datatype);
-	PrintToServer("[War3Source] Tried to ADD column in TABLE %s: %s",table_name,columnname);
+	PrintToServer("[War3Evo] Tried to ADD column in TABLE %s: %s",table_name,columnname);
 	SQL_FastQueryLogOnError(DB,query);
 }
 

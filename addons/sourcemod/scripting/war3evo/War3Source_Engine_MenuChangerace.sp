@@ -30,27 +30,27 @@ public OnPluginStart()
 		g_hGameMode = FindConVar("mp_gamemode");
 		if(!HookEventEx("survival_round_start", War3Source_SurvivalStartEvent))
 		{
-			PrintToServer("[War3Source] Could not hook the survival_round_start event.");
+			PrintToServer("[War3Evo] Could not hook the survival_round_start event.");
 		}
 		if(!HookEventEx("round_end", War3Source_RoundEndEvent))
 		{
-			PrintToServer("[War3Source] Could not hook the round_end event.");
+			PrintToServer("[War3Evo] Could not hook the round_end event.");
 		}
 		if(!HookEventEx("player_entered_checkpoint", War3Source_EnterCheckEvent))
 		{
-			PrintToServer("[War3Source] Could not hook the player_entered_checkpoint event.");
+			PrintToServer("[War3Evo] Could not hook the player_entered_checkpoint event.");
 		}
 		if(!HookEventEx("player_left_checkpoint", War3Source_LeaveCheckEvent))
 		{
-			PrintToServer("[War3Source] Could not hook the player_left_checkpoint event.");
+			PrintToServer("[War3Evo] Could not hook the player_left_checkpoint event.");
 		}
 		if(!HookEventEx("player_entered_start_area", War3Source_EnterCheckEvent))
 		{
-			PrintToServer("[War3Source] Could not hook the player_entered_start_area event.");
+			PrintToServer("[War3Evo] Could not hook the player_entered_start_area event.");
 		}
 		if(!HookEventEx("player_left_start_area", War3Source_LeaveCheckEvent))
 		{
-			PrintToServer("[War3Source] Could not hook the player_left_start_area event.");
+			PrintToServer("[War3Evo] Could not hook the player_left_start_area event.");
 		}
 	}
 	hUseCategories = CreateConVar("war3_jobcats","0","If non-zero job categories will be enabled");
@@ -211,7 +211,7 @@ War3Source_ChangeRaceMenu(client,bool:forceUncategorized=false)
 			if(strlen(dbErrorMsg)){
 				Format(title,sizeof(title),"%s\n \n",dbErrorMsg);
 			}
-			Format(title,sizeof(title),"%s%T",title,"[War3Source] Select a category",GetTrans()) ;
+			Format(title,sizeof(title),"%s%T",title,"[War3Evo] Select a category",GetTrans()) ;
 			if(W3GetLevelBank(client)>0){
 				Format(title,sizeof(title),"%s\n%T\n",title,"You Have {amount} levels in levelbank. Say levelbank to use it",GetTrans(), W3GetLevelBank(client));
 			}
@@ -244,7 +244,7 @@ War3Source_ChangeRaceMenu(client,bool:forceUncategorized=false)
 			if(strlen(dbErrorMsg)){
 				Format(title,sizeof(title),"%s\n \n",dbErrorMsg);
 			}
-			Format(title,sizeof(title),"%s%T",title,"[War3Source] Select your desired job",GetTrans()) ;
+			Format(title,sizeof(title),"%s%T",title,"[War3Evo] Select your desired job",GetTrans()) ;
 			if(W3GetLevelBank(client)>0){
 				Format(title,sizeof(title),"%s\n%T\n",title,"You Have {amount} levels in levelbank. Say levelbank to use it",GetTrans(), W3GetLevelBank(client));
 			}
@@ -375,7 +375,7 @@ public War3Source_CRMenu_SelCat(Handle:menu,MenuAction:action,client,selection)
 
 				new Handle:crMenu=CreateMenu(War3Source_CRMenu_Selected);
 				SetMenuExitButton(crMenu,true);
-				Format(title,sizeof(title),"%T","[War3Source] Select your desired job",GetTrans());
+				Format(title,sizeof(title),"%T","[War3Evo] Select your desired job",GetTrans());
 				SetMenuTitle(crMenu,"%s\nCategory: %s\n",title,sItem);
 				// Iteriate through the races and print them out				
 				new racelist[MAXRACES];

@@ -24,7 +24,7 @@ public OnPluginStart()
 {
 
 	if(!War3Source_InitiateHelpVector())
-		SetFailState("[War3Source] There was a failure in creating the help vector, definitely halting.");
+		SetFailState("[War3Evo] There was a failure in creating the help vector, definitely halting.");
 	War3Source_InitHelpCommands();
 }
 
@@ -85,7 +85,7 @@ War3Source_War3Help(client)
 {
 	new Handle:helpMenu=CreateMenu(War3Source_HelpMenu_Selected);
 	SetMenuExitButton(helpMenu,true);
-	SetMenuTitle(helpMenu,"%T","[War3Source] Select a command for more info",client);
+	SetMenuTitle(helpMenu,"%T","[War3Evo] Select a command for more info",client);
 	decl String:commandname[64];
 	decl String:helpbuf[4];
 	new Handle:commandHandle;
@@ -140,7 +140,7 @@ War3Source_HelpMenu_Command(client,command)
 	Format(strdesc,sizeof(strdesc),"%T",desc,client);
 	
 	Format(strdesc,sizeof(strdesc),"%T%s\n \n","Description:",client,strdesc);
-	SetMenuTitle(helpMenu_Command,"%T\n \n%s","[War3Source] War3Source Command - {cmd}",client,strcmd,strdesc);
+	SetMenuTitle(helpMenu_Command,"%T\n \n%s","[War3Evo] War3Evo Command - {cmd}",client,strcmd,strdesc);
 	
 	new String:backtohelp[32];
 	Format(backtohelp,sizeof(backtohelp),"%T","Back to help commands",client);

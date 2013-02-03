@@ -46,13 +46,13 @@ public bool:InitNativesForwards()
 	m_OffsetSpeed=FindSendPropOffs("CTFPlayer","m_flMaxspeed");
 	if(m_OffsetSpeed==-1)
 	{
-		PrintToServer("[War3Source] Error finding speed offset.");
+		PrintToServer("[War3Evo] Error finding speed offset.");
 	}
 	
 	m_OffsetClrRender=FindSendPropOffs("CBaseAnimating","m_clrRender");
 	if(m_OffsetClrRender==-1)
 	{
-		PrintToServer("[War3Source] Error finding render color offset.");
+		PrintToServer("[War3Evo] Error finding render color offset.");
 	}
 	
 	CreateNative("W3IsBuffInvised",NW3IsBuffInvised);

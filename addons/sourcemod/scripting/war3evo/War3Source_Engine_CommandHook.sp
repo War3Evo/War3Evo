@@ -442,7 +442,7 @@ bool:Internal_War3Source_SayCommand(client,String:arg1[256])
 		if(g_hCVar!=INVALID_HANDLE)
 		{
 			GetConVarString(g_hCVar, version, sizeof(version));
-			War3_ChatMessage(client,"War3Source Current Version: %s",version);
+			War3_ChatMessage(client,"War3Evo / War3Source Current Version: %s",version);
 		}
 		return returnblocking;
 	}
@@ -573,7 +573,7 @@ bool:Internal_War3Source_SayCommand(client,String:arg1[256])
 		}
 		else if(CommandCheck(arg1,"war3dev"))
 		{
-			War3_ChatMessage(client,"%T","War3Source Developers",client);
+			War3_ChatMessage(client,"%T","War3Evo Developers",client);
 			return returnblocking;
 		}
 		else if(CommandCheck(arg1,"myinfo"))

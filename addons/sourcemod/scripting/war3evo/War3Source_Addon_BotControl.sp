@@ -152,14 +152,14 @@ ScrambleBots()
 	if(GetConVarInt(botsetraces)){
 		if(GetConVarBool(botAnnounce))
 		{
-			//PrintToChatAll("\x01\x04[War3Source]\x01 %T","The bots races and levels have been scrambled.",LANG_SERVER);
+			//PrintToChatAll("\x01\x04[War3Evo]\x01 %T","The bots races and levels have been scrambled.",LANG_SERVER);
 				
 			for(new players = 1; players <= MaxClients; ++players)
 			{
 				if (IsClientConnected(players) && IsClientInGame(players)&& !IsFakeClient(players))
 				{
 					
-					PrintToChat(players,"\x01\x04[War3Source]\x01 %T","The bots jobs and levels have been scrambled.",players);
+					PrintToChat(players,"\x01\x04[War3Evo]\x01 %T","The bots jobs and levels have been scrambled.",players);
 				}
 			}
 		}

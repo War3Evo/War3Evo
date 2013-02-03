@@ -49,7 +49,7 @@ ShowMenuShop2(client){
 	new Diamonds=War3_GetDiamonds(client);
 	
 	new String:title[300];
-	Format(title,sizeof(title),"%T\n","[War3Source] Select an item to buy. You have {amount}/{amount} items",GetTrans(),GetClientItems2Owned(client),GetMaxShopitems2PerPlayer());
+	Format(title,sizeof(title),"%T\n","[War3Evo] Select an item to buy. You have {amount}/{amount} items",GetTrans(),GetClientItems2Owned(client),GetMaxShopitems2PerPlayer());
 	Format(title,sizeof(title),"%s%T\n \n",title,"You have {amount} Diamonds",GetTrans(),Diamonds);
 	
 	SetMenuTitle(shopMenu2,title);
@@ -186,7 +186,7 @@ InternalExceededMaxItemsMenuBuy(client)
 	decl String:itemname2[64];
 	W3GetItemName(WantsToBuy2[client],itemname2,sizeof(itemname2));
 	
-	SetMenuTitle(hMenu,"%T\n","[War3Source] You already have a max of {amount} items. Choose an item to replace with {itemname}. You will not get Diamonds back",GetTrans(),GetMaxShopitems2PerPlayer(),itemname2);
+	SetMenuTitle(hMenu,"%T\n","[War3Evo] You already have a max of {amount} items. Choose an item to replace with {itemname}. You will not get Diamonds back",GetTrans(),GetMaxShopitems2PerPlayer(),itemname2);
 	
 	decl String:itembuf2[4];
 	decl String:linestr2[96];

@@ -31,7 +31,7 @@ ShowMenuItemsinfo(client){
 	SetTrans(client);
 	new Handle:helpMenu=CreateMenu(ShowMenuItemsinfoSelected);
 	SetMenuExitButton(helpMenu,true);
-	SetMenuTitle(helpMenu,"%T","[War3Source] Shopmenu items",client);
+	SetMenuTitle(helpMenu,"%T","[War3Evo] Shopmenu items",client);
 	decl String:str[64];
 	decl String:numstr[4];
 	
@@ -80,7 +80,7 @@ public ShowMenuItemsinfo2(client,itemnum){
 	
 
 	
-	Format(str,sizeof(str),"%T\n%s","[War3Source] Item: {item} (identifier: {id})",client,str,shortname,str2);
+	Format(str,sizeof(str),"%T\n%s","[War3Evo] Item: {item} (identifier: {id})",client,str,shortname,str2);
 	
 	SetMenuTitle(helpMenu,str);
 	

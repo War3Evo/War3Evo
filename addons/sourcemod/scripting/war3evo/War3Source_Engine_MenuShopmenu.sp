@@ -46,7 +46,7 @@ ShowMenuShopCategory(client)
 	new gold = War3_GetGold(client);
 
 	new String:title[300];
-	Format(title,sizeof(title),"%T\n","[War3Source] Select an item category to browse. You have {amount}/{amount} items",GetTrans(),GetClientItemsOwned(client),GetMaxShopitemsPerPlayer());
+	Format(title,sizeof(title),"%T\n","[War3Evo] Select an item category to browse. You have {amount}/{amount} items",GetTrans(),GetClientItemsOwned(client),GetMaxShopitemsPerPlayer());
 
 	if(W3BuyUseCSMoney()) {
 		Format(title,sizeof(title),"%s \n",title);
@@ -97,7 +97,7 @@ ShowMenuShop(client, const String:category[]="") {
 	new gold=War3_GetGold(client);
 
 	new String:title[300];
-	Format(title,sizeof(title),"%T\n","[War3Source] Select an item to buy. You have {amount}/{amount} items",GetTrans(),GetClientItemsOwned(client),GetMaxShopitemsPerPlayer());
+	Format(title,sizeof(title),"%T\n","[War3Evo] Select an item to buy. You have {amount}/{amount} items",GetTrans(),GetClientItemsOwned(client),GetMaxShopitemsPerPlayer());
 	if(W3BuyUseCSMoney()) {
 		Format(title,sizeof(title),"%s \n",title);
 	}
@@ -328,7 +328,7 @@ War3M_ExceededMaxItemsMenuBuy(client)
 	decl String:itemname[64];
 	W3GetItemName(WantsToBuy[client],itemname,sizeof(itemname));
 
-	SetMenuTitle(hMenu,"%T\n","[War3Source] You already have a max of {amount} items. Choose an item to replace with {itemname}. You will not get gold back",GetTrans(),GetMaxShopitemsPerPlayer(),itemname);
+	SetMenuTitle(hMenu,"%T\n","[War3Evo] You already have a max of {amount} items. Choose an item to replace with {itemname}. You will not get gold back",GetTrans(),GetMaxShopitemsPerPlayer(),itemname);
 
 	decl String:itembuf[4];
 	decl String:linestr[96];

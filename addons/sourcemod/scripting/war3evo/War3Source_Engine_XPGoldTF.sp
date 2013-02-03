@@ -55,40 +55,40 @@ public OnPluginStart()
 
 	//if(!HookEventEx("teamplay_round_win",War3Source_RoundOverEvent))
 	//{
-	//	PrintToServer("[War3Source] Could not hook the teamplay_round_win event.");
+	//	PrintToServer("[War3Evo] Could not hook the teamplay_round_win event.");
 	//
 	//}
 	if(!HookEventEx("teamplay_point_captured",War3Source_PointCapturedEvent))
 	{
-		PrintToServer("[War3Source] Could not hook the teamplay_point_captured event.");
+		PrintToServer("[War3Evo] Could not hook the teamplay_point_captured event.");
 	}
 	if(!HookEventEx("teamplay_capture_blocked",War3Source_PointCapBlockedEvent))
 	{
-		PrintToServer("[War3Source] Could not hook the teamplay_capture_blocked event.");
+		PrintToServer("[War3Evo] Could not hook the teamplay_capture_blocked event.");
 	}
 	if(!HookEventEx("teamplay_flag_event",War3Source_FlagEvent))
 	{
-		PrintToServer("[War3Source] Could not hook the teamplay_flag_event event.");
+		PrintToServer("[War3Evo] Could not hook the teamplay_flag_event event.");
 	}
 	if(!HookEventEx("object_destroyed", War3Source_ObjectDestroyedEvent))
 	{
-		PrintToServer("[War3Source] Could not hook the object_destroyed event.");
+		PrintToServer("[War3Evo] Could not hook the object_destroyed event.");
 	}
 	if(!HookEventEx("mvm_pickup_currency", War3Source_MvMCurrencyEvent))
 	{
-		PrintToServer("[War3Source] Could not hook the mvm_pickup_currency event.");
+		PrintToServer("[War3Evo] Could not hook the mvm_pickup_currency event.");
 	}
 	if(!HookEventEx("mvm_tank_destroyed_by_players", War3Source_MvMTankBustedEvent))
 	{
-		PrintToServer("[War3Source] Could not hook the mvm_tank_destroyed_by_players event.");
+		PrintToServer("[War3Evo] Could not hook the mvm_tank_destroyed_by_players event.");
 	}
 	if(!HookEventEx("mvm_bomb_reset_by_player", War3Source_MvMResetBombEvent))
 	{
-		PrintToServer("[War3Source] Could not hook the mvm_bomb_reset_by_player event.");
+		PrintToServer("[War3Evo] Could not hook the mvm_bomb_reset_by_player event.");
 	}
 	if(!HookEventEx("mvm_medic_powerup_shared", War3Source_MvMSharedCanteenEvent))
 	{
-		PrintToServer("[War3Source] Could not hook the mvm_medic_powerup_shared event.");
+		PrintToServer("[War3Evo] Could not hook the mvm_medic_powerup_shared event.");
 	}
 
 	HookEvent("player_teleported",TF_XP_teleported);

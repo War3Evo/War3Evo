@@ -1,171 +1,171 @@
 "Phrases"
 {
-	"[War3Source]"
+	"[War3Evo]"
 	{
-		"en"		"{green} [War3Source] {default} "
+		"en"		"{green} [War3Evo] {default} "
 	}
 
 	//War3Source_Engine_AdminConsole.sp
-	"[War3Source] The syntax of the command is: war3_setxp <player> <xp>"
+	"[War3Evo] The syntax of the command is: war3_setxp <player> <xp>"
 	{
-		"en"		"[War3Source] The syntax of the command is: war3_setxp <player> <xp>"
+		"en"		"[War3Evo] The syntax of the command is: war3_setxp <player> <xp>"
 	}
-	"[War3Source] You just set {player} XP to {amount}"
+	"[War3Evo] You just set {player} XP to {amount}"
 	{
 		"#format"	"{1:s},{2:d}"
-		"en"		"[War3Source] You just set \"{1}'s\" XP to {2}."
+		"en"		"[War3Evo] You just set \"{1}'s\" XP to {2}."
 	}
 	"Admin {player} set your XP to {amount}"
 	{
 		"#format"	"{1:s},{2:d}"
 		"en"		"Admin \"{1}\" set your XP to {2}."
 	}
-	"[War3Source] The syntax of the command is: war3_givexp <player> <xp>"
+	"[War3Evo] The syntax of the command is: war3_givexp <player> <xp>"
 	{
-		"en"		"[War3Source] The syntax of the command is: war3_givexp <player> <xp>"
+		"en"		"[War3Evo] The syntax of the command is: war3_givexp <player> <xp>"
 	}
-	"[War3Source] You just gave {amount} XP to {player}"
+	"[War3Evo] You just gave {amount} XP to {player}"
 	{
 		"#format"	"{1:d},{2:s}"
-		"en"		"[War3Source] You just gave {1} XP to \"{2}\"."
+		"en"		"[War3Evo] You just gave {1} XP to \"{2}\"."
 	}
 	"Admin {player} gave you {amount} XP"
 	{
 		"#format"	"{1:s},{2:d}"
 		"en"		"Admin \"{1}\" gave you {2} XP."
 	}
-	"[War3Source] The syntax of the command is: war3_removexp <player> <xp>"
+	"[War3Evo] The syntax of the command is: war3_removexp <player> <xp>"
 	{
-		"en"		"[War3Source] The syntax of the command is: war3_removexp <player> <xp>"
+		"en"		"[War3Evo] The syntax of the command is: war3_removexp <player> <xp>"
 	}
-	"[War3Source] You just removed {amount} XP from {player}"
+	"[War3Evo] You just removed {amount} XP from {player}"
 	{
 		"#format"	"{1:d},{2:s}"
-		"en"		"[War3Source] You just removed {1} XP from \"{2}\"."
+		"en"		"[War3Evo] You just removed {1} XP from \"{2}\"."
 	}
 	"Admin {player} removed {amount} XP from you"
 	{
 		"#format"	"{1:s},{2:d}"
 		"en"		"Admin \"{1}\" removed {2} XP from you."
 	}
-	"[War3Source] The syntax of the command is: war3_War3_SetLevel <player> <level>"
+	"[War3Evo] The syntax of the command is: war3_War3_SetLevel <player> <level>"
 	{
-		"en"		"[War3Source] The syntax of the command is: war3_War3_SetLevel <player> <level>"
+		"en"		"[War3Evo] The syntax of the command is: war3_War3_SetLevel <player> <level>"
 	}
-	"[War3Source] You just set player {player} level to {amount}"
+	"[War3Evo] You just set player {player} level to {amount}"
 	{
 		"#format"	"{1:s},{2:d}"
-		"en"		"[War3Source] You just set player \"{1}'s\" level to {2}."
+		"en"		"[War3Evo] You just set player \"{1}'s\" level to {2}."
 	}
 	"Admin {player} set your level to {amount}, re-pick your skills"
 	{
 		"#format"	"{1:s},{2:d}"
 		"en"		"Admin \"{1}\" set your level to {2}, re-pick your skills."
 	}
-	"[War3Source] The syntax of the command is: war3_givelevel <player>"
+	"[War3Evo] The syntax of the command is: war3_givelevel <player>"
 	{
-		"en"		"[War3Source] The syntax of the command is: war3_givelevel <player>"
+		"en"		"[War3Evo] The syntax of the command is: war3_givelevel <player>"
 	}
-	"[War3Source] Player {player} is already at their max level"
+	"[War3Evo] Player {player} is already at their max level"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] Player \"{1}\" is already at their max level."
+		"en"		"[War3Evo] Player \"{1}\" is already at their max level."
 	}
-	"[War3Source] You just gave player {player} a level"
+	"[War3Evo] You just gave player {player} a level"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] You just gave player \"{1}\" a level."
+		"en"		"[War3Evo] You just gave player \"{1}\" a level."
 	}
 	"Admin {player} gave you a level"
 	{
 		"#format"	"{1:s}"
 		"en"		"Admin \"{1}\" gave you a level."
 	}
-	"[War3Source] The syntax of the command is: war3_removelevel <player>"
+	"[War3Evo] The syntax of the command is: war3_removelevel <player>"
 	{
-		"en"		"[War3Source] The syntax of the command is: war3_removelevel <player>"
+		"en"		"[War3Evo] The syntax of the command is: war3_removelevel <player>"
 	}
-	"[War3Source] Player {player} is already at level 0"
+	"[War3Evo] Player {player} is already at level 0"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] Player \"{1}\" is already at level 0."
+		"en"		"[War3Evo] Player \"{1}\" is already at level 0."
 	}
-	"[War3Source] You just removed a level from player {player}"
+	"[War3Evo] You just removed a level from player {player}"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] You just removed a level from player \"{1}\"."
+		"en"		"[War3Evo] You just removed a level from player \"{1}\"."
 	}
 	"Admin {player} removed a level from you, re-pick your skills"
 	{
 		"#format"	"{1:s}"
 		"en"		"Admin \"{1}\" removed a level from you, re-pick your skills."
 	}
-	"[War3Source] The syntax of the command is: war3_War3_SetGold <player> <gold>"
+	"[War3Evo] The syntax of the command is: war3_War3_SetGold <player> <gold>"
 	{
-		"en"		"[War3Source] The syntax of the command is: war3_War3_SetGold <player> <gold>"
+		"en"		"[War3Evo] The syntax of the command is: war3_War3_SetGold <player> <gold>"
 	}
-	"[War3Source] You just set player {player} gold to {amount}"
+	"[War3Evo] You just set player {player} gold to {amount}"
 	{
 		"#format"	"{1:s},{2:d}"
-		"en"		"[War3Source] You just set player \"{1}'s\" gold to {2}."
+		"en"		"[War3Evo] You just set player \"{1}'s\" gold to {2}."
 	}
 	"Admin {player} set your gold to {amount}"
 	{
 		"#format"	"{1:s},{2:d}"
 		"en"		"Admin \"{1}\" set your gold to {2}."
 	}
-	"[War3Source] You just set player {player} diamonds to {amount}"
+	"[War3Evo] You just set player {player} diamonds to {amount}"
 	{
 		"#format"	"{1:s},{2:d}"
-		"en"		"[War3Source] You just set player \"{1}'s\" diamonds to {2}."
+		"en"		"[War3Evo] You just set player \"{1}'s\" diamonds to {2}."
 	}
 	"Admin {player} set your diamonds to {amount}"
 	{
 		"#format"	"{1:s},{2:d}"
 		"en"		"Admin \"{1}\" set your diamonds to {2}."
 	}
-	"[War3Source] The syntax of the command is: war3_givegold <player> <gold>"
+	"[War3Evo] The syntax of the command is: war3_givegold <player> <gold>"
 	{
-		"en"		"[War3Source] The syntax of the command is: war3_givegold <player> <gold>"
+		"en"		"[War3Evo] The syntax of the command is: war3_givegold <player> <gold>"
 	}
-	"[War3Source] You just gave player {player} {amount} gold"
+	"[War3Evo] You just gave player {player} {amount} gold"
 	{
 		"#format"	"{1:s},{2:d}"
-		"en"		"[War3Source] You just gave player \"{1}\" {2} gold."
+		"en"		"[War3Evo] You just gave player \"{1}\" {2} gold."
 	}
 	"Admin {player} give you {amount} gold"
 	{
 		"#format"	"{1:s},{2:d}"
 		"en"		"Admin \"{1}\" give you {2} gold."
 	}
-	"[War3Source] The syntax of the command is: war3_givegold <player> <gold>"
+	"[War3Evo] The syntax of the command is: war3_givegold <player> <gold>"
 	{
-		"en"		"[War3Source] The syntax of the command is: war3_givegold <player> <gold>"
+		"en"		"[War3Evo] The syntax of the command is: war3_givegold <player> <gold>"
 	}
-	"[War3Source] You just removed {amount} gold from player {player}"
+	"[War3Evo] You just removed {amount} gold from player {player}"
 	{
 		"#format"	"{1:d},{2:s}"
-		"en"		"[War3Source] You just removed {1} gold from player \"{2}\"."
+		"en"		"[War3Evo] You just removed {1} gold from player \"{2}\"."
 	}
 	"Admin {player} removed {amount} gold from you"
 	{
 		"#format"	"{1:s},{2:d}"
 		"en"		"Admin \"{1}\" removed {2} gold from you."
 	}
-	"[War3Source] No players matched your query"
+	"[War3Evo] No players matched your query"
 	{
-		"en"		"[War3Source] No players matched your query."
+		"en"		"[War3Evo] No players matched your query."
 	}
 
 	//War3Source_Engine_AdminMenu.sp
-	"[War3Source] Select a player to administrate"
+	"[War3Evo] Select a player to administrate"
 	{
-		"en"		"[War3Source] Select a player to administrate."
+		"en"		"[War3Evo] Select a player to administrate."
 	}
-	"[War3Source] Administration options for {player}"
+	"[War3Evo] Administration options for {player}"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] Administration options for {1}."
+		"en"		"[War3Evo] Administration options for {1}."
 	}
 	"View detailed information"
 	{
@@ -213,10 +213,10 @@
 	{
 		"en"		"The player you selected has left the server."
 	}
-	"[War3Source] Info for {player}. Job: {racename} Gold: {amount} XP: {amount} Level: {amount} Levelbank: {amount}"
+	"[War3Evo] Info for {player}. Job: {racename} Gold: {amount} XP: {amount} Level: {amount} Levelbank: {amount}"
 	{
 		"#format"	"{1:s},{2:s},{3:d},{4:d},{5:d},{6:d}"
-		"en"		"[War3Source] Info for {1}.\nJob: {2}\nGold: {3}\nXP: {4}\nLevel: {5}\nLevelbank: {6}"
+		"en"		"[War3Evo] Info for {1}.\nJob: {2}\nGold: {3}\nXP: {4}\nLevel: {5}\nLevelbank: {6}"
 	}
 	"Back to options"
 	{
@@ -226,10 +226,10 @@
 	{
 		"en"		"The player has disconnected from the server."
 	}
-	"[War3Source] Select an option for {player}"
+	"[War3Evo] Select an option for {player}"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] Select an option for {1}."
+		"en"		"[War3Evo] Select an option for {1}."
 	}
 	"Give 100 XP"
 	{
@@ -275,10 +275,10 @@
 		"#format"	"{1:s},{2:d}"
 		"en"		"Admin \"{1}\" removed {2} XP from you."
 	}
-	"[War3Source] Select an item to give to {player}"
+	"[War3Evo] Select an item to give to {player}"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] Select an item to give to {1}."
+		"en"		"[War3Evo] Select an item to give to {1}."
 	}
 	"You gave {player} a {itemname}"
 	{
@@ -294,10 +294,10 @@
 	{
 		"en"		"The player already owns this item."
 	}
-	"[War3Source] Select a job for {player}"
+	"[War3Evo] Select a job for {player}"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] Select a job for {1}."
+		"en"		"[War3Evo] Select a job for {1}."
 	}
 	"You set player {player} to job {racename}"
 	{
@@ -309,10 +309,10 @@
 		"#format"	"{1:s},{2:s}"
 		"en"		"Admin \"{1}\" set you to job {2}."
 	}
-	"&[War3Source] Select an option for {player}"
+	"&[War3Evo] Select an option for {player}"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] Select an option for {1}."
+		"en"		"[War3Evo] Select an option for {1}."
 	}
 	"Give a level"
 	{
@@ -352,10 +352,10 @@
 		"#format"	"{1:s}"
 		"en"		"Admin \"{1}\" removed a level from you, re-pick your skills."
 	}
-	"&&[War3Source] Select an option for {player}"
+	"&&[War3Evo] Select an option for {player}"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] Select an option for {1}."
+		"en"		"[War3Evo] Select an option for {1}."
 	}
 	"Give 1 gold"
 	{
@@ -401,10 +401,10 @@
 		"#format"	"{1:s},{2:d}"
 		"en"		"Admin \"{1}\" removed {2} gold(s) from you."
 	}
-	"&&&[War3Source] Select an option for {player}"
+	"&&&[War3Evo] Select an option for {player}"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] Select an option for {1}."
+		"en"		"[War3Evo] Select an option for {1}."
 	}
 	"Give 1 level in levelbank"
 	{
@@ -479,9 +479,9 @@
 	{
 		"en"		"say !tomes5 to buy many tomes at once, up to 20"
 	}
-	"War3Source Developers"
+	"War3Evo Developers"
 	{
-		"en"		"Anthony (PimpinJuice) STEAM_0:1:6121386 and Ownz (DarkEnergy) STEAM_0:1:9724315 are developers for War3Source."
+		"en"		"El Diablo (STEAM_0:1:35173666) and LORD DAGOTHUR [X]-RATED (STEAM_0:0:5027348) are developers for War3Evo."
 	}
 	"Select a job first!!"
 	{
@@ -536,44 +536,44 @@
 	{
 		"en"		"Loading player data..."
 	}
-	"[War3Source] XP retrieval query: sending MAIN and load all jobs request! Time: {amount}"
+	"[War3Evo] XP retrieval query: sending MAIN and load all jobs request! Time: {amount}"
 	{
 		"#format"	"{1:.2f}"
-		"en"		"[War3Source] XP retrieval query: sending MAIN and load all jobs request! Time: {1}"
+		"en"		"[War3Evo] XP retrieval query: sending MAIN and load all jobs request! Time: {1}"
 	}
-	"[War3Source] War3 MAIN retrieval: gold {amount} Time {amount}"
+	"[War3Evo] War3 MAIN retrieval: gold {amount} Time {amount}"
 	{
 		"#format"	"{1:d},{2:.2f}"
-		"en"		"[War3Source] War3 MAIN retrieval: gold {1}. Time {2}"
+		"en"		"[War3Evo] War3 MAIN retrieval: gold {1}. Time {2}"
 	}
-	"[War3Source] XP Ret: Job {race} Level {amount} XP {amount} Time {amount}..."
+	"[War3Evo] XP Ret: Job {race} Level {amount} XP {amount} Time {amount}..."
 	{
 		"#format"	"{1:s},{2:d},{3:d},{4:.2f}"
-		"en"		"[War3Source] XP Ret: Job {1} Level {2} XP {3} Time {4}..."
+		"en"		"[War3Evo] XP Ret: Job {1} Level {2} XP {3} Time {4}..."
 	}
-	"[War3Source] Successfully retrieved data jobs, total of {amount} jobs were returned, {amount} are running on this server"
+	"[War3Evo] Successfully retrieved data jobs, total of {amount} jobs were returned, {amount} are running on this server"
 	{
 		"#format"	"{1:d},{2:d}"
-		"en"		"[War3Source] Successfully retrieved data jobs, total of {1} jobs were returned, {2} are running on this server."
+		"en"		"[War3Evo] Successfully retrieved data jobs, total of {1} jobs were returned, {2} are running on this server."
 	}
-	"[War3Source] Inserting fresh level xp data for {amount} jobs"
+	"[War3Evo] Inserting fresh level xp data for {amount} jobs"
 	{
 		"#format"	"{1:d}"
-		"en"		"[War3Source] Inserting fresh level xp data for {1} jobs."
+		"en"		"[War3Evo] Inserting fresh level xp data for {1} jobs."
 	}
 	"Successfully retrieved save data"
 	{
 		"en"		"Successfully retrieved save data."
 	}
-	"[War3Source] XP RETRIEVED IN {amount} seconds"
+	"[War3Evo] XP RETRIEVED IN {amount} seconds"
 	{
 		"#format"	"{1:.1f}"
-		"en"		"[War3Source] XP RETRIEVED IN {1} seconds"
+		"en"		"[War3Evo] XP RETRIEVED IN {1} seconds"
 	}
-	"[War3Source] Saving XP for job {racename}: LVL {amount} XP {amount}"
+	"[War3Evo] Saving XP for job {racename}: LVL {amount} XP {amount}"
 	{
 		"#format"	"{1:s},{2:d},{3:d}"
-		"en"		"[War3Source] Saving XP for job {1}: LVL {2} XP {3}"
+		"en"		"[War3Evo] Saving XP for job {1}: LVL {2} XP {3}"
 	}
 
 	//War3Source_Engine_DatabaseTop100.sp
@@ -582,27 +582,27 @@
 		"#format"	"{1:d},{2:d}"
 		"en"		"Ranked {1} of {2}."
 	}
-	"[War3Source] Select a player to view stats"
+	"[War3Evo] Select a player to view stats"
 	{
-		"en"		"[War3Source] Select a player to view stats."
+		"en"		"[War3Evo] Select a player to view stats."
 	}
 	"The player you selected has left the server"
 	{
 		"en"		"The player you selected has left the server."
 	}
-	"[War3Source] Info for {player}. Current Job: {racename} gold: {amount}"
+	"[War3Evo] Info for {player}. Current Job: {racename} gold: {amount}"
 	{
 		"#format"	"{1:s},{2:s},{3:d}"
-		"en"		"[War3Source] Info for {1}.\nCurrent Job: {2}\ngold: {3}"
+		"en"		"[War3Evo] Info for {1}.\nCurrent Job: {2}\ngold: {3}"
 	}
 	"The player has disconnected from the server"
 	{
 		"en"		"The player has disconnected from the server."
 	}
-	"[War3Source] {racename} info for {player}. Level: {amount} XP: {amount}"
+	"[War3Evo] {racename} info for {player}. Level: {amount} XP: {amount}"
 	{
 		"#format"	"{1:s},{2:s},{3:d},{4:d}"
-		"en"		"[War3Source] {1} info for {2}.\nLevel: {3}\nXP: {4}"
+		"en"		"[War3Evo] {1} info for {2}.\nLevel: {3}\nXP: {4}"
 	}
 	"{skillname} - Level {amount}"
 	{
@@ -613,10 +613,10 @@
 	{
 		"en"		"The player you selected has left the server."
 	}
-	"[War3Source] Top {amount} ({amount}-{amount})"
+	"[War3Evo] Top {amount} ({amount}-{amount})"
 	{
 		"#format"	"{1:d},{2:d},{3:d}"
-		"en"		"[War3Source] Top {1} ({2}-{3})"
+		"en"		"[War3Evo] Top {1} ({2}-{3})"
 	}
 	"{rank} - {player} (Lvl. {amount}, {amount} XP)"
 	{
@@ -641,14 +641,14 @@
 	}
 
 	//War3Source_Engine_HelpMenu.sp
-	"[War3Source] Select a command for more info"
+	"[War3Evo] Select a command for more info"
 	{
-		"en"		"[War3Source] Select a command for more info."
+		"en"		"[War3Evo] Select a command for more info."
 	}
-	"[War3Source] War3Source Command - {cmd}"
+	"[War3Evo] War3Evo Command - {cmd}"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] War3Source Command - {1}"
+		"en"		"[War3Evo] War3Evo Command - {1}"
 	}
 	"Description:"
 	{
@@ -664,7 +664,7 @@
 	}
 	"HelpMenu0desc"
 	{
-		"en"		"The main War3Source menu"
+		"en"		"The main War3Evo menu"
 	}
 	"HelpMenu1"
 	{
@@ -768,7 +768,7 @@
 	}
 	"HelpMenu13desc"
 	{
-		"en"		"View developers of War3Source"
+		"en"		"View developers of War3Evo"
 	}
 	"HelpMenu14"
 	{
@@ -800,7 +800,7 @@
 	}
 	"HelpMenu17desc"
 	{
-		"en"		"Bring up the war3source admin menu"
+		"en"		"Bring up the War3Evo admin menu"
 	}
 
 	//War3Source_Engine_ItemOwnership.sp
@@ -811,9 +811,9 @@
 	}
 
 	//War3Source_Engine_MenuChangerace.sp
-	"[War3Source] Select your desired job"
+	"[War3Evo] Select your desired job"
 	{
-		"en"		"[War3Source] Select your desired job"
+		"en"		"[War3Evo] Select your desired job"
 	}
 	"You Have {amount} levels in levelbank. Say levelbank to use it"
 	{
@@ -877,25 +877,25 @@
 	}
 
 	//War3Source_Engine_MenuItemsinfo.sp
-	"[War3Source] Shopmenu items"
+	"[War3Evo] Shopmenu items"
 	{
-		"en"		"[War3Source] Shopmenu items."
+		"en"		"[War3Evo] Shopmenu items."
 	}
-	"[War3Source] Item: {item} (identifier: {id})"
+	"[War3Evo] Item: {item} (identifier: {id})"
 	{
 		"#format"	"{1:s},{2:s}"
-		"en"		"[War3Source] Item: {1} (identifier: {2})"
+		"en"		"[War3Evo] Item: {1} (identifier: {2})"
 	}
 
 	//War3Source_Engine_MenuRacePlayerinfo.sp
-	"[War3Source] Select a job for more info"
+	"[War3Evo] Select a job for more info"
 	{
-		"en"		"[War3Source] Select a job for more info."
+		"en"		"[War3Evo] Select a job for more info."
 	}
-	"[War3Source] Information for job: {racename} (LVL {amount}/{amount})"
+	"[War3Evo] Information for job: {racename} (LVL {amount}/{amount})"
 	{
 		"#format"	"{1:s},{2:d},{3:d}"
-		"en"		"[War3Source] Information for job: {1} (LVL {2}/{3})"
+		"en"		"[War3Evo] Information for job: {1} (LVL {2}/{3})"
 	}
 	"{skillname} (LVL {amount}/{amount})"
 	{
@@ -920,10 +920,10 @@
 		"#format"	"{1:s}"
 		"en"		"See all players with job {1}"
 	}
-	"[War3Source] People who are job: {racename}"
+	"[War3Evo] People who are job: {racename}"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] People who are job: {1}"
+		"en"		"[War3Evo] People who are job: {1}"
 	}
 	"{player} (Level {amount}) [{team}]"
 	{
@@ -942,9 +942,9 @@
 	{
 		"en"		"playerinfo <optional name>: More than one target found";
 	}
-	"[War3Source] Select a player to view its information"
+	"[War3Evo] Select a player to view its information"
 	{
-		"en"		"[War3Source] Select a player to view its information";
+		"en"		"[War3Evo] Select a player to view its information";
 	}
 	"{player} ({racename} LVL {amount})"
 	{
@@ -956,10 +956,10 @@
 		"#format"	"{1:s},{2:s}"
 		"en"		"{1} ({2})";
 	}
-	"[War3Source] Information for {player}"
+	"[War3Evo] Information for {player}"
 	{
 		"#format"	"{1:s}"
-		"en"		"[War3Source] Information for {1}";
+		"en"		"[War3Evo] Information for {1}";
 	}
 	"Total levels: {amount}"
 	{
@@ -1013,10 +1013,10 @@
 	{
 		"en"		"You don't have any skill points to spend, if you want to reset your skills use resetskills."
 	}
-	"[War3Source] Select your desired skill. ({amount}/{amount})"
+	"[War3Evo] Select your desired skill. ({amount}/{amount})"
 	{
 		"#format"	"{1:d},{2:d}"
-		"en"		"[War3Source] Select your desired skill. ({1}/{2})"
+		"en"		"[War3Evo] Select your desired skill. ({1}/{2})"
 	}
 	"{skillname} (Skill Level {amount})"
 	{
@@ -1049,13 +1049,13 @@
 	}
 
 	//War3Source_Engine_MenuWar3Menu.sp
-	"[War3Source] Choose a task"
+	"[War3Evo] Choose a task"
 	{
-		"en"		"[War3Source] Choose a task."
+		"en"		"[War3Evo] Choose a task."
 	}
 	"War3Menu_Item0"
 	{
-		"en"		"View War3Source command list"
+		"en"		"View War3Evo command list"
 	}
 	"War3Menu_Item1"
 	{
@@ -1114,15 +1114,15 @@
 	}
 
 	//War3Source_Engine_Shopmenu.sp
-	"[War3Source] Select an item to buy. You have {amount}/{amount} items"
+	"[War3Evo] Select an item to buy. You have {amount}/{amount} items"
 	{
 		"#format"	"{1:d},{2:d}"
-		"en"		"[War3Source] Select an item to buy. You have {1}/{2} items"
+		"en"		"[War3Evo] Select an item to buy. You have {1}/{2} items"
 	}
-	"[War3Source] Select an item category to browse. You have {amount}/{amount} items"
+	"[War3Evo] Select an item category to browse. You have {amount}/{amount} items"
 	{
 		"#format"	"{1:d},{2:d}"
-		"en"		"(War3Source) Select an item category to browse. You have {1}/{2} items"
+		"en"		"(War3Evo) Select an item category to browse. You have {1}/{2} items"
 	}
 	"You have {amount} Gold"
 	{
@@ -1174,24 +1174,24 @@
 		"#format"	"{1:s}"
 		"en"		"You have successfully purchased {green}{1}{default}."
 	}
-	"[War3Source] You already have a max of {amount} items. Choose an item to replace with {itemname}. You will not get gold back"
+	"[War3Evo] You already have a max of {amount} items. Choose an item to replace with {itemname}. You will not get gold back"
 	{
 		"#format"	"{1:d},{2:s}"
-		"en"		"[War3Source] You already have a max of {1} items.\nChoose an item to replace with {2}.\nYou will not get gold back."
+		"en"		"[War3Evo] You already have a max of {1} items.\nChoose an item to replace with {2}.\nYou will not get gold back."
 	}
 
 	//War3Source_Engine_Statistics.sp
-	"A newer version of War3Source is available"
+	"A newer version of War3Evo is available"
 	{
-		"en"		"A newer version of War3Source is available"
+		"en"		"A newer version of War3Evo is available"
 	}
-	"Please download @ www.war3source.com"
+	"Please download @ www.War3Evo.com"
 	{
-		"en"		"Server Owner please update. www.war3source.com"
+		"en"		"Server Owner please update. www.War3Evo.com"
 	}
-	"Report a war3source bug: say war3bug <detailed description>"
+	"Report a War3Evo bug: say war3bug <detailed description>"
 	{
-		"en"		"Report a war3source bug: say war3bug <detailed description>"
+		"en"		"Report a War3Evo bug: say war3bug <detailed description>"
 	}
 	"You cannot use war3bug again so soon"
 	{
@@ -1486,7 +1486,7 @@
 	"WelcomeToServer"
 	{
 		"#format"	"{1:s},{2:s},{3:s}"
-		"en"		"Welcome to {1} War3Source server!\nYou get XP and gold for kills and objectives.\nEach level gained, you may choose a skill to level up.\n \nVisit the mod website @ Www.War3Source.Com\nVersion: {2} by {3}"
+		"en"		"Welcome to {1} War3Evo server!\nYou get XP and gold for kills and objectives.\nEach level gained, you may choose a skill to level up.\n \nVisit the mod website @ Www.War3Evo.Com\nVersion: {2} by {3}"
 	}
 	"ForHelpIntro"
 	{
@@ -1771,8 +1771,8 @@
 		"#format"	"{1:s}"
 		"en"		"Vengence blocked ({1})"
 	}
-	"[War3Source] Select a category"
+	"[War3Evo] Select a category"
 	{
-		"en"		"[War3Source] Select a category"
+		"en"		"[War3Evo] Select a category"
 	}
 }

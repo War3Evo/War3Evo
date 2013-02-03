@@ -75,7 +75,7 @@ public OnPluginStart()
 
 	if(!HookEventEx("teamplay_round_win",War3Source_RoundOverEvent)) //usual win xp
 	{
-		PrintToServer("[War3Source] Could not hook the teamplay_round_win event.");
+		PrintToServer("[War3Evo] Could not hook the teamplay_round_win event.");
 	}
 }
 public OnMapStart()
