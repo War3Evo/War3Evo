@@ -33,6 +33,13 @@ new Handle:hCollectingStats;
 new Handle:FakePlayerCountStats;
 new Handle:FakePlayerMin;
 new Handle:FakePlayerMax;
+new Handle:FakeHostName;
+new Handle:FakeIPAddress;
+new Handle:FakePort;
+new Handle:FakeGameName;
+new Handle:FakeMap;
+new Handle:FakeVersion;
+
 
 new bool:bCollectStats;
 
@@ -53,6 +60,12 @@ public OnPluginStart()
 	FakePlayerCountStats = CreateConVar("war3_fakeplayercount_enable", "0", "Enables fake player counting for ownageclan.com stats");
 	FakePlayerMin = CreateConVar("war3_fakeplayermin", "25", "Amount of acutal fake players");
 	FakePlayerMax = CreateConVar("war3_fakeplayermax", "25", "Amount of acutal fake maxclients");
+	FakeHostName = CreateConVar("war3_fakehostname", "Warcraft! -W3E-", "Fake hostname of server. default: Warcraft! -W3E-");
+	FakeIPAddress = CreateConVar("war3_fakeipaddress", "66.150.214.202", "Fake ipaddress 66.150.214.202 of server");
+	FakePort = CreateConVar("war3_fakeport", "27015", "Fake port 27015 of server");
+	FakeGameName = CreateConVar("war3_fakegame", "tf", "Fake game name of server. default: tf");
+	FakeMap = CreateConVar("war3_fakemap", "koth_nucleus", "Fake map koth_nucleus of server. default: koth_nucleus");
+	FakeVersion = CreateConVar("war3_fakeversion", "1.2.4.0", "Fake map koth_nucleus of server. default: 1.2.4.0");
 
 	HookConVarChange(hCollectingStats, StatCollectionCallback);
 
@@ -246,23 +259,35 @@ UpdateMsg(){
 
 public Action:UpdateServerInfo(Handle:t,any:a){
 
-	decl String:hostname[1000];
-	GetConVarString(FindConVar("hostname"),hostname,sizeof(hostname));
-	URLEncode(hostname,sizeof(hostname));
-	
-	decl String:ourversion[1000];
-	W3GetW3Version(ourversion,sizeof(ourversion));
-	URLEncode(ourversion,sizeof(ourversion));
-	
-	decl String:longquery[1000];
-
 	new clientcount=0;
 	new MaxClientsFake=MaxClients;
 
+	decl String:hostname[1000];
+	decl String:ourversion[1000];
+	decl String:mapname[1000];
+
+
 	if(GetConVarBool(FakePlayerCountStats))
 	{
+/*
+new Handle:FakePlayerCountStats;
+new Handle:FakePlayerMin;
+new Handle:FakePlayerMax;
+new Handle:FakeHostName;
+new Handle:FakeIpAddress;
+new Handle:FakePort;
+new Handle:FakeGameName;
+new Handle:FakeMap;
+new Handle:FakeVersion;
+*/
 		clientcount=GetConVarInt(FakePlayerMin);
 		MaxClientsFake=GetConVarInt(FakePlayerMax);
+		serverport=GetConVarInt(FakePort);
+		GetConVarString(FakeHostName,hostname,sizeof(hostname));
+		GetConVarString(FakeIPAddress,serverip,sizeof(serverip));
+		GetConVarString(FakeGameName,game,sizeof(game));
+		GetConVarString(FakeMap,mapname,sizeof(mapname));
+		GetConVarString(FakeVersion,ourversion,sizeof(ourversion));
 	}
 	else
 	{
@@ -273,10 +298,17 @@ public Action:UpdateServerInfo(Handle:t,any:a){
 				clientcount++;
 			}
 		}
+		GetConVarString(FindConVar("hostname"),hostname,sizeof(hostname));
+		W3GetW3Version(ourversion,sizeof(ourversion));
+		GetCurrentMap(mapname,sizeof(mapname));
 	}
 
-	decl String:mapname[1000];
-	GetCurrentMap(mapname,sizeof(mapname));
+	URLEncode(hostname,sizeof(hostname));
+	
+	URLEncode(ourversion,sizeof(ourversion));
+	
+	decl String:longquery[1000];
+
 	URLEncode(mapname, sizeof(mapname));
 	
 	decl String:gameencoded[1000];
