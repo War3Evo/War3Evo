@@ -110,7 +110,7 @@ public OnW3Denyable(W3DENY:event,client){
 					//	DP("racerestricitons.sp");
 					if(No_Message==false)
 					{
-						War3_ChatMessage(client,"%T","Race limit for your team has been reached, please select a different race. (MAX {amount})",GetTrans(),W3GetRaceMaxLimitTeam(race_selected,GetClientTeam(client)));
+						War3_ChatMessage(client,"%T","Job limit for your team has been reached, please select a different race. (MAX {amount})",GetTrans(),W3GetRaceMaxLimitTeam(race_selected,GetClientTeam(client)));
 					}
 				
 					new cvar=W3GetRaceMaxLimitTeamCvar(race_selected,GetClientTeam(client));
