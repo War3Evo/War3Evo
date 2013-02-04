@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "0.0.0.5 (2/3/2013) 8:30AM EST"
+#define PLUGIN_VERSION "0.0.0.6 (2/4/2013) 5:20AM EST"
 /**
 * File: War3Source_BloodMage.sp
 * Description: The Blood Mage race for War3Source.
@@ -93,7 +93,7 @@ public OnPluginStart()
 	HookEvent("player_death",PlayerDeathEvent);
 	HookEvent("player_team",PlayerTeamEvent);
 	
-	LoadTranslations("w3s.race.bloodlord.phrases");
+	//LoadTranslations("w3s.race.bloodlord.phrases");
 }
 
 public OnWar3LoadRaceOrItemOrdered(num)
