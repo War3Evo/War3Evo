@@ -114,6 +114,7 @@ public SDK_OnWeaponSwitch(client, weapon)
 				}
 				else
 				{
+					// heavy has hard time with 0.50
 					War3_SetBuff(client,fAttackSpeed,thisRaceID,0.70);
 					//DP("Weapon NOT wrench");
 				}
