@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "0.0.0.1"
+#define PLUGIN_VERSION "0.0.0.2 (2/5/2013)"
 /**
 * File: War3Source_HumanStronghold.sp
 * Description: The Human Stronghold race for War3Source.
@@ -10,6 +10,8 @@
 
 #include <sourcemod>
 #include "W3SIncs/War3Source_Interface"
+#include "W3SIncs/sdkhooks"
+
 
 new thisRaceID;
 
@@ -84,6 +86,46 @@ public OnWar3LoadRaceOrItemOrdered(num)
 	}
 }
 
+public OnClientPutInServer(client){
+	SDKHook(client,SDKHook_WeaponSwitchPost,SDK_OnWeaponSwitch);
+}
+
+public OnClientDisconnect(client){
+	SDKUnhook(client,SDKHook_WeaponSwitchPost,SDK_OnWeaponSwitch);
+}
+
+public SDK_OnWeaponSwitch(client, weapon)
+{
+//
+	if (ValidPlayer(client))
+	{
+		if(War3_GetRace(client)==thisRaceID)
+		{
+			if(IsValidEdict(weapon))
+			{
+				decl String:weaponName[128];
+				GetEdictClassname(weapon, weaponName, sizeof(weaponName));
+				//if(StrEqual(weaponName, "tf_weapon_wrench"))
+				if(W3IsDamageFromMelee(weaponName))
+				{
+					//new AutoDispenser_level=War3_GetSkillLevel(client,thisRaceID,SKILL_AUTO_DISPENSER);
+					War3_SetBuff(client,fAttackSpeed,thisRaceID,1.20);
+					//DP("Weapon wrench");
+				}
+				else
+				{
+					War3_SetBuff(client,fAttackSpeed,thisRaceID,0.70);
+					//DP("Weapon NOT wrench");
+				}
+			}
+			else
+			{
+				War3_SetBuff(client,fAttackSpeed,thisRaceID,0.70);
+			}
+		}
+	}
+}
+
 public OnMapStart()
 {
 	BeamSprite=PrecacheModel("materials/sprites/lgtning.vmt");
@@ -111,6 +153,7 @@ public OnRaceChanged(client,oldrace,newrace)
 		War3_SetBuff(client,fArmorPhysical,thisRaceID,0.0);
 		War3_SetBuff(client,fSlow,thisRaceID,1.0);
 		War3_SetBuff(client,fMaxSpeed,thisRaceID,1.0);
+		War3_SetBuff(client,fAttackSpeed,thisRaceID,1.0);
 		ARMOR_ENABLED[client]=false;
 		ARMOR_BUTTON_PRESSED[client]=false;
 		ARMOR_TIMER[client]=0;

@@ -701,7 +701,7 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 		
 		if(!W3HasImmunity(victim,Immunity_Items)&&!Perplexed(attacker))
 		{
-			if(War3_GetOwnsItem(attacker,shopItem[CLAW])&&ValidPlayer(victim,true,true)&&W3Chance(W3ChanceModifier(attacker))) // claws of attack
+			if(War3_GetOwnsItem(attacker,shopItem[CLAW])&&ValidPlayer(victim,true,true)&&W3Chance(W3ChanceModifier(attacker)) && !W3HasImmunity(victim, Immunity_Items)) // claws of attack
 			{
 				new Float:dmg=GetConVarFloat(ClawsAttackCvar);
 				if(dmg<0.0) 	dmg=0.0;
@@ -721,7 +721,7 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 				}
 			}
 				
-			if( War3_GetOwnsItem(attacker,shopItem[FROST]) && !bFrosted[victim])
+			if( War3_GetOwnsItem(attacker,shopItem[FROST]) && !bFrosted[victim] && !W3HasImmunity(victim, Immunity_Items))
 			{
 				/*new chance;
 				switch (TF2_GetPlayerClass(attacker))
@@ -768,7 +768,7 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 					}
 				}
 				if(GetRandomInt(1, 100) <= chance) */
-				if(W3Chance(W3ChanceModifier(attacker)))
+				if(W3Chance(W3ChanceModifier(attacker)) && !W3HasImmunity(victim, Immunity_Items))
 				{
 					new Float:speed_frost=GetConVarFloat(OrbFrostCvar);
 					if(speed_frost<=0.0) speed_frost=0.01; // 0.0 for override removes
@@ -784,7 +784,7 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 			}
 	
 
-			if(War3_GetOwnsItem(attacker,shopItem[MASK]) && W3Chance(W3ChanceModifier(attacker))) // Mask of death
+			if(War3_GetOwnsItem(attacker,shopItem[MASK]) && W3Chance(W3ChanceModifier(attacker)) && !W3HasImmunity(victim, Immunity_Items)) // Mask of death
 			{
 				new Float:hp_percent=GetConVarFloat(MaskDeathCvar);
 				if(hp_percent<0.0)	hp_percent=0.0;
@@ -1073,7 +1073,7 @@ public OnW3TakeDmgBullet(victim,attacker,Float:damage)
 					//DP(GetWeapon);//
 					//StrEqual( wpnstr, "weapon_knife" )
 					//if(!W3HasImmunity(attacker,Immunity_Skills)&&skilllevel_MagicArmorPassiveSkills>0&&War3_GetRace(victim)==thisRaceID&&TF2_GetPlayerClass(attacker)==TFClass_Spy&&War3_Chance(NightGuardsHelmChance[skilllevel_PassiveSkills])&&damagetype==135270528&&!Perplexed(victim)){
-					if(!WeaponIsCritial)
+					if(!WeaponIsCritial && !W3HasImmunity(victim, Immunity_Items))
 					{
 						TF2_IgnitePlayer(victim, attacker);
 						g_fExtinguishNow[victim] = GetGameTime() + fSecondsTillExtinguish;

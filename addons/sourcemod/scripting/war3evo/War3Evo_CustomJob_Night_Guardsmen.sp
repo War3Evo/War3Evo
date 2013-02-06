@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "0.0.0.2 (2/1/2013) 2:01AM EST"
+#define PLUGIN_VERSION "0.0.0.3 (2/5/2013)"
 
 #pragma semicolon 1    ///WE RECOMMEND THE SEMICOLON
 #pragma tabsize 0     // doesn't mess with how you format your lines
@@ -12,6 +12,7 @@
 //#include <tf2>
 #include "W3SIncs/sdkhooks"
 #include "W3SIncs/War3Source_Interface"
+
 public W3ONLY(){} //unload this?
 
 public Plugin:myinfo =
@@ -392,6 +393,53 @@ public OnWar3LoadRaceOrItemOrdered2(num)
 	}
 }
 
+public OnClientPutInServer(client){
+	SDKHook(client,SDKHook_WeaponSwitchPost,SDK_OnWeaponSwitch);
+
+	// Night Guardsman Helm
+	SDKHook(client,SDKHook_TraceAttack,SDK_Forwarded_TraceAttack);
+}
+
+public OnClientDisconnect(client){
+	SDKUnhook(client,SDKHook_WeaponSwitchPost,SDK_OnWeaponSwitch);
+
+	// Night Guardsman Helm
+	SDKUnhook(client,SDKHook_TraceAttack,SDK_Forwarded_TraceAttack);
+}
+
+public SDK_OnWeaponSwitch(client, weapon)
+{
+//
+	if (ValidPlayer(client))
+	{
+		if(War3_GetRace(client)==thisRaceID)
+		{
+			if(IsValidEdict(weapon))
+			{
+				decl String:weaponName[128];
+				GetEdictClassname(weapon, weaponName, sizeof(weaponName));
+				//if(StrEqual(weaponName, "tf_weapon_wrench"))
+				if(W3IsDamageFromMelee(weaponName))
+				{
+					//new AutoDispenser_level=War3_GetSkillLevel(client,thisRaceID,SKILL_AUTO_DISPENSER);
+					War3_SetBuff(client,fAttackSpeed,thisRaceID,1.20);
+					//DP("Weapon wrench");
+				}
+				else
+				{
+					War3_SetBuff(client,fAttackSpeed,thisRaceID,0.50);
+					//DP("Weapon NOT wrench");
+				}
+			}
+			else
+			{
+				War3_SetBuff(client,fAttackSpeed,thisRaceID,0.50);
+			}
+		}
+	}
+}
+
+
 public W3CvarCooldownHandler(Handle:cvar, const String:oldValue[], const String:newValue[])
 {
 	new Float:value = StringToFloat(newValue);
@@ -428,6 +476,7 @@ public RemovePassiveSkills(client)
 	War3_SetBuff(client,fArmorPhysical,thisRaceID,0.0);
 	War3_SetBuff(client,fArmorMagic,thisRaceID,0.0);
 	War3_SetBuff(client,fDamageModifier,thisRaceID,0.0);
+	War3_SetBuff(client,fAttackSpeed,thisRaceID,1.0);
 }
 
 //public OnUltimateCommand(client,ability,bool:pressed)
@@ -816,14 +865,6 @@ public OnWar3EventDeath(victim)
 				TurtledWard[victim]=false;
 			}*/
 	}
-}
-
-// Night Guardsman Helm
-public OnClientPutInServer(client){
-	SDKHook(client,SDKHook_TraceAttack,SDK_Forwarded_TraceAttack);
-}
-public OnClientDisconnect(client){
-	SDKUnhook(client,SDKHook_TraceAttack,SDK_Forwarded_TraceAttack);
 }
 
 public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon)
