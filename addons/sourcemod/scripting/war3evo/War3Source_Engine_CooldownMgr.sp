@@ -1,3 +1,5 @@
+#define PLUGIN_VERSION "0.0.0.1"
+
 //Cooldown manager
 //keeps track of all cooldowns
 
@@ -65,22 +67,16 @@ public Plugin:myinfo=
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_CoolDownMGR",PLUGIN_VERSION,"War3evo Cool Down Manager",FCVAR_PLUGIN);
+
 	CreateTimer(0.1,DeciSecondTimer,_,TIMER_REPEAT);
 
 }
 public OnMapStart()
 {
-	if(GAMECSGO){
-		strcopy(ultimateReadySound,sizeof(ultimateReadySound),"music/war3source/ult_ready.mp3");
-		strcopy(abilityReadySound,sizeof(abilityReadySound),"music/war3source/ability_refresh.mp3");
-		War3_PrecacheSound("music/war3source/csgo/ui/hint.mp3");
-	}
-	else
-	{
-		strcopy(ultimateReadySound,sizeof(ultimateReadySound),"war3source/ult_ready.mp3");
-		strcopy(abilityReadySound,sizeof(abilityReadySound),"war3source/ability_refresh.mp3");
-		War3_PrecacheSound("UI/hint.wav");
-	}
+	strcopy(ultimateReadySound,sizeof(ultimateReadySound),"war3source/ult_ready.mp3");
+	strcopy(abilityReadySound,sizeof(abilityReadySound),"war3source/ability_refresh.mp3");
+	War3_PrecacheSound("UI/hint.wav");
 
 	for(new i=0;i<MAXTHREADS;i++){
 		expireTime[i]=0.0;
@@ -418,8 +414,8 @@ CooldownExpired(i,bool:expiredByTimer)
 	CooldownPointer[client][raceid][skillNum]=-1;
 
 	if(expiredByTimer){
-		if(ValidPlayer(client,true)&&Cooldown[i][cprintmsgonexpire]&& (  (W3()&&War3_GetRace(client)==raceid) ||(SH()&&SHHasHero(client,raceid))    )   ){ //if still the same race and alive
-			if(War3_GetSkillLevel(client,raceid,skillNum)>0||SH()){
+		if(ValidPlayer(client,true)&&Cooldown[i][cprintmsgonexpire]&&(War3_GetRace(client)==raceid)){ //if still the same race and alive
+			if(War3_GetSkillLevel(client,raceid,skillNum)>0){
 			
 				new String:skillname[64];
 				SetTrans(client);
@@ -477,24 +473,12 @@ public OnWar3EventSpawn(client){
 	
 
 	CheckCooldownsForExpired(true,client)
-	if(W3()){
-		new race=War3_GetRace(client);
-		for(new i=1;i<MAXSKILLCOUNT;i++){
-			if(CooldownOnSpawn[race][i]){ //only his race
-				
-				Internal_CreateCooldown(client,CooldownOnSpawnDuration[race][i],race,i,false,CdOnSpawnPrintOnExpire[race][i]);
-			}
-			
+	new race=War3_GetRace(client);
+	for(new i=1;i<MAXSKILLCOUNT;i++){
+		if(CooldownOnSpawn[race][i]){ //only his race
+
+			Internal_CreateCooldown(client,CooldownOnSpawnDuration[race][i],race,i,false,CdOnSpawnPrintOnExpire[race][i]);
 		}
-	}
-	if(SH()){
-		new skillindex=0; //zeroth skill always in SH
-		for(new hero=1;hero<=War3_GetRacesLoaded();hero++){
-			if(CooldownOnSpawn[hero][skillindex]){ 
-				
-				Internal_CreateCooldown(client,CooldownOnSpawnDuration[hero][skillindex],hero,skillindex,false,CdOnSpawnPrintOnExpire[hero][skillindex]);
-			}
-			
-		}
+
 	}
 }

@@ -15,7 +15,7 @@
 	}
 	"naix_skill_Infest_desc"
 	{
-		"en"		"Regains #1# health upon killing an enemy.\nYou teleport to victim location if you are ducking"
+		"en"		"Regains #1# health upon killing an enemy.\nYou teleport to victim location if you are ducking\n(only once every 10 seconds.)"
 	}
 
 	"naix_skill_BloodBath"
@@ -33,7 +33,7 @@
 	}
 	"naix_skill_Feast_desc"
 	{
-		"en"		"Regenerates #1# percent of enemy's current HP on hit."
+		"en"		"Regenerates #1# percent of enemy's current HP chance on hit."
 	}
 
 	"naix_skill_Rage"
@@ -75,5 +75,9 @@
 	"You are no longer in rage mode"
 	{
 		"en"		"You are no longer in rage mode"
+	}
+	"NoEmptyLocation"
+	{		
+		"en"		"No empty location found"
 	}
 }

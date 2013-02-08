@@ -16,11 +16,8 @@ public Plugin:myinfo =
 	author = "Smilax", //with help from Glider
 	description = "The Dragonborn race for War3Source.",
 	version = "2.0.0.0",
-	url = "http://cgaclan.com/"
+	url = "http://www.war3evo.com/"
 };
-public LoadCheck(){
-	return GameTF();
-}
 
 new SKILL_ROAR,SKILL_SCALES,SKILL_DRAGONBORN,ULTIMATE_DRAGONBREATH;
 /*
@@ -56,9 +53,9 @@ new Float:victimvec[3]={0.0,0.0,0.0};
 new Float:DragonBreathRange[5]={0.0,400.0,500.0,600.0,700.0};
 
 // Sounds
-new String:roarsound[256]; //="war3source/dragonborn/roar.mp3";
-new String:ultsndblue[256]; //="war3source/dragonborn/ultblue.mp3";
-new String:ultsndred[256]; //="war3source/dragonborn/ultred.mp3";
+new String:roarsound[]="war3source/dragonborn/roar.mp3";
+new String:ultsndblue[]="war3source/dragonborn/ultblue.mp3";
+new String:ultsndred[]="war3source/dragonborn/ultred.mp3";
 
 
 public OnWar3LoadRaceOrItemOrdered(num)
@@ -83,18 +80,6 @@ public OnPluginStart()
 
 public OnMapStart()
 {
-	if(GAMECSGO)
-	{
-		strcopy(roarsound,sizeof(roarsound),"music/war3source/dragonborn/roar.mp3");
-		strcopy(ultsndblue,sizeof(ultsndblue),"music/war3source/dragonborn/ultblue.mp3");
-		strcopy(ultsndred,sizeof(ultsndred),"music/war3source/dragonborn/ultred.mp3");
-	}
-	else
-	{
-		strcopy(roarsound,sizeof(roarsound),"war3source/dragonborn/roar.mp3");
-		strcopy(ultsndblue,sizeof(ultsndblue),"war3source/dragonborn/ultblue.mp3");
-		strcopy(ultsndred,sizeof(ultsndred),"war3source/dragonborn/ultred.mp3");
-	}
 
 	War3_PrecacheParticle("explosion_trailSmoke");//ultimate trail
 	War3_PrecacheParticle("burningplayer_flyingbits"); //Red Team foot effect
@@ -126,7 +111,7 @@ public OnUltimateCommand(client,race,bool:pressed)
 				if(target>0)
 				{
 					EmitSoundToAll(ultsndblue,client);
-					EmitSoundToAll(ultsndblue,client);
+					EmitSoundToAll(ultsndblue,target); //play sound to target ... - Dagothur 1/16/2013
 					GetClientAbsOrigin(target,victimvec);
 					TF2_AddCondition(target, TFCond_Jarated, 5.0);
 					AttachThrowAwayParticle(target, "waterfall_bottomwaves", victimvec, "", 2.0);
@@ -191,11 +176,11 @@ public OnAbilityCommand(client,ability,bool:pressed)
 						GetClientAbsOrigin(i,VictimPos);
 						if(GetVectorDistance(AttackerPos,VictimPos)<RoarRadius)
 						{
-							if(GetClientTeam(i)!=AttackerTeam&&!W3HasImmunity(client,Immunity_Skills))
+							if(GetClientTeam(i)!=AttackerTeam&&!W3HasImmunity(i,Immunity_Skills)) //fixed immunity; this was checking if the dragonborn had skill immunity rather than the target - Dagothur 1/16/2013
 							{
 								//TF2_StunPlayer(client, Float:duration, Float:slowdown=0.0, stunflags, attacker=0);
 								EmitSoundToAll(roarsound,client);
-								EmitSoundToAll(roarsound,client);
+								EmitSoundToAll(roarsound,i); //fixed playing the roar sound to the affected player; this used to play it to the client, which as you can see above, resulted in it being played twice - Dagothur 1/16/2013
 								TF2_StunPlayer(i, RoarDuration[skilllvl], _, TF_STUNFLAGS_GHOSTSCARE,client);
 								War3_CooldownMGR(client,RoarCooldownTime,thisRaceID,SKILL_ROAR,_,_);
 								GetClientAbsOrigin(client,dragvec);

@@ -40,17 +40,17 @@ public OnPluginStart()
 	MyWeaponsOffset=FindSendPropOffs("CBaseCombatCharacter","m_hMyWeapons");
 	if(MyWeaponsOffset==-1)
 	{
-		PrintToServer("[War3Source] Error finding weapon list offset.");
+		PrintToServer("[War3Evo] Error finding weapon list offset.");
 	}
 	Clip1Offset=FindSendPropOffs("CBaseCombatWeapon","m_iClip1");
 	if(Clip1Offset==-1)
 	{
-		PrintToServer("[War3Source] Error finding clip1 offset.");
+		PrintToServer("[War3Evo] Error finding clip1 offset.");
 	}
 	AmmoOffset=FindSendPropOffs("CBasePlayer","m_iAmmo");
 	if(AmmoOffset==-1)
 	{
-		PrintToServer("[War3Source] Error finding ammo offset.");
+		PrintToServer("[War3Evo] Error finding ammo offset.");
 	}
 }
 

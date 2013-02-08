@@ -119,7 +119,7 @@ stock SH_SetBuff(client,W3Buff:buffindex,heroid,any:value){
 
 
 /** 
- * Prints a message in the chat area with [War3Source] pre-appended.
+ * Prints a message in the chat area with [War3Evo] pre-appended.
  * Support color tags: {default}, {green}, {lightgreen}, {red}, {blue}, {olive}.
  * 
  * @param client      Client index, pass 0 for message to all.

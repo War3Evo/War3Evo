@@ -38,15 +38,12 @@ public OnPluginStart()
 	m_OffsetActiveWeapon=FindSendPropOffs("CBasePlayer","m_hActiveWeapon");
 	if(m_OffsetActiveWeapon==-1)
 	{
-		LogError("[War3Source] Error finding active weapon offset.");
+		LogError("[War3Evo] Error finding active weapon offset.");
 	}
 	m_OffsetNextPrimaryAttack= FindSendPropOffs("CBaseCombatWeapon","m_flNextPrimaryAttack");
 	if(m_OffsetNextPrimaryAttack==-1)
 	{
-		LogError("[War3Source] Error finding active weapon offset.");
-	}
-	if(War3_GetGame()==CS || War3_GetGame()==L4D2){
-		HookEvent("weapon_fire",WeaponFireEvent, EventHookMode_Pre);
+		LogError("[War3Evo] Error finding active weapon offset.");
 	}
 	RegConsoleCmd("w3dropweapon",cmddroptest);
 }

@@ -19,7 +19,7 @@ public Plugin:myinfo =
 public OnPluginStart()
 {
 	// Revan: keyhinttext works with CS:S but weird symbols will be displayed.. probably because that message string(not a cs:go issue)
-	g_hCvarEnable = CreateConVar("War3_RightTextDisp",(War3_GetGame()==Game_CSGO)?"0":"1","Enables the right-hand text display of war3source information",_,true,0.0,true,1.0);
+	g_hCvarEnable = CreateConVar("War3_RightTextDisp","1","Enables the right-hand text display of War3Evo information",_,true,0.0,true,1.0);
 	if(g_hCvarEnable == INVALID_HANDLE) {
 		SetFailState("could not create convar");
 	}

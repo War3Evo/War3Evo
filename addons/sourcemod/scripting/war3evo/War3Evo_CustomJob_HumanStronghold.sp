@@ -1,3 +1,4 @@
+#define PLUGIN_VERSION "0.0.0.2 (2/5/2013)"
 /**
 * File: War3Source_HumanStronghold.sp
 * Description: The Human Stronghold race for War3Source.
@@ -9,7 +10,9 @@
 
 #include <sourcemod>
 #include "W3SIncs/War3Source_Interface"
-public W3ONLY(){} //unload this?
+#include "W3SIncs/sdkhooks"
+
+
 new thisRaceID;
 
 new Handle:ultCooldownCvar;
@@ -52,7 +55,8 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
-	
+	CreateConVar("war3evo_HumanStronghold",PLUGIN_VERSION,"War3evo Job Human Stronghold",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+
 	ultCooldownCvar=CreateConVar("war3_human_ultimate_cooldown","30.0","Cooldown between teleports");
 	
 	//LoadTranslations("w3s.race.human.phrases");
@@ -62,20 +66,64 @@ public OnWar3LoadRaceOrItemOrdered(num)
 {
 	if(num==20)
 	{
+		// create a "Race trait comment = You do normal damage with seige and half damage without siege"
+		// need to create a race trait thingy that allows you to put comments into the race information
+		// without having to create a skill.
 		thisRaceID=War3_CreateNewRace("Human Stronghold","humanstronghold");
 		SKILL_HEALTH=War3_AddRaceSkill(thisRaceID,"Devotion Aura",
-        "Gives you additional 30/60/80/100 health and Increased Magical resistance 1/2/3/4.\n(Only Works in Siege.)",false,4);
+		"Gives you additional 30/60/80/100 health and Increased Magical resistance 1/2/3/4.\n(Only Works in Siege.)",false,4);
 		SKILL_ARMOR=War3_AddRaceSkill(thisRaceID,"Devotion Armor",
-        "1-4 physical armor (always) and when maxed it gives 100% Immunity to crits (only during under siege)\nReduces speed down to 85%/80%/75%/70% (always)",false,4);
+		"1-4 physical armor (always) and when maxed it gives 100% Immunity to crits (only during under siege)\nReduces speed down to 85%/80%/75%/70% (always)",false,4);
 		SKILL_SIEGE=War3_AddRaceSkill(thisRaceID,"Siege",
-        "You can not move while in Siege mode.\nYou Obtain 1-4 Addition Armor and Magical Resistance.\nSlight Health Regeneration (+ability)",false,4);
+		"You can not move while in Siege mode.\nYou Obtain 1-4 Addition Armor and Magical Resistance.\nSlight Health Regeneration(+ability)",false,4);
 		SKILL_ADVANCED_ARMOR=War3_AddRaceSkill(thisRaceID,"Advanced Siege",
-        "1-4 additional physical Armor.(Added to Siege Mode Only)",false,4);
+		"1-4 additional physical Armor.(Added to Siege Mode Only)",false,4);
 		ULT_LASTSTAND=War3_AddRaceSkill(thisRaceID,"Last Stand",
-        "Gives Uber and 25% more Attack power to self for 1/2/3/4 seconds.\n(Must be in siege mode)",true,4);
+		"Gives Uber and 25% more Attack power to self for 1/2/3/4 seconds.\n(Must be in siege mode)",true,4);
 		W3SkillCooldownOnSpawn(thisRaceID,ULT_LASTSTAND,10.0,_);
 		War3_CreateRaceEnd(thisRaceID);
-        War3_SetDependency(thisRaceID, SKILL_ADVANCED_ARMOR, SKILL_SIEGE, 4);
+		War3_SetDependency(thisRaceID, SKILL_ADVANCED_ARMOR, SKILL_SIEGE, 4);
+	}
+}
+
+public OnClientPutInServer(client){
+	SDKHook(client,SDKHook_WeaponSwitchPost,SDK_OnWeaponSwitch);
+}
+
+public OnClientDisconnect(client){
+	SDKUnhook(client,SDKHook_WeaponSwitchPost,SDK_OnWeaponSwitch);
+}
+
+public SDK_OnWeaponSwitch(client, weapon)
+{
+//
+	if (ValidPlayer(client))
+	{
+		if(War3_GetRace(client)==thisRaceID)
+		{
+			if(IsValidEdict(weapon))
+			{
+				decl String:weaponName[128];
+				GetEdictClassname(weapon, weaponName, sizeof(weaponName));
+				//if(StrEqual(weaponName, "tf_weapon_wrench"))
+				if(W3IsDamageFromMelee(weaponName))
+				{
+					//new AutoDispenser_level=War3_GetSkillLevel(client,thisRaceID,SKILL_AUTO_DISPENSER);
+					War3_SetBuff(client,fAttackSpeed,thisRaceID,1.20);
+					//DP("Weapon wrench");
+				}
+				else
+				{
+					// heavy has hard time with 0.50
+					War3_SetBuff(client,fAttackSpeed,thisRaceID,0.70);
+					//DP("Weapon NOT wrench");
+				}
+			}
+			else
+			{
+				War3_SetBuff(client,fAttackSpeed,thisRaceID,0.70);
+			}
+		}
 	}
 }
 
@@ -84,31 +132,32 @@ public OnMapStart()
 	BeamSprite=PrecacheModel("materials/sprites/lgtning.vmt");
 	HaloSprite=PrecacheModel("materials/sprites/halo01.vmt");
 	
-   	War3_PrecacheSound(transform_sound);
-    for(new i;i<100;i++)
-    {
-     ARMOR_TIMER[i]=0;
-     ARMOR_ENABLED[i]=false;
-     ARMOR_BUTTON_PRESSED[i]=false;
-    }
+	War3_PrecacheSound(transform_sound);
+	for(new i;i<100;i++)
+	{
+	 ARMOR_TIMER[i]=0;
+	 ARMOR_ENABLED[i]=false;
+	 ARMOR_BUTTON_PRESSED[i]=false;
+	}
 }
 
 public OnRaceChanged(client,oldrace,newrace)
 {
 	if(newrace!=thisRaceID)
 	{
-        War3_SetBuff(client,fHPRegen,thisRaceID,0.0);
+		War3_SetBuff(client,fHPRegen,thisRaceID,0.0);
 		War3_SetBuff(client,fInvisibilitySkill,thisRaceID,1.0); // if we aren't their race anymore we shouldn't be controlling their alpha
 		War3_SetBuff(client,iAdditionalMaxHealth,thisRaceID,0);
-        War3_SetBuff(client,fArmorPhysical,thisRaceID,0.0);
-        War3_SetBuff(client,fArmorMagic,thisRaceID,0.0);
-        War3_SetBuff(client,bNoMoveMode,thisRaceID,false);
-        War3_SetBuff(client,fArmorPhysical,thisRaceID,0.0);
+		War3_SetBuff(client,fArmorPhysical,thisRaceID,0.0);
+		War3_SetBuff(client,fArmorMagic,thisRaceID,0.0);
+		War3_SetBuff(client,bNoMoveMode,thisRaceID,false);
+		War3_SetBuff(client,fArmorPhysical,thisRaceID,0.0);
 		War3_SetBuff(client,fSlow,thisRaceID,1.0);
 		War3_SetBuff(client,fMaxSpeed,thisRaceID,1.0);
-        ARMOR_ENABLED[client]=false;
-        ARMOR_BUTTON_PRESSED[client]=false;
-        ARMOR_TIMER[client]=0;
+		War3_SetBuff(client,fAttackSpeed,thisRaceID,1.0);
+		ARMOR_ENABLED[client]=false;
+		ARMOR_BUTTON_PRESSED[client]=false;
+		ARMOR_TIMER[client]=0;
 	}
 	else
 	{
@@ -141,22 +190,22 @@ public OnUltimateCommand(client,race,bool:pressed)
 			
 			if(War3_SkillNotInCooldown(client,thisRaceID,ULT_LASTSTAND,true)) //not in the 0.2 second delay when we check stuck via moving
 			{
-				// LAST STAND
-				// Gives Uber and 25% more Attack power to self for 2/4/6/8 seconds
-				// Must be in siege mode
-				if(ARMOR_ENABLED[client])
-				{
-					// is in siege mode
-					TF2_AddCondition(client,TFCond_Ubercharged,fLastStandUber[ult_level]);
-					War3_SetBuff(client,fAttackSpeed,thisRaceID,1.25);
-					CreateTimer(fLastStandUber[ult_level],Timer_Disable_Ultimate,GetClientUserId(client));
-					//new Float:cooldown=GetConVarFloat(ultCooldownCvar);
-					War3_CooldownMGR(client,GetConVarFloat(ultCooldownCvar),thisRaceID,ULT_LASTSTAND,_,_);
-				}
-				else
-				{
-					W3Hint(client,HINT_SKILL_STATUS,4.0,"Must be Siege Mode");
-				}
+	// LAST STAND
+	// Gives Uber and 25% more Attack power to self for 2/4/6/8 seconds
+	// Must be in siege mode
+	if(ARMOR_ENABLED[client])
+	{
+		// is in siege mode
+		TF2_AddCondition(client,TFCond_Ubercharged,fLastStandUber[ult_level]);
+		War3_SetBuff(client,fAttackSpeed,thisRaceID,1.25);
+		CreateTimer(fLastStandUber[ult_level],Timer_Disable_Ultimate,GetClientUserId(client));
+		//new Float:cooldown=GetConVarFloat(ultCooldownCvar);
+		War3_CooldownMGR(client,GetConVarFloat(ultCooldownCvar),thisRaceID,ULT_LASTSTAND,_,_);
+	}
+	else
+	{
+		W3Hint(client,HINT_SKILL_STATUS,4.0,"Must be Siege Mode");
+	}
 			}
 		}
 		else
@@ -185,22 +234,22 @@ public OnSkillLevelChanged(client,race,skill,newskilllevel)
 public OnWar3EventSpawn(client){
 	if(War3_GetRace(client)==thisRaceID && ARMOR_ENABLED[client])
 	{
-        War3_SetBuff(client,fHPRegen,thisRaceID,0.0);
-        War3_SetBuff(client,bNoMoveMode,thisRaceID,false);
-        War3_SetBuff(client,fArmorPhysical,thisRaceID,0.0);
-        W3Hint(client,HINT_SKILL_STATUS,1.0,"Siege Disabled!");
-        ARMOR_ENABLED[client]=false;
-        ARMOR_BUTTON_PRESSED[client]=false;
+		War3_SetBuff(client,fHPRegen,thisRaceID,0.0);
+		War3_SetBuff(client,bNoMoveMode,thisRaceID,false);
+		War3_SetBuff(client,fArmorPhysical,thisRaceID,0.0);
+		W3Hint(client,HINT_SKILL_STATUS,1.0,"Siege Disabled!");
+		ARMOR_ENABLED[client]=false;
+		ARMOR_BUTTON_PRESSED[client]=false;
 		ActivateSkills(client);
 	}
-/*    else if(ARMOR_ENABLED)
-    {
-        War3_SetBuff(client,bNoMoveMode,thisRaceID,false);
-        War3_SetBuff(client,fArmorPhysical,thisRaceID,0.0);
-        W3Hint(client,HINT_SKILL_STATUS,1.0,"Siege Disabled! (You changed race)");
-        ARMOR_ENABLED=false;
-        ARMOR_BUTTON_PRESSED=false;
-    }*/
+/*	else if(ARMOR_ENABLED)
+	{
+		War3_SetBuff(client,bNoMoveMode,thisRaceID,false);
+		War3_SetBuff(client,fArmorPhysical,thisRaceID,0.0);
+		W3Hint(client,HINT_SKILL_STATUS,1.0,"Siege Disabled! (You changed race)");
+		ARMOR_ENABLED=false;
+		ARMOR_BUTTON_PRESSED=false;
+	}*/
 }
 
 /* ***************************  ability *************************************/
@@ -208,28 +257,28 @@ public OnWar3EventSpawn(client){
 public OnAbilityCommand(client,ability,bool:pressed)
 {
 	//if(War3_GetRace(client)==thisRaceID && ability==0 && pressed && IsPlayerAlive(client))
-    new skilllevelz = War3_GetSkillLevel(client,thisRaceID,SKILL_SIEGE);
-    if(skilllevelz>0 && War3_GetRace(client)==thisRaceID && ability==0 && pressed && ValidPlayer(client,true))
+	new skilllevelz = War3_GetSkillLevel(client,thisRaceID,SKILL_SIEGE);
+	if(skilllevelz>0 && War3_GetRace(client)==thisRaceID && ability==0 && pressed && ValidPlayer(client,true))
 	{
-       if(ARMOR_ENABLED[client]==true && !ARMOR_BUTTON_PRESSED[client])
-       {
-         // disabled
-         //EmitSoundToClient( client, fdisable_sound );
-         W3Hint(client,HINT_SKILL_STATUS,1.0,"Siege Disabling...");
-         CreateTimer(1.0,Timer_Disable_Siege,client);
-         EmitSoundToClient( client, transform_sound );
-         ARMOR_BUTTON_PRESSED[client]=true;
-       }
-       else if(ARMOR_ENABLED[client]==false && !ARMOR_BUTTON_PRESSED[client])
-       {
-       // enabled
-         //EmitSoundToClient( client, fenable_sound );
-        CreateTimer(1.0,Timer_Enable_Siege,client);
-        W3Hint(client,HINT_SKILL_STATUS,1.0,"Siege Enabling...");
-        EmitSoundToClient( client, transform_sound );
-        ARMOR_BUTTON_PRESSED[client]=true;
-       }
-    }
+	   if(ARMOR_ENABLED[client]==true && !ARMOR_BUTTON_PRESSED[client])
+	   {
+		 // disabled
+		 //EmitSoundToClient( client, fdisable_sound );
+		 W3Hint(client,HINT_SKILL_STATUS,1.0,"Siege Disabling...");
+		 CreateTimer(1.0,Timer_Disable_Siege,client);
+		 EmitSoundToClient( client, transform_sound );
+		 ARMOR_BUTTON_PRESSED[client]=true;
+	   }
+	   else if(ARMOR_ENABLED[client]==false && !ARMOR_BUTTON_PRESSED[client])
+	   {
+	   // enabled
+		 //EmitSoundToClient( client, fenable_sound );
+		CreateTimer(1.0,Timer_Enable_Siege,client);
+		W3Hint(client,HINT_SKILL_STATUS,1.0,"Siege Enabling...");
+		EmitSoundToClient( client, transform_sound );
+		ARMOR_BUTTON_PRESSED[client]=true;
+	   }
+	}
 
 }
 
@@ -254,11 +303,11 @@ public Action:Timer_Enable_Siege(Handle:timer, any:client)
 			new team=GetClientTeam(client);
 			if(team==2)
 			{
-				ringColor={255,0,0,255};
+	ringColor={255,0,0,255};
 			}
 			else if(team==3)
 			{
-				ringColor={0,0,255,255};
+	ringColor={0,0,255,255};
 			}
 			TE_SetupBeamRingPoint(vec,40.0,10.0,BeamSprite,HaloSprite,0,15,1.0,15.0,0.0,ringColor,10,0);
 			TE_SendToAll();
@@ -313,56 +362,59 @@ public Action:Timer_Disable_Siege(Handle:timer, any:client)
 {
   ARMOR_TIMER[client]++;
   if(ARMOR_TIMER[client]>=3)
-    {
+	{
 	TF2_RemoveCondition(client,TFCond_Ubercharged);
 	TF2_RemoveCondition(client,TFCond_DefenseBuffed);
 	War3_SetBuff(client,fArmorMagic,thisRaceID,0.0);
 	War3_SetBuff(client,iAdditionalMaxHealth,thisRaceID,0);
-    War3_SetBuff(client,fHPRegen,thisRaceID,0.0);
-    War3_SetBuff(client,bNoMoveMode,thisRaceID,false);
-    War3_SetBuff(client,fArmorPhysical,thisRaceID,0.0);
-    W3Hint(client,HINT_SKILL_STATUS,1.0,"Siege Disabled!");
-    ActivateSkills(client);
-    ARMOR_ENABLED[client]=false;
-    ARMOR_BUTTON_PRESSED[client]=false;
-    ARMOR_TIMER[client]=0;
-    }
-    else
-    {
-    new p=(3-ARMOR_TIMER[client]);
-    CreateTimer(1.0,Timer_Disable_Siege,client);
-    W3Hint(client,HINT_SKILL_STATUS,1.0,"Disabling Siege in %i",p);
-    }
+	War3_SetBuff(client,fHPRegen,thisRaceID,0.0);
+	War3_SetBuff(client,bNoMoveMode,thisRaceID,false);
+	War3_SetBuff(client,fArmorPhysical,thisRaceID,0.0);
+	W3Hint(client,HINT_SKILL_STATUS,1.0,"Siege Disabled!");
+	ActivateSkills(client);
+	ARMOR_ENABLED[client]=false;
+	ARMOR_BUTTON_PRESSED[client]=false;
+	ARMOR_TIMER[client]=0;
+	}
+	else
+	{
+	new p=(3-ARMOR_TIMER[client]);
+	CreateTimer(1.0,Timer_Disable_Siege,client);
+	W3Hint(client,HINT_SKILL_STATUS,1.0,"Disabling Siege in %i",p);
+	}
 }
 
 
-/*
+
 public OnW3TakeDmgAllPre(victim,attacker,Float:damage)
 {
 if(War3_GetRace(attacker)==thisRaceID)
-    {
-        if(ARMOR_ENABLED[attacker])
-        {
-        W3FlashScreen(attacker,RGBA_COLOR_BLUE);
-        War3_DamageModPercent(1.50);
-        }
-        else
-        {
-        War3_DamageModPercent(0.50);
-        }
-    }
+	{
+		if(ARMOR_ENABLED[attacker])
+		{
+			//W3FlashScreen(attacker,RGBA_COLOR_BLUE);
+			War3_DamageModPercent(0.50);
+		}
+		else
+		{
+			//W3FlashScreen(attacker,RGBA_COLOR_BLUE);
+			War3_DamageModPercent(0.75);
+		}
+	}
+}
 
-    //new skill_level_dodge=War3_GetSkillLevel(victim,thisRaceID,SKILL_DODGE);
-    //if(victim==thisRaceID && skill_level_dodge>0 &&GetClientTeam(attacker)!=GetClientTeam(victim))
-    //{
+/*
+	//new skill_level_dodge=War3_GetSkillLevel(victim,thisRaceID,SKILL_DODGE);
+	//if(victim==thisRaceID && skill_level_dodge>0 &&GetClientTeam(attacker)!=GetClientTeam(victim))
+	//{
 
-//        if(GetRandomFloat(0.0,1.0)<=DodgeChance[skill_level_dodge] && !W3HasImmunity(attacker,Immunity_Skills))
-//        {
-//            W3FlashScreen(victim,RGBA_COLOR_BLUE);
-//            War3_DamageModPercent(0.0); //NO DAMAMGE
+//		if(GetRandomFloat(0.0,1.0)<=DodgeChance[skill_level_dodge] && !W3HasImmunity(attacker,Immunity_Skills))
+//		{
+//			W3FlashScreen(victim,RGBA_COLOR_BLUE);
+//			War3_DamageModPercent(0.0); //NO DAMAMGE
 
-//        }
-//    }
+//		}
+//	}
 
 } */
 

@@ -9,8 +9,7 @@
 #include <sdktools>
 #include "W3SIncs/revantools"
 new thisRaceID;
-new String:beamsnd[256]; // = "war3source/moonqueen/beam.mp3";
-new String:lunasnd2[256]; // = "weapons/flashbang/flashbang_explode2.mp3";
+new String:beamsnd[]= "war3source/moonqueen/beam.mp3";
 
 //skill is auto cast via chance
 //new Float:LucentChance[5] = {0.00,0.05,0.11,0.22,0.30};
@@ -51,37 +50,15 @@ public OnPluginStart()
 
 public OnMapStart()
 {
-	if(GAMECSGO) {
-		strcopy(beamsnd,sizeof(beamsnd),"music/war3source/moonqueen/beam.mp3");
-		strcopy(lunasnd2,sizeof(lunasnd2),"music/war3source/flashbang_explode2.mp3");
-	}
-	else
-	{
-		strcopy(beamsnd,sizeof(beamsnd),"war3source/moonqueen/beam.mp3");
-		strcopy(lunasnd2,sizeof(lunasnd2),"war3source/flashbang_explode2.mp3");
-	}
-
 	War3_PrecacheSound( beamsnd );
-	if(GameCS()) {
-
-		War3_PrecacheSound( lunasnd2 );
-	}
 	//BeamSprite=War3_PrecacheBeamSprite();
 	HaloSprite=War3_PrecacheHaloSprite();
-	if(War3_GetGame() == Game_CSGO) {
-		CoreSprite = PrecacheModel( "effects/combinemuzzle1.vmt" );
-		MoonSprite = PrecacheModel( "particle/particle_glow_01" );
-		XBeamSprite = PrecacheModel( "materials/sprites/physbeam.vmt" );
-		//PrecacheModel("particle/particle_flares/particle_flare_004");
-	}
-	else {
-		CoreSprite = PrecacheModel( "materials/sprites/physcannon_blueflare1.vmt" );
-		MoonSprite = PrecacheModel( "materials/sprites/physcannon_bluecore1b.vmt");
-		//BlueSprite = PrecacheModel( "materials/sprites/physcannon_bluelight1.vmt" );
-		XBeamSprite = PrecacheModel( "materials/sprites/XBeam2.vmt" );
-		LightModel = PrecacheModel( "models/effects/vol_light.mdl" );
-		//PrecacheModel("particle/fire.vmt");
-	}
+	CoreSprite = PrecacheModel( "materials/sprites/physcannon_blueflare1.vmt" );
+	MoonSprite = PrecacheModel( "materials/sprites/physcannon_bluecore1b.vmt");
+	//BlueSprite = PrecacheModel( "materials/sprites/physcannon_bluelight1.vmt" );
+	XBeamSprite = PrecacheModel( "materials/sprites/XBeam2.vmt" );
+	LightModel = PrecacheModel( "models/effects/vol_light.mdl" );
+	//PrecacheModel("particle/fire.vmt");
 }
 
 public OnWar3LoadRaceOrItemOrdered(num)
@@ -132,13 +109,11 @@ public OnW3PlayerAuraStateChanged(client,aura,bool:inAura,level)
 	{
 		//Yes, to let mod our damage done
 		War3_SetBuff(client,iDamageBonus,thisRaceID,inAura?BlessingIncrease[level]:0);
-		if(War3_GetGame() != Game_CSGO) {
-			if(inAura==true&&IsPlayerAlive(client)) {
-				decl Float:client_pos[3];
-				GetClientAbsOrigin(client,client_pos);
-				TE_SetupGlowSprite(client_pos, LightModel, 2.0, 1.0, 255);
-				TE_SendToAll();
-			}
+		if(inAura==true&&IsPlayerAlive(client)) {
+			decl Float:client_pos[3];
+			GetClientAbsOrigin(client,client_pos);
+			TE_SetupGlowSprite(client_pos, LightModel, 2.0, 1.0, 255);
+			TE_SendToAll();
 		}
 	}
 }
@@ -163,10 +138,11 @@ public OnW3TakeDmgBullet( victim, attacker, Float:damage )
 			new race_attacker = War3_GetRace( attacker );
 			new skill_level = War3_GetSkillLevel( attacker, thisRaceID, SKILL_MOONBEAM );
 			new skill_level2 = War3_GetSkillLevel( attacker, thisRaceID, SKILL_BOUNCE );
-			if( race_attacker == thisRaceID &&!Hexed(attacker))
+			if( race_attacker == thisRaceID &&!Hexed(attacker) && W3Chance(W3ChanceModifier(attacker))) //skill activation chance modifier; damage was out of control on pyro just like crypt lord's beetles - Dagothur 1/16/2013
 			{
-
-				if( skill_level > 0 && SkillAvailable(attacker,thisRaceID,SKILL_MOONBEAM,false) &&!W3HasImmunity( victim, Immunity_Skills ))
+				// So that players' sentry does not proc this skill
+				// Less chance to Proc for based on your class.
+				if(!W3IsOwnerSentry(attacker) && skill_level > 0 && SkillAvailable(attacker,thisRaceID,SKILL_MOONBEAM,false) &&!W3HasImmunity( victim, Immunity_Skills ))
 				{
 					MoonBeamDamageAndEffect(victim, attacker, LucentBeamMin[skill_level], LucentBeamMax[skill_level]);
 
@@ -205,8 +181,8 @@ public OnW3TakeDmgBullet( victim, attacker, Float:damage )
 					//TE_SendToAll(0.0);
 					//TE_SetupBeamRingPoint(start_pos, 20.0, maxdist+10.0, XBeamSprite, HaloSprite, 0, 1, 1.0, 90.0, 0.0, {128,0,255,255}, 10, 0);
 					//TE_SendToAll(2.0);
-					for (new i = 1; i <= MaxClients; i++) {
-						if(ValidPlayer(i,true) && GetClientTeam(i) != GetClientTeam(attacker)&&!W3HasImmunity(i,Immunity_Wards)) {
+					for (new i = 1; i <= MaxClients; i++) { 
+						if(ValidPlayer(i,true) && GetClientTeam(i) != GetClientTeam(attacker)&&!W3HasImmunity(i,Immunity_Skills)) { //this was checking for ward immunity instead of skill immunity - Dagothur 1/16/2013
 							decl Float:TargetPos[3];
 							GetClientAbsOrigin(i, TargetPos);
 							if (GetVectorDistance(start_pos, TargetPos) <= maxdist) {
@@ -218,10 +194,7 @@ public OnW3TakeDmgBullet( victim, attacker, Float:damage )
 							}
 						}
 					}
-					if(GameCS()) {
-						EmitSoundToAll(lunasnd2,victim);
-						EmitSoundToAll(lunasnd2,attacker);
-					}
+					//emit sound here for tf2?  was sound here for cs:go
 				}
 			}
 

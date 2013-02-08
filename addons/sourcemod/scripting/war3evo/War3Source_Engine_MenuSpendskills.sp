@@ -17,11 +17,8 @@ new Handle:NoSpendSkillsLimitCvar;
 
 public OnPluginStart()
 {
-	if(W3())
-    {
-     // No Spendskill level restrictions on non-ultimates (Requires mapchange)
-     NoSpendSkillsLimitCvar=CreateConVar("war3_no_spendskills_limit","0","Set to 1 to require no limit on non-ultimate spendskills");
-    }
+	// No Spendskill level restrictions on non-ultimates (Requires mapchange)
+	NoSpendSkillsLimitCvar=CreateConVar("war3_no_spendskills_limit","0","Set to 1 to require no limit on non-ultimate spendskills");
 }
 
 public OnWar3Event(W3EVENT:event,client){
@@ -78,7 +75,7 @@ War3Source_SkillMenu(client)
 			new skillcount=W3GetLevelsSpent(client,race_num);
 			new level=War3_GetLevel(client,race_num);
 			SetMenuExitButton(sMenu,true);
-			SetMenuTitle(sMenu,"%T\n \n","[War3Source] Select your desired skill. ({amount}/{amount})",client,skillcount,level);
+			SetMenuTitle(sMenu,"%T\n \n","[War3Evo] Select your desired skill. ({amount}/{amount})",client,skillcount,level);
 			decl String:skillname[64];
 			new curskilllevel;
 			

@@ -25,7 +25,7 @@ public War3Source_IntroMenu(client)
 	if(strlen(buf)){
 		AddMenuItem(introMenu,"exit",buf);
 	}
-	Format(buf,sizeof(buf),"Www.War3Source.Com");
+	Format(buf,sizeof(buf),"Www.War3Evo.Com");
 	AddMenuItem(introMenu,"exit",buf);
 
 	Format(buf,sizeof(buf),"<-- Press this number for war3menu help!");
@@ -42,7 +42,7 @@ public War3Source_IntroMenu(client)
 
 public War3Source_IntroMenu_Select(Handle:menu,MenuAction:action,client,selection)
 {
-	if(W3()&&ValidPlayer(client))
+	if(ValidPlayer(client))
 	{
 		if(W3IsPlayerXPLoaded(client)){
 			if(selection>2)

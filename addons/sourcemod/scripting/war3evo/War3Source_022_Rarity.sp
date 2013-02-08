@@ -1,3 +1,5 @@
+#define PLUGIN_VERSION "0.0.0.2 (1/18/2013)"
+
 #pragma semicolon 1    ///WE RECOMMEND THE SEMICOLON
 
 #include <sourcemod>
@@ -10,7 +12,7 @@ public Plugin:myinfo =
 	name = "Race - Rarity",
 	author = "OWNAGE",
 	description = "",
-	version = "1.0",
+	version = "1.1",
 	url = "http://ownageclan.com/"
 };
 
@@ -56,6 +58,8 @@ public OnWar3LoadRaceOrItemOrdered(num)
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_rarity",PLUGIN_VERSION,"War3evo Job Rarity",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+
 	LoadTranslations("w3s.race.rarity.phrases");
 }
 
@@ -71,7 +75,7 @@ public OnWar3EventSpawn(client){
 
 public OnW3TakeDmgBulletPre(victim,attacker,Float:damage)
 {
-	if(ValidPlayer(victim)&&ValidPlayer(attacker)&&attacker!=victim )
+	if(ValidPlayer(victim)&&ValidPlayer(attacker)&&attacker!=victim && !W3HasImmunity(attacker,Immunity_Skills) ) //fixed a bug where attacking a mesmerized player when holding holy shield would still result in transfer of stun - Dagothur 1/17/2013
 	{
 		if(GetClientTeam(victim)!=GetClientTeam(attacker))
 		{
@@ -193,9 +197,6 @@ public OnAbilityCommand(client,ability,bool:pressed)
 Sleep(client){
 	War3_SetBuff(client,bStunned,thisRaceID,true);
 	PrintHintText(client,"%T","You are Mesmerized",client);
-	if(GameTF()){
-		
-	}
 }
 
 public Action:EndSleep(Handle:t,any:client){

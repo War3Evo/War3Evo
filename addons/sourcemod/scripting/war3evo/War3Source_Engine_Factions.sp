@@ -119,6 +119,7 @@ public _:NWar3_GetRaceFaction(Handle:plugin,numParams) {
 	decl String:buffer[iSize];
 	W3GetFactionNameById(W3GetFaction(iRace),buffer,iSize);
 	SetNativeString(2, buffer, iSize);
+	return true;   //merged from war3source-2
 }
 
 //Factions gonna get refreshed

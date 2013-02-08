@@ -1,3 +1,5 @@
+#define PLUGIN_VERSION "0.0.0.2 (2/1/2013) 2:01AM EST"
+
 #include <sourcemod>
 #include "W3SIncs/War3Source_Interface"
 
@@ -17,34 +19,34 @@ public Plugin:myinfo=
 
 public OnPluginStart()
 {
+	CreateConVar("war3evo_CommandHook",PLUGIN_VERSION,"War3evo Chat Command Hooks",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+
 	Cvar_ChatBlocking=CreateConVar("war3_command_blocking","0","block chat commands from showing up");
-	if(W3()) {
 
-		RegConsoleCmd("say",War3Source_SayCommand);
-		RegConsoleCmd("say_team",War3Source_TeamSayCommand);
-		RegConsoleCmd("+ultimate",War3Source_UltimateCommand);
-		RegConsoleCmd("-ultimate",War3Source_UltimateCommand);
-		RegConsoleCmd("+ability",War3Source_NoNumAbilityCommand);
-		RegConsoleCmd("-ability",War3Source_NoNumAbilityCommand); //dont blame me if ur job is a failure because theres too much buttons to press
-		RegConsoleCmd("+ability1",War3Source_AbilityCommand);
-		RegConsoleCmd("-ability1",War3Source_AbilityCommand);
-		RegConsoleCmd("+ability2",War3Source_AbilityCommand);
-		RegConsoleCmd("-ability2",War3Source_AbilityCommand);
-		RegConsoleCmd("+ability3",War3Source_AbilityCommand);
-		RegConsoleCmd("-ability3",War3Source_AbilityCommand);
-		RegConsoleCmd("+ability4",War3Source_AbilityCommand);
-		RegConsoleCmd("-ability4",War3Source_AbilityCommand);
+	RegConsoleCmd("say",War3Source_SayCommand);
+	RegConsoleCmd("say_team",War3Source_TeamSayCommand);
+	RegConsoleCmd("+ultimate",War3Source_UltimateCommand);
+	RegConsoleCmd("-ultimate",War3Source_UltimateCommand);
+	RegConsoleCmd("+ability",War3Source_NoNumAbilityCommand);
+	RegConsoleCmd("-ability",War3Source_NoNumAbilityCommand); //dont blame me if ur job is a failure because theres too much buttons to press
+	RegConsoleCmd("+ability1",War3Source_AbilityCommand);
+	RegConsoleCmd("-ability1",War3Source_AbilityCommand);
+	RegConsoleCmd("+ability2",War3Source_AbilityCommand);
+	RegConsoleCmd("-ability2",War3Source_AbilityCommand);
+	RegConsoleCmd("+ability3",War3Source_AbilityCommand);
+	RegConsoleCmd("-ability3",War3Source_AbilityCommand);
+	RegConsoleCmd("+ability4",War3Source_AbilityCommand);
+	RegConsoleCmd("-ability4",War3Source_AbilityCommand);
 
-		RegConsoleCmd("ability",War3Source_OldWCSCommand);
-		RegConsoleCmd("ability1",War3Source_OldWCSCommand);
-		RegConsoleCmd("ability2",War3Source_OldWCSCommand);
-		RegConsoleCmd("ability3",War3Source_OldWCSCommand);
-		RegConsoleCmd("ability4",War3Source_OldWCSCommand);
-		RegConsoleCmd("ultimate",War3Source_OldWCSCommand);
+	RegConsoleCmd("ability",War3Source_OldWCSCommand);
+	RegConsoleCmd("ability1",War3Source_OldWCSCommand);
+	RegConsoleCmd("ability2",War3Source_OldWCSCommand);
+	RegConsoleCmd("ability3",War3Source_OldWCSCommand);
+	RegConsoleCmd("ability4",War3Source_OldWCSCommand);
+	RegConsoleCmd("ultimate",War3Source_OldWCSCommand);
 
-		RegConsoleCmd("shopmenu",War3Source_CmdShopmenu);
-		RegConsoleCmd("shopmenu2",War3Source_CmdShopmenu2);
-	}
+	RegConsoleCmd("shopmenu",War3Source_CmdShopmenu);
+	RegConsoleCmd("shopmenu2",War3Source_CmdShopmenu2);
 }
 
 public bool:InitNativesForwards()
@@ -440,7 +442,7 @@ bool:Internal_War3Source_SayCommand(client,String:arg1[256])
 		if(g_hCVar!=INVALID_HANDLE)
 		{
 			GetConVarString(g_hCVar, version, sizeof(version));
-			War3_ChatMessage(client,"War3Source Current Version: %s",version);
+			War3_ChatMessage(client,"War3Evo / War3Source Current Version: %s",version);
 		}
 		return returnblocking;
 	}
@@ -464,7 +466,7 @@ bool:Internal_War3Source_SayCommand(client,String:arg1[256])
 		CloseHandle(array);
 		return returnblocking;
 	}
-	else if(CommandCheck(arg1,"jobinfo")||CommandCheck(arg1,"raceinfo"))
+	else if(CommandCheck(arg1,"jobinfo")||CommandCheck(arg1,"raceinfo")||CommandCheck(arg1,"job"))
 	{
 		W3CreateEvent(DoShowRaceinfoMenu,client);
 		return returnblocking;
@@ -496,28 +498,14 @@ bool:Internal_War3Source_SayCommand(client,String:arg1[256])
 				}
 			}
 		}
-		new Float:currentmaxspeed=GetEntDataFloat(ClientX,War3_GetGame()==Game_TF?FindSendPropOffs("CTFPlayer","m_flMaxspeed"):FindSendPropOffs("CBasePlayer","m_flLaggedMovementValue"));
-		if(GameTF())
+		new Float:currentmaxspeed=GetEntDataFloat(ClientX,FindSendPropOffs("CTFPlayer","m_flMaxspeed"));
+		if(SpecTarget==true)
 		{
-			if(SpecTarget==true)
-			{
-				War3_ChatMessage(client,"%T (%.2fx)","Spectating target's max speed is {amount}",client,currentmaxspeed,W3GetSpeedMulti(ClientX));
-			}
-			else
-			{
-				War3_ChatMessage(client,"%T (%.2fx)","Your max speed is {amount}",client,currentmaxspeed,W3GetSpeedMulti(client));
-			}
+			War3_ChatMessage(client,"%T (%.2fx)","Spectating target's max speed is {amount}",client,currentmaxspeed,W3GetSpeedMulti(ClientX));
 		}
 		else
 		{
-			if(SpecTarget==true)
-			{
-				War3_ChatMessage(client,"%T","Spectating target's max speed is {amount}",client,currentmaxspeed);
-			}
-			else
-			{
-				War3_ChatMessage(client,"%T","Your max speed is {amount}",client,currentmaxspeed);
-			}
+			War3_ChatMessage(client,"%T (%.2fx)","Your max speed is {amount}",client,currentmaxspeed,W3GetSpeedMulti(client));
 		}
 	}
 	else if(CommandCheck(arg1,"maxhp"))
@@ -585,7 +573,7 @@ bool:Internal_War3Source_SayCommand(client,String:arg1[256])
 		}
 		else if(CommandCheck(arg1,"war3dev"))
 		{
-			War3_ChatMessage(client,"%T","War3Source Developers",client);
+			War3_ChatMessage(client,"%T","War3Evo Developers",client);
 			return returnblocking;
 		}
 		else if(CommandCheck(arg1,"myinfo"))

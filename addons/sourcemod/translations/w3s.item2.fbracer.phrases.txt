@@ -1,10 +1,10 @@
 "Phrases"
 {
-	"fortifiedbracer_ItemName"
+	"fbracer_temName"
 	{
 		"en"		"Fortified Bracer"
 	}
-	"fortifiedbracer_ItemDesc"
+	"fbracer_temDesc"
 	{
 		"en"		"+10 max HP."
 	}

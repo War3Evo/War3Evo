@@ -5,13 +5,12 @@
 #include <sourcemod>
 #include "W3SIncs/War3Source_Interface"
 
-
 new Handle:g_hGameMode;
 new bool:bSurvivalStarted;
 new bool:bStartingArea[MAXPLAYERS];
 
 //race cat defs
-new Handle:hUseCategories,Handle:hCanDrawCat;
+new Handle:hUseCategories,Handle:hCanDrawCat,Handle:hAllowCategoryDefault;
 new String:strCategories[MAXCATS][64];
 new CatCount;
 
@@ -31,30 +30,31 @@ public OnPluginStart()
 		g_hGameMode = FindConVar("mp_gamemode");
 		if(!HookEventEx("survival_round_start", War3Source_SurvivalStartEvent))
 		{
-			PrintToServer("[War3Source] Could not hook the survival_round_start event.");
+			PrintToServer("[War3Evo] Could not hook the survival_round_start event.");
 		}
 		if(!HookEventEx("round_end", War3Source_RoundEndEvent))
 		{
-			PrintToServer("[War3Source] Could not hook the round_end event.");
+			PrintToServer("[War3Evo] Could not hook the round_end event.");
 		}
 		if(!HookEventEx("player_entered_checkpoint", War3Source_EnterCheckEvent))
 		{
-			PrintToServer("[War3Source] Could not hook the player_entered_checkpoint event.");
+			PrintToServer("[War3Evo] Could not hook the player_entered_checkpoint event.");
 		}
 		if(!HookEventEx("player_left_checkpoint", War3Source_LeaveCheckEvent))
 		{
-			PrintToServer("[War3Source] Could not hook the player_left_checkpoint event.");
+			PrintToServer("[War3Evo] Could not hook the player_left_checkpoint event.");
 		}
 		if(!HookEventEx("player_entered_start_area", War3Source_EnterCheckEvent))
 		{
-			PrintToServer("[War3Source] Could not hook the player_entered_start_area event.");
+			PrintToServer("[War3Evo] Could not hook the player_entered_start_area event.");
 		}
 		if(!HookEventEx("player_left_start_area", War3Source_LeaveCheckEvent))
 		{
-			PrintToServer("[War3Source] Could not hook the player_left_start_area event.");
+			PrintToServer("[War3Evo] Could not hook the player_left_start_area event.");
 		}
 	}
 	hUseCategories = CreateConVar("war3_jobcats","0","If non-zero job categories will be enabled");
+	hAllowCategoryDefault = CreateConVar("war3_allow_default_cats","0","Allow Default categories to show in category menu? (default 0)");
 	RegServerCmd("war3_reloadcats", Command_ReloadCats);
 }
 
@@ -73,9 +73,9 @@ public Action:Command_ReloadCats(args) {
 
 public War3Source_EnterCheckEvent(Handle:event,const String:name[],bool:dontBroadcast)
 {
-	if(GetEventInt(event,"userid")>0)
+	if(GetEventInt(event,"userid") > 0)
 	{
-		new client = GetClientOfUserId(GetEventInt(event,"userid"));
+		new client = GetClientOfUserId(GetEventInt(event, "userid"));
 		if (ValidPlayer(client, true) && GetClientTeam(client) == TEAM_SURVIVORS)
 		{
 			bStartingArea[client] = true;
@@ -94,9 +94,9 @@ public War3Source_EnterCheckEvent(Handle:event,const String:name[],bool:dontBroa
 
 public War3Source_LeaveCheckEvent(Handle:event,const String:name[],bool:dontBroadcast)
 {
-	if(GetEventInt(event,"userid")>0)
+	if(GetEventInt(event,"userid") > 0)
 	{
-		new client = GetClientOfUserId(GetEventInt(event,"userid"));
+		new client = GetClientOfUserId(GetEventInt(event, "userid"));
 		if (ValidPlayer(client, true) && GetClientTeam(client) == TEAM_SURVIVORS)
 		{
 			W3Hint(client, HINT_LOWEST, 1.0, "You will not be able to change jobs during the map.");
@@ -116,11 +116,9 @@ public War3Source_RoundEndEvent(Handle:event,const String:name[],bool:dontBroadc
 }
 
 public OnWar3Event(W3EVENT:event,client){
-	if(W3()){
-		if(event==DoShowChangeRaceMenu){
-			if(ValidPlayer(client)&& !W3Denied(DN_ShowChangeRace,client)){
-				War3Source_ChangeRaceMenu(client);
-			}
+	if(event==DoShowChangeRaceMenu){
+		if(ValidPlayer(client)&& !W3Denied(DN_ShowChangeRace,client)){
+			War3Source_ChangeRaceMenu(client);
 		}
 	}
 }
@@ -188,7 +186,7 @@ stock GetNewRacesInCat(client,String:category[]) {
 	return amount;
 }
 
-War3Source_ChangeRaceMenu(client)
+War3Source_ChangeRaceMenu(client,bool:forceUncategorized=false)
 {
 	if(W3IsPlayerXPLoaded(client))
 	{
@@ -202,7 +200,7 @@ War3Source_ChangeRaceMenu(client)
 
 		SetTrans(client);
 		decl Handle:crMenu;
-		if(IsCategorized()) {
+		if( IsCategorized() && !forceUncategorized ) {
 			//Revan: the long requested changerace categorie feature
 			//TODO:
 			//- translation support
@@ -213,15 +211,19 @@ War3Source_ChangeRaceMenu(client)
 			if(strlen(dbErrorMsg)){
 				Format(title,sizeof(title),"%s\n \n",dbErrorMsg);
 			}
-			Format(title,sizeof(title),"%s%T",title,"[War3Source] Select a category",GetTrans()) ;
+			Format(title,sizeof(title),"%s%T",title,"[War3Evo] Select a category",GetTrans()) ;
 			if(W3GetLevelBank(client)>0){
 				Format(title,sizeof(title),"%s\n%T\n",title,"You Have {amount} levels in levelbank. Say levelbank to use it",GetTrans(), W3GetLevelBank(client));
 			}
 			SetMenuTitle(crMenu,"%s\n \n",title);
 			decl String:strCat[64];
+			//Prepend 'All Jobs' entry.
+			AddMenuItem(crMenu,"-1","All Jobs");
 			//At first we gonna add the categories
 			for(new i=1;i<CatCount;i++) {
 				W3GetCategory(i,strCat,sizeof(strCat));
+				if(StrEqual(strCat,"default") && !GetConVarBool(hAllowCategoryDefault))
+					continue;
 				if(strlen(strCat)>0) {
 					if(HasCategoryAccess(client,i)) {
 						new amount=GetNewRacesInCat(client,strCat);
@@ -242,7 +244,7 @@ War3Source_ChangeRaceMenu(client)
 			if(strlen(dbErrorMsg)){
 				Format(title,sizeof(title),"%s\n \n",dbErrorMsg);
 			}
-			Format(title,sizeof(title),"%s%T",title,"[War3Source] Select your desired job",GetTrans()) ;
+			Format(title,sizeof(title),"%s%T",title,"[War3Evo] Select your desired job",GetTrans()) ;
 			if(W3GetLevelBank(client)>0){
 				Format(title,sizeof(title),"%s\n%T\n",title,"You Have {amount} levels in levelbank. Say levelbank to use it",GetTrans(), W3GetLevelBank(client));
 			}
@@ -366,13 +368,20 @@ public War3Source_CRMenu_SelCat(Handle:menu,MenuAction:action,client,selection)
 				SetTrans(client);
 				new String:sItem[64],String:title[512],String:rbuf[4],String:rname[64],String:rdisp[128];
 				GetMenuItem(menu, selection, sItem, sizeof(sItem));
+				if( StringToInt(sItem) == -1 ) {
+					War3Source_ChangeRaceMenu(client,true);
+					return;
+				}
+
 				new Handle:crMenu=CreateMenu(War3Source_CRMenu_Selected);
 				SetMenuExitButton(crMenu,true);
-				Format(title,sizeof(title),"%T","[War3Source] Select your desired job",GetTrans());
+				Format(title,sizeof(title),"%T","[War3Evo] Select your desired job",GetTrans());
 				SetMenuTitle(crMenu,"%s\nCategory: %s\n",title,sItem);
 				// Iteriate through the races and print them out				
 				new racelist[MAXRACES];
 				new racedisplay=W3GetRaceList(racelist);
+				new bool:SteamGroupRequired=false;
+				AddMenuItem(crMenu,"-1","[Return to Categories]");
 				for(new i=0;i<racedisplay;i++)
 				{
 					new	x=racelist[i],String:rcvar[64];
@@ -414,14 +423,53 @@ public War3Source_CRMenu_SelCat(Handle:menu,MenuAction:action,client,selection)
 						{
 							Format(rdisp,sizeof(rdisp),"%s %T",rdisp,"reqlvl {amount}",GetTrans(),minlevel);
 						}
-						AddMenuItem(crMenu,rbuf,rdisp,(minlevel<=W3GetTotalLevels(client)||W3IsDeveloper(client))?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
+						new String:requiredflagstr[32];
+						W3GetRaceAccessFlagStr(x,requiredflagstr,sizeof(requiredflagstr));  ///14 = index, see races.inc
+
+						if(!StrEqual(requiredflagstr, "0", false)&&!StrEqual(requiredflagstr, "", false)&&!W3IsDeveloper(client))
+						{
+							Format(rdisp,sizeof(rdisp),"%s (VIP Only)",rdisp);
+							if(W3RaceHasFlag(x,"steamgroup"))
+							{
+								Format(rdisp,sizeof(rdisp),"%s (Steam Group)",rdisp);
+							}
+							new AdminId:admin = GetUserAdmin(client);
+							if(admin == INVALID_ADMIN_ID) //flag is required and this client is not admin
+							{
+								AddMenuItem(crMenu,rbuf,rdisp,ITEMDRAW_DISABLED);
+							}
+							else
+							{
+								AddMenuItem(crMenu,rbuf,rdisp,ITEMDRAW_DEFAULT);
+							}
+						}
+						else if(!War3_IsInSteamGroup(client)&&W3RaceHasFlag(x,"steamgroup"))
+						{
+							Format(rdisp,sizeof(rdisp),"%s *War3Evo Steam Group Required*",rdisp);
+							AddMenuItem(crMenu,rbuf,rdisp,ITEMDRAW_DISABLED);
+							SteamGroupRequired=true;
+							//War3_ChatMessage(client,"Job %s requires you join our Steam Group:\nhttp://steamcommunity.com/groups/war3evo",rname);
+							//War3_ChatMessage("Sometimes we lose connection to the steam group, so please be patient.");
+						}
+						else
+						{
+							//AddMenuItem(crMenu,rbuf,rdisp,(minlevel<=W3GetTotalLevels(client)||StrEqual(steamid,"STEAM_0:1:35173666",false)?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
+							if(W3RaceHasFlag(x,"steamgroup"))
+							{
+								Format(rdisp,sizeof(rdisp),"%s (Steam Group)",rdisp);
+							}
+							AddMenuItem(crMenu,rbuf,rdisp,minlevel<=W3GetTotalLevels(client)?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
+						}
+					}
+					if(SteamGroupRequired==true)
+					{
+						War3_ChatMessage(client,"Steam Group: http://steamcommunity.com/groups/war3evo");
 					}
 				}
-				AddMenuItem(crMenu,"-1","Back");
 				DisplayMenu(crMenu,client,MENU_TIME_FOREVER);
 			}
 		}
-	case MenuAction_End:
+		case MenuAction_End:
 		{
 			CloseHandle(menu);
 		}
@@ -445,13 +493,14 @@ public War3Source_CRMenu_Selected(Handle:menu,MenuAction:action,client,selection
 			new SelectionStyle;
 			GetMenuItem(menu,selection,SelectionInfo,sizeof(SelectionInfo),SelectionStyle, SelectionDispText,sizeof(SelectionDispText));
 			new race_selected=StringToInt(SelectionInfo);
-			new bool:allowChooseRace=bool:CanSelectRace(client,race_selected); //this is the deny system W3Denyable
 			
 			if(race_selected==-1) {
 				War3Source_ChangeRaceMenu(client); //user came from the categorized cr menu and clicked the back button
 				return;
-			}			
-			else if(allowChooseRace==false){
+			}
+
+			new bool:allowChooseRace=bool:CanSelectRace(client,race_selected); //this is the deny system W3Denyable			
+			if(allowChooseRace==false){
 				War3Source_ChangeRaceMenu(client);//derpy hooves
 			}
 			

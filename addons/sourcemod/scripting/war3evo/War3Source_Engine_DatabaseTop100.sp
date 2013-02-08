@@ -170,7 +170,7 @@ War3Source_Stats(client)
 	
 	new Handle:statsMenu=CreateMenu(War3Source_Stats_Selected);
 	SetMenuExitButton(statsMenu,true);
-	SetMenuTitle(statsMenu,"%T","[War3Source] Select a player to view stats",client);
+	SetMenuTitle(statsMenu,"%T","[War3Evo] Select a player to view stats",client);
 	decl String:playername[64];
 	decl String:war3playerbuf[4];
 
@@ -231,7 +231,7 @@ public War3Source_Stats_Player(client,target)
 		decl String:race_name[64];
 		War3_GetRaceName(War3_GetRace(target),race_name,sizeof(race_name));
 		new gold=War3_GetGold(target);
-		SetMenuTitle(playerInfo,"%T\n","[War3Source] Info for {player}. Current Job: {racename} gold: {amount}",client,playername,race_name,gold);
+		SetMenuTitle(playerInfo,"%T\n","[War3Evo] Info for {player}. Current Job: {racename} gold: {amount}",client,playername,race_name,gold);
 		DisplayMenu(playerInfo,client,20);
 	}
 	else
@@ -287,7 +287,7 @@ public War3Source_Stats_Player_Race(client,target,race_num)
 		new level=War3_GetLevel(target,race_num);
 		new xp=War3_GetXP(target,race_num);
 		
-		Format(longbuf,sizeof(longbuf),"%T\n","[War3Source] {racename} info for {player}. Level: {amount} XP: {amount}",client,race_name,playername,level,xp);
+		Format(longbuf,sizeof(longbuf),"%T\n","[War3Evo] {racename} info for {player}. Level: {amount} XP: {amount}",client,race_name,playername,level,xp);
 		
 		new SkillCount = War3_GetRaceSkillCount(race_num);
 		for(new i=1;i<=SkillCount;i++){
@@ -354,7 +354,7 @@ War3Source_War3Top(client,top_num,cur_place=0)
 	if(top_num>iTopCount)
 		top_num=iTopCount;
 	new String:menuText[512];
-	Format(menuText,sizeof(menuText),"%T\n","[War3Source] Top {amount} ({amount}-{amount})",client,top_num,cur_place+1,total_display);
+	Format(menuText,sizeof(menuText),"%T\n","[War3Evo] Top {amount} ({amount}-{amount})",client,top_num,cur_place+1,total_display);
 	new x2=0;
 	//for(new x=cur_place;x<total_display;x++)
 	for(new x=cur_place;x<99;x++)

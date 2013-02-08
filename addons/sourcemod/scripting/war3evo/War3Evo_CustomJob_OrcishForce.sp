@@ -1,3 +1,4 @@
+#define PLUGIN_VERSION "0.0.0.2 (1/26/2013) 8:22AM EST"
 /**
  * File: War3Source_CustomRace_OrcishForce.sp
  * Description: The Orcish Force Horde race.
@@ -78,7 +79,7 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
-
+	CreateConVar("war3evo_OrcishForce",PLUGIN_VERSION,"War3evo Orcish Force",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	//HookEvent("round_start",RoundStartEvent);
 	ultCooldownCvar=CreateConVar("war3_orcishforce_chain_cooldown","20.0","Cooldown time for chain lightning.");
 
@@ -113,18 +114,8 @@ public OnWar3LoadRaceOrItemOrdered(num)
 	}       //blood thirsty    Sweeping Strikes
 }
 
-public OnMapStart()
-{
-	BeamSprite=PrecacheModel("materials/sprites/lgtning.vmt");
-	HaloSprite=PrecacheModel("materials/sprites/halo01.vmt");
-	
-	BloodSpray = PrecacheModel("sprites/bloodspray.vmt");
-	BloodDrop = PrecacheModel("sprites/blood.vmt");
-	
-	War3_PrecacheSound(lightningSound);
-	War3_PrecacheSound(wardDamageSound);
 
-}
+
 
 public OnWar3PlayerAuthed(client)
 {
@@ -271,6 +262,7 @@ public DoChain(client,Float:distance,dmg,bool:first_call,last_target)
 			// alright, time to cooldown
 			new Float:cooldown=GetConVarFloat(ultCooldownCvar);
 			War3_CooldownMGR(client,cooldown,thisRaceID,ULT_LIGHTNING,_,_);
+			War3_SetBuff(client,bDisarm,thisRaceID,true); //since this is where the cooldown activates it seems appropriate to activate the disarm here - Dagothur 1/16/2013
 			//DP("CD %f %d %d",cooldown,thisRaceID,ULT_LIGHTNING);
 		}
 	}
@@ -316,7 +308,7 @@ public OnUltimateCommand(client,race,bool:pressed)
 				new Float:distance=ChainDistance[skill];
 				// Dochange was 60 damage:
 				DoChain(client,distance,90,true,0); // This function should also handle if there aren't targets
-				War3_SetBuff(client,bDisarm,thisRaceID,true);
+				
 				CreateTimer(DischargeDelay[skill],Enable_Attack,GetClientUserId(client));
 			}
 		}
@@ -336,8 +328,252 @@ public Action:Enable_Attack(Handle:timer,any:userid)
 	}
 }
 
-/* SHADOW HUNTER SWAP ABILITY BELOW */
 
+new totalChecks;   // dont use int:totalChecks; gave tagmismatch
+new checkArray[20][4];
+
+public OnMapStart()
+{
+	decl String:mapname[128];
+    GetCurrentMap(mapname, sizeof(mapname));
+	//DP(mapname);
+	if (strcmp(mapname, "pl_goldrush", false) == 0) {
+		totalChecks = 2;
+		checkArray[0][0] = -2200; //x < 
+		checkArray[0][1] = -3700; //x >
+		checkArray[0][2] = 1700; //y >
+		checkArray[0][3] = 2200; //y <
+		
+		checkArray[1][0] = -4100;
+		checkArray[1][1] = -4700;
+		checkArray[1][2] = -2666;
+		checkArray[1][3] = -2255;
+	} else if (strcmp(mapname, "koth_nucleus", false) == 0)	{
+		totalChecks = 6;
+		checkArray[0][0] = -1300; //x < 
+		checkArray[0][1] = -1500; //x >
+		checkArray[0][2] = -450; //y >
+		checkArray[0][3] = 400; //y <
+		
+		checkArray[1][0] = 1500; //x < 
+		checkArray[1][1] = 1200; //x >
+		checkArray[1][2] = -400; //y >
+		checkArray[1][3] = 400; //y <
+		
+		checkArray[2][0] = 2000; //x < not bugged
+		checkArray[2][1] = 1600; //x >
+		checkArray[2][2] = 100; //y >
+		checkArray[2][3] = 400; //y <
+		
+		checkArray[3][0] = 1800; //x < not bugged
+		checkArray[3][1] = 1100; //x >
+		checkArray[3][2] = -1000; //y >
+		checkArray[3][3] = -700; //y <
+		
+		checkArray[4][0] = -1100; //x < not bugged
+		checkArray[4][1] = -1900; //x >
+		checkArray[4][2] = -1000; //y >
+		checkArray[4][3] = -700; //y <
+		
+		checkArray[5][0] = -1600; //x < not bugged
+		checkArray[5][1] = -2000; //x >
+		checkArray[5][2] = 100; //y >]
+		checkArray[5][3] = 400; //y <
+		
+	}	 else if (strcmp(mapname, "koth_viaduct", false) == 0)	{
+		totalChecks = 2;
+		checkArray[0][0] = -928; //x < 
+		checkArray[0][1] = -1800; //x >
+		checkArray[0][2] = 2823; //y >
+		checkArray[0][3] = 3224; //y <
+		
+		checkArray[1][0] = -1000;
+		checkArray[1][1] = -1700;
+		checkArray[1][2] = -3200;
+		checkArray[1][3] = -2800;
+	}  else if (strcmp(mapname, "koth_lakeside_final", false) == 0)	{
+		totalChecks = 2;
+		checkArray[0][0] = 3400; //x < 
+		checkArray[0][1] = 2800; //x >
+		checkArray[0][2] = -1000; //y >
+		checkArray[0][3] = -50; //y <
+		
+		checkArray[1][0] = -2600;
+		checkArray[1][1] = -3400;
+		checkArray[1][2] = -1000;
+		checkArray[1][3] = 50;
+	} else if (strcmp(mapname, "koth_harvest_final", false) == 0)	{
+		totalChecks = 2;
+		checkArray[0][0] = 900; //x < 
+		checkArray[0][1] = 27; //x >
+		checkArray[0][2] = 1700; //y >
+		checkArray[0][3] = 2100; //y <
+		
+		checkArray[1][0] = -27;
+		checkArray[1][1] = -900;
+		checkArray[1][2] = -2100;
+		checkArray[1][3] = -1700;
+	}  else if (strcmp(mapname, "pl_badwater", false) == 0)	{
+		totalChecks = 5;
+		checkArray[0][0] = -1000; //x < 
+		checkArray[0][1] = -1300; //x >
+		checkArray[0][2] = -80; //y >
+		checkArray[0][3] = 200; //y <
+		
+		checkArray[1][0] = 255;
+		checkArray[1][1] = -230;
+		checkArray[1][2] = -90;
+		checkArray[1][3] = 300;
+		
+		checkArray[2][0] = 550; //x < 
+		checkArray[2][1] = 375; //x >
+		checkArray[2][2] = 150; //y >
+		checkArray[2][3] = 900; //y <
+		
+		checkArray[3][0] = 3200;
+
+
+		checkArray[3][1] = 2650;
+		checkArray[3][2] = -2000;
+		checkArray[3][3] = -400;
+		
+		checkArray[4][0] = -1500; //x < 
+		checkArray[4][1] = -2250; //x >
+		checkArray[4][2] = -1100; //y >
+		checkArray[4][3] = -725; //y <
+	} else if (strcmp(mapname, "pl_upward", false) == 0)	{
+		totalChecks = 6;
+		checkArray[0][0] = -600; //x < 
+		checkArray[0][1] = -1000; //x >
+		checkArray[0][2] = -2300; //y >
+		checkArray[0][3] = -1900; //y <
+		
+		checkArray[1][0] = -1600; //x < 
+		checkArray[1][1] = -2000; //x >
+		checkArray[1][2] = -1700; //y >
+		checkArray[1][3] = -1400; //y <
+		
+		checkArray[2][0] = -1150; //x < not bugged
+		checkArray[2][1] = -1400; //x >
+		checkArray[2][2] = -1300; //y >
+		checkArray[2][3] = -800; //y <
+		
+		checkArray[3][0] = 720; //x < not bugged
+		checkArray[3][1] = 300; //x >
+		checkArray[3][2] = 1000; //y >
+		checkArray[3][3] = 1400; //y <
+		
+		checkArray[4][0] = 1000; //x < not bugged
+		checkArray[4][1] = 88; //x >
+		checkArray[4][2] = -25; //y >
+		checkArray[4][3] = 730; //y <
+		
+		checkArray[5][0] = 2000; //x < not bugged
+		checkArray[5][1] = 1500; //x >
+		checkArray[5][2] = -800; //y >]
+		checkArray[5][3] = -475; //y <		
+
+		
+	}  else if (strcmp(mapname, "cp_dustbowl", false) == 0)	{
+		totalChecks = 7;
+		checkArray[0][0] = -1750; //x < 
+		checkArray[0][1] = -2500; //x >
+		checkArray[0][2] = 2264; //y >
+		checkArray[0][3] = 3100; //y <
+		
+		checkArray[1][0] = -1550; //x < 
+		checkArray[1][1] = -1800; //x >
+		checkArray[1][2] = 1400; //y >
+		checkArray[1][3] = 2100; //y <
+		
+		checkArray[2][0] = 2900; //x < not bugged
+		checkArray[2][1] = 1400; //x >
+		checkArray[2][2] = -350; //y >
+		checkArray[2][3] = 1100; //y <
+		
+		checkArray[3][0] = -1300; //x < not bugged
+		checkArray[3][1] = -2655; //x >
+		checkArray[3][2] = -1750; //y >
+		checkArray[3][3] = -560; //y <
+		
+		checkArray[4][0] = -215; //x < not bugged
+		checkArray[4][1] = -1300; //x >
+		checkArray[4][2] = 250; //y >
+		checkArray[4][3] = 1315; //y <
+		
+		checkArray[5][0] = 300; //x < not bugged
+		checkArray[5][1] = -100; //x >
+		checkArray[5][2] = 600; //y >]
+		checkArray[5][3] = 1000; //y <
+		
+		checkArray[6][0] = 1300; //x < not bugged
+		checkArray[6][1] = 800; //x >
+		checkArray[6][2] = 600; //y >]
+		checkArray[6][3] = 1000; //y <
+
+	} else if (strcmp(mapname, "pl_hoodoo_final", false) == 0)	{
+		totalChecks = 5;
+		checkArray[0][0] = 5700; //x < 
+		checkArray[0][1] = 5000; //x >
+		checkArray[0][2] = 340; //y >
+		checkArray[0][3] = 1400; //y <
+		
+		checkArray[1][0] = 2700; //x < 
+		checkArray[1][1] = 1450; //x >
+		checkArray[1][2] = -3800; //y >
+		checkArray[1][3] = -1750; //y <
+		
+		checkArray[2][0] = -3400; //x < not bugged
+		checkArray[2][1] = -3900; //x >
+		checkArray[2][2] = -1650; //y >
+		checkArray[2][3] = -1200; //y <
+		
+		checkArray[3][0] = -4200; //x < not bugged
+		checkArray[3][1] = -4800; //x >
+		checkArray[3][2] = -1300; //y >
+		checkArray[3][3] = -300; //y <
+		
+		checkArray[4][0] = -7700; //x < not bugged
+		checkArray[4][1] = -8800; //x >
+		checkArray[4][2] = -1100; //y >
+		checkArray[4][3] = 0; //y <
+		
+
+		
+	} else {
+		totalChecks = 0;
+	}
+	
+	BeamSprite=PrecacheModel("materials/sprites/lgtning.vmt");
+	HaloSprite=PrecacheModel("materials/sprites/halo01.vmt");
+	
+	BloodSpray = PrecacheModel("sprites/bloodspray.vmt");
+	BloodDrop = PrecacheModel("sprites/blood.vmt");
+	
+	War3_PrecacheSound(lightningSound);
+	War3_PrecacheSound(wardDamageSound);
+
+}
+
+/* SHADOW HUNTER SWAP ABILITY BELOW */
+public bool:wardCheck(client)
+{
+	
+	if (!totalChecks)
+		return false;
+	
+	
+	new Float:vec[3];
+	GetClientAbsOrigin(client, vec);
+	
+	for(new x=0;x<totalChecks;x++) {
+		if (vec[0] < checkArray[x][0] && vec[0] > checkArray[x][1] && vec[1] > checkArray[x][2] && vec[1] < checkArray[x][3]) {
+			War3_ChatMessage(client, "You cannot place wards here, cheapo!");
+			return true;
+		} 
+	}
+	return false;
+}
 public OnAbilityCommand(client,ability,bool:pressed)
 {
 	if(War3_GetRace(client)==thisRaceID && ability==0 && pressed && IsPlayerAlive(client))
@@ -345,12 +581,12 @@ public OnAbilityCommand(client,ability,bool:pressed)
 		new skill_level=War3_GetSkillLevel(client,thisRaceID,SKILL_WARD);
 		if(skill_level>0)
 		{
-			if(!Silenced(client)&&CurrentWardCount[client]<WardStartingArr[skill_level])
+			if (!wardCheck(client)) 
 			{
-				new iTeam=GetClientTeam(client);
-				new bool:conf_found=false;
-				if(War3_GetGame()==Game_TF)
+				if(!Silenced(client)&&CurrentWardCount[client]<WardStartingArr[skill_level])
 				{
+					new iTeam=GetClientTeam(client);
+					new bool:conf_found=false;
 					new Handle:hCheckEntities=War3_NearBuilding(client);
 					new size_arr=0;
 					if(hCheckEntities!=INVALID_HANDLE)
@@ -368,26 +604,26 @@ public OnAbilityCommand(client,ability,bool:pressed)
 					}
 					if(size_arr>0)
 						CloseHandle(hCheckEntities);
-				}
-				if(conf_found)
-				{
-					W3MsgWardLocationDeny(client);
+					if(conf_found)
+					{
+						W3MsgWardLocationDeny(client);
+					}
+					else
+					{
+						if(War3_IsCloaked(client))
+						{
+							W3MsgNoWardWhenInvis(client);
+							return;
+						}
+						CreateWard(client);
+						CurrentWardCount[client]++;
+						W3MsgCreatedWard(client,CurrentWardCount[client],WardStartingArr[skill_level]);
+					}
 				}
 				else
 				{
-					if(War3_IsCloaked(client))
-					{
-						W3MsgNoWardWhenInvis(client);
-						return;
-					}
-					CreateWard(client);
-					CurrentWardCount[client]++;
-					W3MsgCreatedWard(client,CurrentWardCount[client],WardStartingArr[skill_level]);
+					W3MsgNoWardsLeft(client);
 				}
-			}
-			else
-			{
-				W3MsgNoWardsLeft(client);
 			}
 		}
 	}
@@ -408,6 +644,15 @@ public OnWar3EventSpawn(client)
 	RemoveWards(client);
 	for(new x=1;x<=MaxClients;x++)
 		bBeenHit[client][x]=false;
+/*	if(ValidPlayer(client))
+	{
+		if(IsFakeClient(client))
+		{
+			if(War3_GetRace(client)==thisRaceID)
+			{
+			}
+		}
+	}*/
 }
 
 new damagestackcritmatch=-1;
@@ -444,6 +689,17 @@ public OnW3TakeDmgBulletPre(victim,attacker,Float:damage)
 
 //need event for weapon string
 public OnWar3EventPostHurt(victim,attacker,dmg){
+	// Trigger Ultimate on bots 5% chance
+	if(ValidPlayer(victim))
+	{
+		if(IsFakeClient(victim)&&War3_GetRace(victim)==thisRaceID&&W3Chance(0.05))
+		{
+			//DP("ultimate should trigger");
+			OnUltimateCommand(victim,thisRaceID,true);
+			new Float:cooldown=GetConVarFloat(ultCooldownCvar);
+			War3_CooldownMGR(victim,cooldown,thisRaceID,ULT_LIGHTNING,true,false);
+		}
+	}
 	if(victim>0&&attacker>0&&victim!=attacker)
 	{
 		new race_attacker=War3_GetRace(attacker);

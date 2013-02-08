@@ -1,3 +1,4 @@
+#define PLUGIN_VERSION "0.0.0.1"
 /*
 ADD IN A MAP CHECKING FOR MVM IN THE ONMAP AREA..
 
@@ -36,7 +37,7 @@ new Handle:botBuysRandomMultipleChance;
 new Handle:botsetraces;
 public OnPluginStart()
 {
-	CreateConVar("war3evo_mvm_bots","1.0.0.1","War3Evolution MVM Bot Enhancements.",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+	CreateConVar("war3evo_botcontrol",PLUGIN_VERSION,"War3Evo Bot Control",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD|FCVAR_DONTRECORD);
 	//SetFailState("BROKEN");
 	
 	// ########################## BOT EVASION ################################
@@ -50,17 +51,8 @@ public OnPluginStart()
 	botScrambleRound = CreateConVar("war3_bots_scramble_on_round", "1", "Scramble bots each round?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	botAnnounce = CreateConVar("war3_bots_scramble_announce", "1", "Announce the scrambling?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	
-	switch(War3_GetGame())
-	{
-		case Game_DOD, Game_CS, Game_CSGO:
-			HookEvent("round_start", Event_ScrambleNow);
-		case Game_TF:
-			HookEvent("teamplay_round_win", Event_ScrambleNow);
-			//HookEvent("mvm_begin_wave", Event_ScrambleNow);
-		case Game_L4D2:
-			HookEvent("round_end", Event_ScrambleNow);
-	}
-	
+	HookEvent("teamplay_round_win", Event_ScrambleNow);
+
 	// ########################## BOT ITEM CONFIG ############################
 	botBuysItems = CreateConVar("war3_bots_buy_items", "1", "Can bots buy items?", FCVAR_PLUGIN, true, 0.0, true, 1.0);
 	botBuysRandom = CreateConVar("war3_bots_buy_random","1","Bots buy random items when they spawn (Loadout Mode currently disabled!)", FCVAR_PLUGIN, true, 1.0, true, 1.0);
@@ -116,13 +108,10 @@ public OnW3TakeDmgAllPre(victim, attacker, Float:damage)
 				War3_DamageModPercent(0.0);
 				W3MsgEvaded(victim, attacker);
 				
-				if(War3_GetGame() == Game_TF)
-				{
-					decl Float:pos[3];
-					GetClientEyePosition(victim, pos);
-					pos[2] += 4.0;
-					War3_TF_ParticleToClient(0, "miss_text", pos);
-				}
+				decl Float:pos[3];
+				GetClientEyePosition(victim, pos);
+				pos[2] += 4.0;
+				War3_TF_ParticleToClient(0, "miss_text", pos);
 			}
 		}
 	}
@@ -134,8 +123,11 @@ public Event_ScrambleNow(Handle:event, const String:name[], bool:dontBroadcast)
 	new bool:BotsExist=false;
 	for(new players = 1; players <= MaxClients; ++players)
 	{
-		if(IsFakeClient(players))
-			BotsExist=true;
+		if(ValidPlayer(players))
+		{
+			if(IsFakeClient(players))
+				BotsExist=true;
+		}
 	}
 
 	//Why scramblebots that doesn't exist?
@@ -160,14 +152,14 @@ ScrambleBots()
 	if(GetConVarInt(botsetraces)){
 		if(GetConVarBool(botAnnounce))
 		{
-			//PrintToChatAll("\x01\x04[War3Source]\x01 %T","The bots races and levels have been scrambled.",LANG_SERVER);
+			//PrintToChatAll("\x01\x04[War3Evo]\x01 %T","The bots races and levels have been scrambled.",LANG_SERVER);
 				
 			for(new players = 1; players <= MaxClients; ++players)
 			{
 				if (IsClientConnected(players) && IsClientInGame(players)&& !IsFakeClient(players))
 				{
 					
-					PrintToChat(players,"\x01\x04[War3Source]\x01 %T","The bots jobs and levels have been scrambled.",players);
+					PrintToChat(players,"\x01\x04[War3Evo]\x01 %T","The bots jobs and levels have been scrambled.",players);
 				}
 			}
 		}

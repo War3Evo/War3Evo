@@ -13,7 +13,7 @@
 
 #include <cstrike>
 
-enum ITEMENUM{ ///
+enum ITEMENUM{
 	POSTHASTE=0,
 	TRINKET,
 	LIFETUBE,
@@ -60,7 +60,7 @@ enum ITEMENUM{ ///
 	*/
 }
 
-new ItemID[ITEMENUM];
+new ItemID[MAXITEMS];
 
 // Regen Cash
 new bool:CASH_REGEN_PLAYERS[MAXPLAYERSCUSTOM]=false;
@@ -85,31 +85,29 @@ public Plugin:myinfo =
 public OnPluginStart()
 {
 	//CreateTimer(1.0,test,_,TIMER_REPEAT);
-	W3CreateCvar("w3shop2items","loaded","is the shop2 loaded");
+	//W3CreateCvar("w3shop2items","loaded","is the shop2 loaded");
 	cvarAmount = CreateConVar("sm_cashregen_amount", "20", "Amount of money generated per increment", _, true, 0.0, true, 1000.0);
 	cvarTime = CreateConVar("sm_cashregen_time", "20", "Time between cash regens", _, true, 0.0);
 
-	//Version = CreateConVar("sm_cashregen_version", PLUGIN_VERSION, "MvM Cash Regen Version", FCVAR_PLUGIN | FCVAR_SPONLY | FCVAR_REPLICATED | FCVAR_DONTRECORD);
-
 	if(!HookEventEx("mvm_begin_wave", MVM_OnRoundStart))
 	{
-		PrintToServer("[War3Source] Could not hook the mvm_begin_wave event.");
+		PrintToServer("[War3Evo] Could not hook the mvm_begin_wave event.");
 	}
 	if(!HookEventEx("teamplay_round_win", MVM_OnTeamplayRoundWin))
 	{
-		PrintToServer("[War3Source] Could not hook the teamplay_round_win event.");
+		PrintToServer("[War3Evo] Could not hook the teamplay_round_win event.");
 	}
 	if(!HookEventEx("mvm_wave_complete", MVM_OnRoundEnd))
 	{
-		PrintToServer("[War3Source] Could not hook the mvm_wave_complete event.");
+		PrintToServer("[War3Evo] Could not hook the mvm_wave_complete event.");
 	}
 	if(!HookEventEx("mvm_mission_complete", MVM_OnRoundComplete))
 	{
-		PrintToServer("[War3Source] Could not hook the mvm_mission_complete event.");
+		PrintToServer("[War3Evo] Could not hook the mvm_mission_complete event.");
 	}
 	if(!HookEventEx("mvm_pickup_currency", War3Source_MvMCurrencyEvent))
 	{
-		PrintToServer("[War3Source] Could not hook the mvm_pickup_currency event.");
+		PrintToServer("[War3Evo] Could not hook the mvm_pickup_currency event.");
 	}
 
 //	HookEvent("teamplay_setup_finished", OnTeamplaySetupFinished);
@@ -127,16 +125,20 @@ public OnPluginStart()
 
 public OnWar3LoadRaceOrItemOrdered(num)
 {
-	if(num==10&&EXT()){
-		ItemID[POSTHASTE]=W3CreateShopItem2T("posthaste",10);	
+	if(num==10){
+
+		for(new x=0;x<MAXITEMS;x++)
+			ItemID[x]=0;
+
+		ItemID[POSTHASTE]=War3_CreateShopItem2T("posthaste",10);
 		if(ItemID[POSTHASTE]==0){
 			DP("ERR ITEM ID RETURNED IS ZERO");
 		}
-		ItemID[TRINKET]=W3CreateShopItem2T("trinket",15);
-		ItemID[LIFETUBE]=W3CreateShopItem2T("lifetube",40);
-		ItemID[SNAKE_BRACELET]=W3CreateShopItem2T("snakebracelet",10);
-		ItemID[FORTIFIED_BRACER]=W3CreateShopItem2T("fortifiedbracer",10);
-		ItemID[CASH_REGEN]=W3CreateShopItem2T("mvmcashregen",40);
+		ItemID[TRINKET]=War3_CreateShopItem2T("trinket",15);
+		ItemID[LIFETUBE]=War3_CreateShopItem2T("lifetube",40);
+		ItemID[SNAKE_BRACELET]=War3_CreateShopItem2T("sbracelt",10);
+		ItemID[FORTIFIED_BRACER]=War3_CreateShopItem2T("fbracer",10);
+		ItemID[CASH_REGEN]=War3_CreateShopItem2T("mvmcashregen",40);
 		
 
 	}
@@ -200,7 +202,7 @@ public OnItem2Lost(client,item){ //deactivate passives , client may have disconn
 public OnW3TakeDmgBulletPre(victim,attacker,Float:damage)
 {
 //sh has no shop2 items
-	if(W3()&&IS_PLAYER(victim)&&IS_PLAYER(attacker)&&victim>0&&attacker>0&&attacker!=victim)
+	if(IS_PLAYER(victim)&&IS_PLAYER(attacker)&&victim>0&&attacker>0&&attacker!=victim)
 	{
 		new vteam=GetClientTeam(victim);
 		new ateam=GetClientTeam(attacker);

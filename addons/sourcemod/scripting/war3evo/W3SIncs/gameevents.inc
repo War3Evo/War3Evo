@@ -12,44 +12,20 @@ public bool:War3Source_HookEvents()
 	// Events for all games
 	if(!HookEventEx("player_spawn",War3Source_PlayerSpawnEvent,EventHookMode_Pre)) //,EventHookMode_Pre
 	{
-		PrintToServer("[War3Source] Could not hook the player_spawn event.");
+		PrintToServer("[War3Evo] Could not hook the player_spawn event.");
 		return false;
 	}
 	if(!HookEventEx("player_death",War3Source_PlayerDeathEvent,EventHookMode_Pre))
 	{
-		PrintToServer("[War3Source] Could not hook the player_death event.");
+		PrintToServer("[War3Evo] Could not hook the player_death event.");
 		return false;
 	}
-	if(War3_GetGame()==Game_CS)
+	if(!HookEventEx("teamplay_round_win",War3Source_RoundOverEvent))
 	{
-		if(!HookEventEx("round_start",War3Source_RoundStartEvent))
-		{
-			PrintToServer("[War3Source] Could not hook the round_start event.");
-			return false;
-		}
-		iRoundNumber=0;
-		bInFreezeTime=false;
-		
-		if(!HookEventEx("round_end",War3Source_RoundOverEvent))
-		{
-			PrintToServer("[War3Source] Could not hook the round_end event.");
-			return false;
-		}
+		PrintToServer("[War3Evo] Could not hook the teamplay_round_win event.");
+		return false;
 	}
-	else if(War3_GetGame()==Game_DOD)
-	{
-		// TODO: DOD specific events
-	}
-	else if(War3_GetGame()==Game_TF)
-	{
-		if(!HookEventEx("teamplay_round_win",War3Source_RoundOverEvent))
-		{
-			PrintToServer("[War3Source] Could not hook the teamplay_round_win event.");
-			return false;
-		}
 
-	}
-	
 	return true;
 	
 }
@@ -69,66 +45,51 @@ public War3Source_PlayerSpawnEvent(Handle:event,const String:name[],bool:dontBro
 			War3_SetMaxHP_INTERNAL(client,GetClientHealth(client));
 			//PrintToChatAll("%d",GetClientHealth(index)); 
 			
-			if(W3()){
-				CheckPendingRace(client);
-				
-				if(IsFakeClient(client)&&W3IsPlayerXPLoaded(client)&&War3_GetRace(client)==0&&GetConVarInt(botsetraces)){ //W3IsPlayerXPLoaded(client) is for skipping until putin server is fired (which cleared variables)
-					new tries=100;
-
-					//new motherbot = War3_GetRaceIDByShortname("motherbot");
-
-					if(tries>0)
+			CheckPendingRace(client);
+			if(IsFakeClient(client)&&W3IsPlayerXPLoaded(client)&&War3_GetRace(client)==0&&GetConVarInt(botsetraces)){ //W3IsPlayerXPLoaded(client) is for skipping until putin server is fired (which cleared variables)
+				new tries=100;
+				//new motherbot = War3_GetRaceIDByShortname("motherbot");
+				if(tries>0)
+				{
+					new race=GetRandomInt(1,War3_GetRacesLoaded());
+					if(!W3RaceHasFlag(race,"nobots")) // may want to remove race!=motherbot then put "nobots" for motherbot along with hidden
 					{
-						new race=GetRandomInt(1,War3_GetRacesLoaded());
-						if(!W3RaceHasFlag(race,"nobots")) // may want to remove race!=motherbot then put "nobots" for motherbot along with hidden
+						tries=0;
+						//PrintToServer("race to be %d",race);
+						War3_SetRace(client,race);
+						War3_SetLevel(client,race,W3GetRaceMaxLevel(race));
+						for(new i=1;i<=War3_GetRaceSkillCount(race);i++)
 						{
-							tries=0;
-							//PrintToServer("race to be %d",race);
-							War3_SetRace(client,race);
-							War3_SetLevel(client,race,W3GetRaceMaxLevel(race));
-							for(new i=1;i<=War3_GetRaceSkillCount(race);i++)
-							{
-								War3_SetSkillLevelINTERNAL(client,race,i,W3GetRaceSkillMaxLevel(race,i));
-							}
-							W3DoLevelCheck(client);
+							War3_SetSkillLevelINTERNAL(client,race,i,W3GetRaceSkillMaxLevel(race,i));
 						}
+						W3DoLevelCheck(client);
 					}
-					//PrintToServer("race %d level %d %d",War3_GetRace(client),War3_GetLevel(client,race),War3_GetSkillLevel(client,race,0));
-
+				}
+				//PrintToServer("race %d level %d %d",War3_GetRace(client),War3_GetLevel(client,race),War3_GetSkillLevel(client,race,0));
 					// Check Bots for classname assignment
-					//CreateTimer(10.0,Check_Bot_ClassName_Timer,userid);
-				}
-				
-				
-				
-				new raceid=War3_GetRace(client);
-				if(!W3GetPlayerProp(client,SpawnedOnce))
-				{
-					War3Source_IntroMenu(client);
-					W3SetPlayerProp(client,SpawnedOnce,true);
-				}
-				else if(raceid<1&&W3IsPlayerXPLoaded(client))
-				{
-					ShowChangeRaceMenu(client);
-				}
-				else if(raceid>0&&GetConVarInt(hRaceLimitEnabled)>0&&GetRacesOnTeam(raceid,GetClientTeam(client),true)>W3GetRaceMaxLimitTeam(raceid,GetClientTeam(client))){
-					CheckRaceTeamLimit(raceid,GetClientTeam(client));  //show changerace inside
-				}
-				raceid=War3_GetRace(client);//get again it may have changed
-				if(raceid>0){
-					
-					W3DoLevelCheck(client);
-					War3_ShowXP(client);
-					
-					W3CreateEvent(DoCheckRestrictedItems,client);
-				}
-				
-				
+				//CreateTimer(10.0,Check_Bot_ClassName_Timer,userid);
 			}
-			if(SH()){
-				SHShowCRMenuIfCanChoose(client);
+			new raceid=War3_GetRace(client);
+			if(!W3GetPlayerProp(client,SpawnedOnce))
+			{
+				War3Source_IntroMenu(client);
+				W3SetPlayerProp(client,SpawnedOnce,true);
 			}
-			
+			else if(raceid<1&&W3IsPlayerXPLoaded(client))
+			{
+				ShowChangeRaceMenu(client);
+			}
+			else if(raceid>0&&GetConVarInt(hRaceLimitEnabled)>0&&GetRacesOnTeam(raceid,GetClientTeam(client),true)>W3GetRaceMaxLimitTeam(raceid,GetClientTeam(client))){
+				CheckRaceTeamLimit(raceid,GetClientTeam(client));  //show changerace inside
+			}
+			raceid=War3_GetRace(client);//get again it may have changed
+			if(raceid>0){
+
+				W3DoLevelCheck(client);
+				War3_ShowXP(client);
+
+				W3CreateEvent(DoCheckRestrictedItems,client);
+			}
 			//forward to all other plugins last
 			DoForward_OnWar3EventSpawn(client);
 			
@@ -242,7 +203,7 @@ public  Action:War3Source_PlayerDeathEvent(Handle:event,const String:name[],bool
 	if(uid_victim>0)
 	{	
 		new deathFlags = GetEventInt(event, "death_flags");
-		if (War3_GetGame()==Game_TF&&deathFlags & 32) //TF_DEATHFLAG_DEADRINGER
+		if (deathFlags & 32) //TF_DEATHFLAG_DEADRINGER
 		{
 			deadringereath=true;
 			//PrintToChat(client,"war3 debug: dead ringer kill");
@@ -333,16 +294,8 @@ public War3Source_RoundOverEvent(Handle:event,const String:name[],bool:dontBroad
 {
 	// cs - int winner
 	// tf2 - int team
-	new team=-1;
-	if(War3_GetGame()==Game_TF)
-	{
-		team=GetEventInt(event,"team");
-	}
-	else
-	{
-		team=GetEventInt(event,"winner");
-	}
-	if(team>-1)
+	//new team=GetEventInt(event,"team");
+	if(GetEventInt(event,"team")>-1)
 	{
 		//winner team...
 	}

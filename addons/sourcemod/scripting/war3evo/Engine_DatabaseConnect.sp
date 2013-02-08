@@ -56,8 +56,8 @@ ConnectDB(){
 	}
 	if(!hDB)
 	{
-		LogError("[War3Source] ERROR: hDB invalid handle, Check SourceMod database config, could not connect. ");
-		W3LogError("[War3Source] ERROR: hDB invalid handle, Check SourceMod database config, could not connect. ");
+		LogError("[War3Evo] ERROR: hDB invalid handle, Check SourceMod database config, could not connect. ");
+		W3LogError("[War3Evo] ERROR: hDB invalid handle, Check SourceMod database config, could not connect. ");
 		Format(dbErrorMsg,sizeof(dbErrorMsg),"ERR: Could not connect to DB. \n%s",error);
 		LogError("ERRMSG:(%s)",error);
 		W3LogError("ERRMSG:(%s)",error);
@@ -80,7 +80,7 @@ ConnectDB(){
 		{
 			g_SQLType=SQLType_Unknown;
 		}
-		PrintToServer("[War3Source] SQL connection successful, driver %s",driver_ident);
+		PrintToServer("[War3Evo] SQL connection successful, driver %s",driver_ident);
 		SQL_LockDatabase(hDB);
 		SQL_FastQuery(hDB, "SET NAMES \"UTF8\""); 
 		SQL_UnlockDatabase(hDB);

@@ -18,13 +18,14 @@
 #include "W3SIncs/colors"
 #include "W3SIncs/aura"
 #include "W3SIncs/War3Source_Effects"
+#include "W3SIncs/War3Source_Logging"
 //sh include is at the end of this file
 
 
 //Interface version, change this when the API requirement changes to force a recompile
 //There will be a system check to make sure all plugins are compiled to the same interface.
 //new String:interfaceVersion[]="1.2.4.0";
-new String:interfaceVersion[]="1.2.2.1";
+new String:interfaceVersion[]="1.2.4.1";
 
 stock dummy; //variable for dummies! Use this where ever u want for a dummy return
 stock String:dummystr[32]; //just a dummy string! 
@@ -76,13 +77,6 @@ public APLRes:AskPluginLoad2(Handle:plugin,bool:late,String:error[],err_max)
 		}
 	}
 
-	//do not load if these functions exists
-	if(GetFunctionByName(plugin, "W3ONLY")!=INVALID_FUNCTION && !W3()) {
-		return APLRes_SilentFailure;
-	}
-	if(GetFunctionByName(plugin, "SHONLY")!=INVALID_FUNCTION && !SH()) {
-		return APLRes_SilentFailure;
-	}
 	return APLRes_Success;
 }
 /**********************
@@ -95,15 +89,6 @@ forward bool:InitNativesForwards();
  */
 forward APLRes:AskPluginLoad2Custom(Handle:plugin,bool:late,String:error[],err_max);
 
-/**********************
- * Implement this with blank statement if you want this plugin to not load if it is not war3 mode
- */
-forward W3ONLY();
-
-/**********************
- * Implement this with blank statement if you want this plugin to not load if it is not sh mode
- */
-forward SHONLY();
 
 //variables forwarded to every w3 plugin
 new W3ForwarededVars[W3ForwardedVarsEnum];
@@ -111,183 +96,53 @@ public W3SetForwarededVar(index,value) {
 	//DP("forwarded %d %d",index,value);
 	W3ForwarededVars[index]=value;
 }
-stock EXT() {
-	return W3ForwarededVars[EXTAvailable];
-}
+//stock EXT() {
+//	return W3ForwarededVars[EXTAvailable];
+//}
 
 //INTERFACE ONLY VARIABLES, use for determining game type
 stock tValveGame;
-stock bool:bWar3Mode;
-stock bool:bSHMode;
-stock W3() {
-	return bWar3Mode;
-}
-stock SH() {
-	return bSHMode;
-}
+
 stock ValveGameEnum:War3_GetGame() {
 	return ValveGameEnum:tValveGame;
 }
 
 //Do not manually call this, this determines the game mode and is called internally in the API
 stock DetermineGameMode() {
-	//DETERMIE GAME MODE
-#if defined WAR3MAIN
-	PrintToServer("[SH] READING shsourcemode.cfg trying to find 'shsource' in the file");
-#endif
-	new Handle:file=OpenFile("cfg/shsourcemode.cfg", "a+"); //creates new file if one not exists
-
-	bWar3Mode = true; //default
-	bSHMode = false; //default
-	new String:buffer[256];
-	while (ReadFileLine(file, buffer, sizeof(buffer))) {
-		if (strncmp(buffer, "shsource", strlen("shsource"), false) == 0) {
-			bWar3Mode = false;
-			bSHMode = true;
-#if defined WAR3MAIN
-			PrintToServer("[SH] SHSource MODE ENABLED");
-#endif
-			break;
-		}
-	}
-	CloseHandle( file);
-#if defined WAR3MAIN
-	PrintToServer("[SH] FINISHED READING shsourcemode.cfg");
-#endif
 
 	//DETERMINE GAME TYPE: CS TF ETC
 	new String:gameDir[64];
 	GetGameFolderName(gameDir, sizeof(gameDir));
-	if (StrContains(gameDir, "cstrike", false) == 0) {
-		tValveGame=_:Game_CS;
-#if defined WAR3MAIN
-		PrintToServer("[War3Source] Game set: Counter-Strike Source ValveGame %d",tValveGame);
-#endif
-		ServerCommand("sv_allowminmodels 0");
-	} else if (StrContains(gameDir, "dod", false) == 0) {
-#if defined WAR3MAIN
-		PrintToServer("[War3Source] Game set: Day of Defeat Source (ONLY DEVELOPER SUPPORT!)");
-#endif
-	tValveGame	=_:Game_DOD;
-	}
-	else if(StrContains(gameDir,"tf",false)==0)
+	if(StrContains(gameDir,"tf",false)==0)
 	{
 #if defined WAR3MAIN
-		PrintToServer("[War3Source] Game set: Team Fortress 2");
+		PrintToServer("[War3Evo] Game set: Team Fortress 2");
 #endif
 		tValveGame=_:Game_TF;
 	}
-	else if(StrContains(gameDir,"left4dead2",false)==0)
-	{
-#if defined WAR3MAIN
-		PrintToServer("[War3Source] Game set: Left 4 Dead 2");
-#endif
-		tValveGame=_:Game_L4D2;
-	}
-	else if(StrContains(gameDir,"left4dead",false)==0)
-	{
-#if defined WAR3MAIN
-		PrintToServer("[War3Source] Game set: Left 4 Dead");
-#endif
-		tValveGame=_:Game_L4D;
-	}
-	else if(StrContains(gameDir,"csgo",false)==0)
-	{
-#if defined WAR3MAIN
-		PrintToServer("[War3Source] Game set: Counter Strike Global Offensive");
-#endif
-		tValveGame=_:Game_CSGO;
-	}
 	else
 	{
-		SetFailState("[War3Source] Sorry, this game isn't support by War3Source yet. If you think this is a mistake, you probably renamed your game directory. For example, re-naming cstrike to cstrike2 will cause this error. (folder name: %s)", gameDir);
+		SetFailState("[War3Evo] Sorry, this game isn't support by War3Evo. If you think this is a mistake, you probably renamed your game directory. For example, re-naming cstrike to cstrike2 will cause this error. (folder name: %s)", gameDir);
 	}
 //bGameModeDetermined=true;
 }
-#define GAMECS GameCS()
-#define GAMETF GameTF()
-#define GAMEL4D1 GameL4D1()
-#define GAMEL4D2 GameL4D2()
-#define GAMEL4DAny GameL4DAny()
-#define GAMECSGO GameCSGO()
-#define GAMECSANY GameCSANY()
-stock bool:GameCS() {
-	return War3_GetGame()==Game_CS;
-}
-stock bool:GameTF() {
-	return War3_GetGame()==Game_TF;
-}
 
-stock bool:GameL4D1() {
-	return (War3_GetGame() == Game_L4D);
-}
+//#pragma deprecated use if(GAMECSANY)
 
-stock bool:GameL4D2() {
-	return ( War3_GetGame() == Game_L4D2);
-}
-
-stock bool:GameL4DAny() {
-	return (War3_GetGame() == Game_L4D || War3_GetGame() == Game_L4D2);
-}
-
-stock bool:GameCSGO() {
-	return War3_GetGame() == Game_CSGO;
-}
-stock bool:GameCSANY() {
-	new ValveGameEnum:war3Game = War3_GetGame();
-	if(war3Game==Game_CS || war3Game==Game_CSGO) {
-		return true;
-	}
-	return false;
-}
-
-#pragma deprecated use if(GAMECSANY)
-// This checks if the current game is CS:S or CS:GO
-stock bool:War3_IsCounterStrike() {
-	new ValveGameEnum:war3Game = War3_GetGame();
-	if(war3Game==Game_CS || war3Game==Game_CSGO) {
-		return true;
-	}
-	return false;
-}
 //We mark some natives optional so different plugins can still startup
 /**********************
  * CALL THIS IN ASKPLUGINLOAD if you are using any of these or have native errors
  */
 
 stock GlobalOptionalNatives() {
-	MarkNativeAsOptional("SHHasHero");
-	MarkNativeAsOptional("SHGetHeroesClientCanHave");
-	MarkNativeAsOptional("SHHasHero");
-
 	MarkNativeAsOptional("W3GetReqXP");
-	MarkNativeAsOptional("SHGetReqXP");
 
 	MarkNativeAsOptional("War3_ShowXP");
-	MarkNativeAsOptional("SHShowXP");
 
 	MarkNativeAsOptional("W3SaveXP");
-	MarkNativeAsOptional("SHSaveXP");
 
 	MarkNativeAsOptional("War3Failed");
 
-	///omfg
-	MarkNativeAsOptional("SHHasHero");
-	MarkNativeAsOptional("SHSetHasHero");
-	MarkNativeAsOptional("SHGetHeroHasPowerBind");
-	MarkNativeAsOptional("SHSetHeroHasPowerBind");
-	MarkNativeAsOptional("SHGetLevel");
-	MarkNativeAsOptional("SHSetLevel");
-	MarkNativeAsOptional("SHGetXP");
-	MarkNativeAsOptional("SHSetXP");
-	MarkNativeAsOptional("SHShowXP");
-	MarkNativeAsOptional("SHGetReqXP");
-	MarkNativeAsOptional("SHGetHeroesClientCanHave");
-	MarkNativeAsOptional("SHGetPowerBind");
-	MarkNativeAsOptional("SHSetPowerBind");
-	MarkNativeAsOptional("SHMaxLevel");
-	MarkNativeAsOptional("SHSaveXP");
-	MarkNativeAsOptional("SHTryToGiveClientHero");
 	MarkNativeAsOptional("OurTestNative");
 	MarkNativeAsOptional("OurTestNative2");
 	MarkNativeAsOptional("W3ExtVersion");
@@ -351,7 +206,7 @@ stock GlobalOptionalNatives() {
 	MarkNativeAsOptional("War3_SetItem2Property");
 	MarkNativeAsOptional("War3_GetItem2Property");
 	MarkNativeAsOptional("War3_GetItem2IdByShortname");
-	MarkNativeAsOptional("W3CreateShopItem2");
+	//MarkNativeAsOptional("W3CreateShopItem2");
 	MarkNativeAsOptional("W3GetItem2Name");
 	MarkNativeAsOptional("W3GetItem2Shortname");
 	MarkNativeAsOptional("W3GetItem2Desc");
@@ -359,7 +214,7 @@ stock GlobalOptionalNatives() {
 	MarkNativeAsOptional("W3GetItem2Order");
 	MarkNativeAsOptional("W3Item2HasFlag");
 	MarkNativeAsOptional("W3GetItem2Catagory");
-	MarkNativeAsOptional("W3GetItems2LoadedEXT");
+	MarkNativeAsOptional("W3GetItems2Loaded");
 	MarkNativeAsOptional("W3IsItem2DisabledGlobal");
 	MarkNativeAsOptional("W3IsItem2DisabledForRace");
 	MarkNativeAsOptional("W3SaveItem2ExpireTime");
@@ -396,8 +251,8 @@ stock GlobalOptionalNatives() {
 	MarkNativeAsOptional("War3_GetOwnsItem");
 	MarkNativeAsOptional("War3_GetOwnsItem2");
 	MarkNativeAsOptional("War3_GetOwnsItem3");
-	MarkNativeAsOptional("W3GetItem2ExpireTime");
-	MarkNativeAsOptional("W3SetItem2ExpireTime");
+//	MarkNativeAsOptional("W3GetItem2ExpireTime");
+//	MarkNativeAsOptional("W3SetItem2ExpireTime");
 	MarkNativeAsOptional("War3_SetOwnsItem");
 	MarkNativeAsOptional("War3_SetOwnsItem2");
 	MarkNativeAsOptional("War3_SetOwnsItem3");
@@ -464,6 +319,7 @@ stock GlobalOptionalNatives() {
 	MarkNativeAsOptional("W3GetDamageType");
 	MarkNativeAsOptional("W3GetDamageInflictor");
 	MarkNativeAsOptional("W3ChanceModifier");
+	MarkNativeAsOptional("W3IsOwnerSentry");
 	MarkNativeAsOptional("W3Hint");
 	MarkNativeAsOptional("War3_GetRace");
 	MarkNativeAsOptional("War3_SetRace");
@@ -497,11 +353,12 @@ stock GlobalOptionalNatives() {
 	MarkNativeAsOptional("CreateWar3GlobalError");
 	MarkNativeAsOptional("W3CreateEvent");
 
-	MarkNativeAsOptional("War3_SetDiamondsEXT");
-	MarkNativeAsOptional("War3_GetDiamondsEXT");
-	MarkNativeAsOptional("War3_GetOwnsItem2EXT");
-	MarkNativeAsOptional("War3_SetOwnsItem2EXT");
-	MarkNativeAsOptional("W3ExtShowShop2");
+	//MarkNativeAsOptional("War3_SetDiamondsEXT");
+	//MarkNativeAsOptional("War3_GetDiamondsEXT");
+	//MarkNativeAsOptional("War3_GetOwnsItem2EXT");
+	//MarkNativeAsOptional("War3_SetOwnsItem2EXT");
+	//MarkNativeAsOptional("W3ExtShowShop2");
+
 	// L4D
 	MarkNativeAsOptional("War3_L4D_IsHelpless");
 	// Skills
@@ -766,6 +623,9 @@ native W3GetItemName(itemid,String:ret[],maxlen);
 native W3GetItemShortname(itemid,String:ret[],maxlen);
 native W3GetItemDescription(itemid,String:ret[],maxlen);
 
+native GetClientItems2Owned(client);
+native GetMaxShopitems2PerPlayer();
+
 native W3GetItemCost(itemid,bool:csmoney);
 native W3GetItemOrder(itemid);
 native W3ItemHasFlag(itemid,String:flagsearch[]);
@@ -863,13 +723,14 @@ native W3SaveItem3(client, itemid);
 
 
 //Shopmenu 2 item class
-//native War3_CreateShopItem2(String:name[],String:shortname[],String:desc[],cost);
-native W3CreateShopItem2(String:name[],String:shortname[],String:desc[],cost,translated=false);
-//translated
-stock W3CreateShopItem2T(String:shortname[],cost) {
-	return W3CreateShopItem2("",shortname,"",cost,true);
+native War3_CreateShopItem2(String:name[],String:shortname[],String:desc[],cost);
+native War3_CreateShopItem2T(String:shortname[],cost);
 
-}
+//native W3CreateShopItem2(String:name[],String:shortname[],String:desc[],cost,translated=false);
+//translated
+//stock W3CreateShopItem2T(String:shortname[],cost) {
+//	return W3CreateShopItem2("",shortname,"",cost,true);
+//}
 
 native War3_SetItem2Property(itemid,W3ItemProp:ITEM_PROPERTY,value);
 native War3_GetItem2Property(itemid,W3ItemProp:ITEM_PROPERTY);
@@ -883,18 +744,15 @@ native W3GetItem2Shortname(itemid,String:ret[],maxlen);
 native W3GetItem2Desc(itemid,String:ret[],maxlen);
 
 native W3GetItem2Cost(itemid);
-//native W3GetItem2Order(itemid);
+native W3GetItem2Order(itemid);
 native W3Item2HasFlag(itemid,String:flagsearch[]);
-//native W3GetItem2Catagory(itemid,String:retcatagorystr[],maxlen);
-native W3GetItems2LoadedEXT();
-stock W3GetItems2Loaded() { //how many items are loaded?
-	return EXT() ? W3GetItems2LoadedEXT() : 0;
-}
+native W3GetItem2Catagory(itemid,String:retcatagorystr[],maxlen);
+native W3GetItems2Loaded();
 
 native bool:W3IsItem2DisabledGlobal(itemid);
 native bool:W3IsItem2DisabledForRace(race,itemid);
 
-native W3ExtShowShop2(client);
+//native W3ExtShowShop2(client);
 
 //Forces a save into database of when the item expires
 //client must own item already
@@ -978,8 +836,8 @@ native War3_RestoreItemsFromDeath(client,bool:payforit=true,bool:csmoney=false);
 // returns true if they are in steam group
 native War3_IsInSteamGroup(client);
 
-native W3GetItem2ExpireTime(client, item);
-native W3SetItem2ExpireTime(client, item, time); //use full linux time , ie: NOW()+duration
+//native W3GetItem2ExpireTime(client, item);
+//native W3SetItem2ExpireTime(client, item, time); //use full linux time , ie: NOW()+duration
 
 native bool:W3BuyUseCSMoney();
 
@@ -993,24 +851,8 @@ native bool:W3BuyUseCSMoney();
  *	ITEM IS NOT LOST AUTOMATICALLY ON DEATH  
  */
 
-native War3_GetOwnsItem2EXT(client, item);
-
-native War3_SetOwnsItem2EXT(client,item,bool:ownsitem);
-stock War3_GetOwnsItem2(client, item) {
-	if (EXT()) {
-		if (item < 1) {
-			DP("err invalid item id %d client %d", item, client);
-			ThrowError("asdf");
-		}
-		return War3_GetOwnsItem2EXT(client, item);
-	}
-	return 0;
-}
-stock War3_SetOwnsItem2(client,item,bool:ownsitem) {
-	if(EXT()) {
-		War3_SetOwnsItem2EXT(client,item,bool:ownsitem);
-	}
-}
+native War3_GetOwnsItem2(client, item);
+native War3_SetOwnsItem2(client,item,bool:ownsitem);
 
 /**
  * Finds the best target within a player's view cone
@@ -1238,18 +1080,14 @@ stock Handle:War3_NearEntByName(client,String:ent_name[],Float:distance)
  */
 stock Handle:War3_NearBuilding(client,Float:distance=150.0)
 {
-	if(War3_GetGame()==Game_TF)
-	{
-		new Handle:hEnts=CreateDataPack();
-		WritePackString(hEnts,"obj_dispenser");
-		WritePackString(hEnts,"obj_sentrygun");
-		WritePackString(hEnts,"obj_teleporter_entrance");
-		WritePackString(hEnts,"obj_teleporter_exit");
-		new Handle:result=War3_NearEntsByName(client,hEnts,4,distance);
-		CloseHandle(hEnts);
-		return result;
-	}
-	return INVALID_HANDLE;
+	new Handle:hEnts=CreateDataPack();
+	WritePackString(hEnts,"obj_dispenser");
+	WritePackString(hEnts,"obj_sentrygun");
+	WritePackString(hEnts,"obj_teleporter_entrance");
+	WritePackString(hEnts,"obj_teleporter_exit");
+	new Handle:result=War3_NearEntsByName(client,hEnts,4,distance);
+	CloseHandle(hEnts);
+	return result;
 }
 
 // THE FOLLOWING NATIVES RETRIEVE DATA CACHED ONGAMEFRAME!
@@ -1426,7 +1264,7 @@ stock nsEntity_SetHealth(entity, health) {
  */
 stock War3_TFHealingEvent(client, amount_healed)
 {
-    if (War3_GetGame() != Game_TF || !ValidPlayer(client, true) || IsFakeClient(client))
+    if (!ValidPlayer(client, true) || IsFakeClient(client))
     {
         return;
     }
@@ -1623,7 +1461,28 @@ native W3GetDamageInflictor();
  */
 
 //helper, directly uses last inflictor and damagetype
+// Acts like a DPS limiter
 native Float:W3ChanceModifier(attacker);
+
+/**
+ * Basically checks to see if this is a Owner's sentry.
+ *
+ * best use inside OnW3TakeDmgBullet or OnW3TakeDmgBullet or SDKHooks calls that have inflictors
+ * where you can use this code:
+ *  new inflictor = W3GetDamageInflictor();
+ *  then pass the inflictor as the entity below:
+ *
+ * @param client: client you wish to check as the owner
+ * @param UseInternalInflictor: true if you wish the native to grab the W3GetDamageInflictor for you.
+ *         ^ only use if you are using inside a OnW3TakeDamage function type, else use your own
+ *         (Default true)
+ * @param ExternalInflictor: entity you wish to check that maybe a sentry / optional
+ *        Make sure you put UseInternalInflictor as false.
+ *
+ * @param return: true if the client is the sentry owner and the entity is the owned sentry
+ *
+ */
+native bool:W3IsOwnerSentry(client,bool:UseInternalInflictor=true,ExternalInflictor=0);
 
 //print via hint engine. format accepts translations
 native W3Hint(client,W3HintPriority:type=HINT_LOWEST,Float:duration=5.0,String:format[],any:...);
@@ -1808,19 +1667,14 @@ stock War3_GetGold(client) {
 	return W3GetPlayerProp(client, PlayerGold);
 }
 
-native War3_GetDiamondsEXT(client);
-native War3_SetDiamondsEXT(client, newd);
+//native War3_GetDiamondsEXT(client);
+//native War3_SetDiamondsEXT(client, newd);
 
 stock War3_GetDiamonds(client) {
-	if (EXT()) {
-		return War3_GetDiamondsEXT(client);
-	}
-	return 0;
+	return W3GetPlayerProp(client, PlayerDiamonds);
 }
 stock War3_SetDiamonds(client, newd) {
-	if (EXT()) {
-		War3_SetDiamondsEXT(client, newd);
-	}
+	W3SetPlayerProp(client, PlayerDiamonds, newd);
 }
 
 native W3IsDeveloper(client);
@@ -2160,8 +2014,9 @@ stock bool:W3Denyable(W3DENY:event,client) {
 }
 native W3Deny();
 
-stock bool:CanSelectRace(client,race) {
+stock bool:CanSelectRace(client,race,bool:silence=false) {
 	W3SetVar(EventArg1,race);
+	W3SetVar(EventArg2,silence);
 	new bool:value=W3Denyable(DN_CanSelectRace,client);
 	//DP("dp %d",value);
 	if(value==false && W3IsDeveloper(client)) {
@@ -2237,7 +2092,7 @@ forward OnWardExpire(wardindex, owner, behaviorID);
 #define MAX_MESSAGE_LENGTH 250
 
 /** 
- * Prints a message in the chat area with [War3Source] pre-appended.
+ * Prints a message in the chat area with [War3Evo] pre-appended.
  * Support color tags: {default}, {green}, {lightgreen}, {red}, {blue}, {olive}.
  * 
  * @param client      Client index, pass 0 for message to all.
@@ -2255,7 +2110,7 @@ stock War3_ChatMessage(client, const String:szMessage[], any:...)
 			{
 				SetGlobalTransTarget(i);
 				VFormat(szBuffer, sizeof(szBuffer), szMessage, 3);
-				Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Source]", i, szBuffer);
+				Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Evo]", i, szBuffer);
 				CPrintToChat(i, szBuffer);
 			}
 		}
@@ -2265,13 +2120,13 @@ stock War3_ChatMessage(client, const String:szMessage[], any:...)
 		decl String:szBuffer[MAX_MESSAGE_LENGTH];
 		SetGlobalTransTarget(client);
 		VFormat(szBuffer, sizeof(szBuffer), szMessage, 3);
-		Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Source]", client, szBuffer);
+		Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Evo]", client, szBuffer);
 		CPrintToChat(client, szBuffer);
 	}
 }
 
 /** 
- * Prints a message in the chat area with [War3Source] pre-appended.
+ * Prints a message in the chat area with [War3Evo] pre-appended.
  * Support color tags: {default}, {green}, {olive}, {teamcolor}.
  * 
  * @param client      Client index, pass 0 for message to all.
@@ -2296,7 +2151,7 @@ stock War3_ChatMessageEx(client, author, const String:szMessage[], any:...)
 			{
 				SetGlobalTransTarget(i);
 				VFormat(szBuffer, sizeof(szBuffer), szMessage, 4);
-				Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Source]", i, szBuffer);
+				Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Evo]", i, szBuffer);
 				CPrintToChatEx(i, author, szBuffer);
 			}
 		}
@@ -2306,7 +2161,7 @@ stock War3_ChatMessageEx(client, author, const String:szMessage[], any:...)
 		decl String:szBuffer[MAX_MESSAGE_LENGTH];
 		SetGlobalTransTarget(client);
 		VFormat(szBuffer, sizeof(szBuffer), szMessage, 4);
-		Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Source]", client, szBuffer);
+		Format(szBuffer, sizeof(szBuffer), "%T%s", "[War3Evo]", client, szBuffer);
 		CPrintToChatEx(client, author, szBuffer);
 	}
 }
@@ -2399,44 +2254,12 @@ stock bool:W3Chance(Float:chancepercent=1.0) {
 	return (GetRandomFloat(0.0,1.0)<=chancepercent);
 }
 
-//sets armor, but does not give any helm
-stock War3_SetCSArmor(client, amount) {
-	// Revan: thoose armor properities for CS:GO are the same as in CS:Source
-	new ValveGameEnum:war3Game = War3_GetGame();
-	if (war3Game == Game_CS || war3Game == Game_CSGO) {
-		if (amount > 125) {
-			amount = 125;
-		}
-		SetEntProp(client, Prop_Send, "m_ArmorValue", amount);
-	}
-}
-stock War3_GetCSArmor(client) {
-	new ValveGameEnum:war3Game = War3_GetGame();
-	if (war3Game == Game_CS || war3Game == Game_CSGO) {
-		return GetEntProp(client, Prop_Send, "m_ArmorValue");
-	}
-	return 0;
-}
-stock War3_GetCSArmorHasHelmet(client) {
-return GetEntProp(client, Prop_Send, "m_bHasHelmet")
-}
-stock War3_SetCSArmorHasHelmet(client,bool:hashelmet) {
-	return SetEntProp(client, Prop_Send, "m_bHasHelmet",hashelmet? 1:0, 1);
-}
-
 /**
  * Returns the amount of money you have in CS/CS:GO
  * When used in TF2 it returns the amount of money the player has in MVM
  */
 stock GetCSMoney(client) {
-	new ValveGameEnum:war3Game = War3_GetGame();
-	if (war3Game == Game_CS || war3Game == Game_CSGO) {
-		return GetEntProp(client, Prop_Send, "m_iAccount");
-	} else if (war3Game == Game_TF) {
-		return GetEntProp(client, Prop_Send, "m_nCurrency");
-	}
-
-	return 0;
+	return GetEntProp(client, Prop_Send, "m_nCurrency");
 }
 
 /**
@@ -2444,16 +2267,11 @@ stock GetCSMoney(client) {
  * When used in TF2 it sets the amount of money the player has in MVM
  */
 stock SetCSMoney(client, newamount) {
-	new ValveGameEnum:war3Game = War3_GetGame();
-	if (war3Game == Game_CS || war3Game == Game_CSGO) {
-		SetEntProp(client, Prop_Send, "m_iAccount", newamount);
-	} else if (war3Game == Game_TF) {
-		if (newamount < 0)
-			newamount = 0;
-		if (newamount > 32767)
-			newamount = 32767;
-		SetEntProp(client, Prop_Send, "m_nCurrency", newamount);
-	}
+	if (newamount < 0)
+		newamount = 0;
+	if (newamount > 32767)
+		newamount = 32767;
+	SetEntProp(client, Prop_Send, "m_nCurrency", newamount);
 }
 
 stock UTIL_Remove(entity) {
@@ -2483,33 +2301,17 @@ stock PlayersOnTeam(team) {
 }
 
 stock GetShortTeamName(team,String:retstr[],maxlen) {
-	if(War3_GetGame()==CS || War3_GetGame()==CSGO) {
-		if(team==1) {
-			Format(retstr,maxlen,"%t","CS Spec");
-			return;
-		}
-		if(team==TEAM_T) {
-			Format(retstr,maxlen,"%t","CS T");
-			return;
-		}
-		if(team==TEAM_CT) {
-			Format(retstr,maxlen,"%t","CS CT");
-			return;
-		}
+	if(team==1) {
+		Format(retstr,maxlen,"%t","TF Spec");
+		return;
 	}
-	else if(War3_GetGame()==TF) {
-		if(team==1) {
-			Format(retstr,maxlen,"%t","TF Spec");
-			return;
-		}
-		if(team==TEAM_RED) {
-			Format(retstr,maxlen,"%t","TF RED");
-			return;
-		}
-		if(team==TEAM_BLUE) {
-			Format(retstr,maxlen,"%t","TF BLU");
-			return;
-		}
+	if(team==TEAM_RED) {
+		Format(retstr,maxlen,"%t","TF RED");
+		return;
+	}
+	if(team==TEAM_BLUE) {
+		Format(retstr,maxlen,"%t","TF BLU");
+		return;
 	}
 
 	Format(retstr,maxlen,"%t","Unknown Team");
@@ -2537,145 +2339,117 @@ stock GetRacesOnTeam(raceid, team, ignoreIfAdminSetRace = false) {
 
 stock bool:W3IsDamageFromMelee(const String:weapon[])
 {
-	switch (War3_GetGame())
-	{
-		case Game_CS:
-		{
-			return StrEqual(weapon,"knife");
-		}
-		case Game_DOD:
-		{
-			return (StrEqual(weapon,"amerknife") ||
-					StrEqual(weapon,"spade") ||
-					StrEqual(weapon,"punch"));
-		}
-		case Game_TF:
-		{
-			return (// Logfile names
-					StrEqual(weapon, "shovel") ||
-					StrEqual(weapon, "wrench") ||
-					StrEqual(weapon, "bat") ||
-					StrEqual(weapon, "bonesaw") ||
-					StrEqual(weapon, "bottle") ||
-					StrEqual(weapon, "club") ||
-					StrEqual(weapon, "fireaxe") ||
-					StrEqual(weapon, "fists") ||
-					StrEqual(weapon, "sandman") ||
-					StrEqual(weapon, "pickaxe") ||
-					StrEqual(weapon, "sword") ||
-					StrEqual(weapon, "demoshield") ||
-					StrEqual(weapon, "taunt_scout") ||
-					StrEqual(weapon, "taunt_sniper") ||
-					StrEqual(weapon, "taunt_pyro") ||
-					StrEqual(weapon, "taunt_demoman") ||
-					StrEqual(weapon, "taunt_heavy") ||
-					StrEqual(weapon, "taunt_spy") ||
-					StrEqual(weapon, "taunt_soldier")||
-                    StrEqual(weapon, "annihilator") ||
-                    StrEqual(weapon, "ubersaw") ||
-                    StrEqual(weapon, "axtinguisher") ||
-                    StrEqual(weapon, "gloves") ||
-                    StrEqual(weapon, "sandman") ||
-                    StrEqual(weapon, "unique_pickaxe") ||
-                    StrEqual(weapon, "robot_arm") ||
-                    StrEqual(weapon, "sledgehammer") ||
-                    StrEqual(weapon, "paintrain") ||
-                    StrEqual(weapon, "southern_hospitality") ||
-                    StrEqual(weapon, "wrench_golden") ||
-                    StrEqual(weapon, "tribalkukri") ||
-                    StrEqual(weapon, "battleaxe") ||
-                    StrEqual(weapon, "battleneedle") ||
-                    StrEqual(weapon, "powerjack") ||
-                    StrEqual(weapon, "holy_mackerel") ||
-                    StrEqual(weapon, "eternal_reward") ||
-                    StrEqual(weapon, "bushwacka") ||
-                    StrEqual(weapon, "gloves_running_urgently") ||
-                    StrEqual(weapon, "fryingpan") ||
-                    StrEqual(weapon, "headtaker") ||
-                    StrEqual(weapon, "ullapool_caber") ||
-                    StrEqual(weapon, "warrior_spirit") ||
-                    StrEqual(weapon, "candy_cane") ||
-                    StrEqual(weapon, "boston_basher") ||
-                    StrEqual(weapon, "back_scratcher") ||
-                    StrEqual(weapon, "claidheamohmor") ||
-                    StrEqual(weapon, "wrench_jag") ||
-                    StrEqual(weapon, "steel_fists") ||
-                    StrEqual(weapon, "lava_axe") ||
-                    StrEqual(weapon, "lava_bat") ||
-                    StrEqual(weapon, "warfan") ||
-                    StrEqual(weapon, "kunai") ||
-                    StrEqual(weapon, "demokatana") ||
-                    StrEqual(weapon, "shahanshah") ||
-                    StrEqual(weapon, "persian_persuader") ||
-                    StrEqual(weapon, "solemn_vow") ||
-                    StrEqual(weapon, "market_gardener") ||
-                    StrEqual(weapon, "saxxy") ||
-                    StrEqual(weapon, "eviction_notice") ||
-                    StrEqual(weapon, "disciplinary_action") ||
-                    StrEqual(weapon, "atomizer") ||
-                    StrEqual(weapon, "scout_sword") ||
-                    StrEqual(weapon, "mailbox") ||
-                    StrEqual(weapon, "big_earner") ||
-                    StrEqual(weapon, "the_maul") ||
-                    StrEqual(weapon, "nonnonviolent_protest") ||
-                    StrEqual(weapon, "nessieclub") ||
-                    StrEqual(weapon, "unarmed_combat") ||
-                    StrEqual(weapon, "voodoo_pin") ||
-                    StrEqual(weapon, "apocofists") ||
-                    StrEqual(weapon, "eureka_effect") ||
-                    StrEqual(weapon, "thirddegree") ||
-                    StrEqual(weapon, "scotland_shard") ||
-                    StrEqual(weapon, "sharp_dresser") ||
-                    StrEqual(weapon, "wrap_assassin") ||
-                    StrEqual(weapon, "spy_cicle") ||
-                    StrEqual(weapon, "holiday_punch") ||
-                    StrEqual(weapon, "black_rose") ||
-                    StrEqual(weapon, "lollichop") ||
-                    StrEqual(weapon, "unique_pickaxe_escape") ||
-                    StrEqual(weapon, "freedom_staff") ||
-                    // Weapon names
-                    StrEqual(weapon, "tf_weapon_bat") ||
-                    StrEqual(weapon, "tf_weapon_bat_wood") ||
-                    StrEqual(weapon, "tf_weapon_bat_fish") ||
-                    StrEqual(weapon, "tf_weapon_shovel") ||
-                    StrEqual(weapon, "saxxy") ||
-                    StrEqual(weapon, "tf_weapon_bat_giftwrap") ||
-                    StrEqual(weapon, "tf_weapon_fireaxe") ||
-                    StrEqual(weapon, "tf_weapon_sword") ||
-                    StrEqual(weapon, "tf_weapon_bottle") ||
-                    StrEqual(weapon, "tf_weapon_stickbomb") ||
-                    StrEqual(weapon, "tf_weapon_katana") ||
-                    StrEqual(weapon, "tf_weapon_fists") ||
-                    StrEqual(weapon, "tf_weapon_wrench") ||
-                    StrEqual(weapon, "tf_weapon_robot_arm") ||
-                    StrEqual(weapon, "tf_weapon_bonesaw") ||
-                    StrEqual(weapon, "tf_weapon_club") ||
-                    StrEqual(weapon, "tf_weapon_knife")
-                );
-		}
-		case Game_L4D2:
-		{
-			return StrEqual(weapon, "weapon_melee");
-		}
-		case Game_CSGO:
-		{
-			// Revan: Seems only to be weapon_knife (normal knife) and weapon_knifegg (golden knife)
-			return (StrContains(weapon,"knife",false)!=-1);
-		}
-	}
-	return false;
+	return (// Logfile names
+			StrEqual(weapon, "shovel") ||
+			StrEqual(weapon, "wrench") ||
+			StrEqual(weapon, "bat") ||
+			StrEqual(weapon, "bonesaw") ||
+			StrEqual(weapon, "bottle") ||
+			StrEqual(weapon, "club") ||
+			StrEqual(weapon, "fireaxe") ||
+			StrEqual(weapon, "fists") ||
+			StrEqual(weapon, "sandman") ||
+			StrEqual(weapon, "pickaxe") ||
+			StrEqual(weapon, "sword") ||
+			StrEqual(weapon, "demoshield") ||
+			StrEqual(weapon, "taunt_scout") ||
+			StrEqual(weapon, "taunt_sniper") ||
+			StrEqual(weapon, "taunt_pyro") ||
+			StrEqual(weapon, "taunt_demoman") ||
+			StrEqual(weapon, "taunt_heavy") ||
+			StrEqual(weapon, "taunt_spy") ||
+			StrEqual(weapon, "taunt_soldier")||
+			StrEqual(weapon, "annihilator") ||
+			StrEqual(weapon, "ubersaw") ||
+			StrEqual(weapon, "axtinguisher") ||
+			StrEqual(weapon, "gloves") ||
+			StrEqual(weapon, "sandman") ||
+			StrEqual(weapon, "unique_pickaxe") ||
+			StrEqual(weapon, "robot_arm") ||
+			StrEqual(weapon, "sledgehammer") ||
+			StrEqual(weapon, "paintrain") ||
+			StrEqual(weapon, "southern_hospitality") ||
+			StrEqual(weapon, "wrench_golden") ||
+			StrEqual(weapon, "tribalkukri") ||
+			StrEqual(weapon, "battleaxe") ||
+			StrEqual(weapon, "battleneedle") ||
+			StrEqual(weapon, "powerjack") ||
+			StrEqual(weapon, "holy_mackerel") ||
+			StrEqual(weapon, "eternal_reward") ||
+			StrEqual(weapon, "bushwacka") ||
+			StrEqual(weapon, "gloves_running_urgently") ||
+			StrEqual(weapon, "fryingpan") ||
+			StrEqual(weapon, "headtaker") ||
+			StrEqual(weapon, "ullapool_caber") ||
+			StrEqual(weapon, "warrior_spirit") ||
+			StrEqual(weapon, "candy_cane") ||
+			StrEqual(weapon, "boston_basher") ||
+			StrEqual(weapon, "back_scratcher") ||
+			StrEqual(weapon, "claidheamohmor") ||
+			StrEqual(weapon, "wrench_jag") ||
+			StrEqual(weapon, "steel_fists") ||
+			StrEqual(weapon, "lava_axe") ||
+			StrEqual(weapon, "lava_bat") ||
+			StrEqual(weapon, "warfan") ||
+			StrEqual(weapon, "kunai") ||
+			StrEqual(weapon, "demokatana") ||
+			StrEqual(weapon, "shahanshah") ||
+			StrEqual(weapon, "persian_persuader") ||
+			StrEqual(weapon, "solemn_vow") ||
+			StrEqual(weapon, "market_gardener") ||
+			StrEqual(weapon, "saxxy") ||
+			StrEqual(weapon, "eviction_notice") ||
+			StrEqual(weapon, "disciplinary_action") ||
+			StrEqual(weapon, "atomizer") ||
+			StrEqual(weapon, "scout_sword") ||
+			StrEqual(weapon, "mailbox") ||
+			StrEqual(weapon, "big_earner") ||
+			StrEqual(weapon, "the_maul") ||
+			StrEqual(weapon, "nonnonviolent_protest") ||
+			StrEqual(weapon, "nessieclub") ||
+			StrEqual(weapon, "unarmed_combat") ||
+			StrEqual(weapon, "voodoo_pin") ||
+			StrEqual(weapon, "apocofists") ||
+			StrEqual(weapon, "eureka_effect") ||
+			StrEqual(weapon, "thirddegree") ||
+			StrEqual(weapon, "scotland_shard") ||
+			StrEqual(weapon, "sharp_dresser") ||
+			StrEqual(weapon, "wrap_assassin") ||
+			StrEqual(weapon, "spy_cicle") ||
+			StrEqual(weapon, "holiday_punch") ||
+			StrEqual(weapon, "black_rose") ||
+			StrEqual(weapon, "lollichop") ||
+			StrEqual(weapon, "unique_pickaxe_escape") ||
+			StrEqual(weapon, "freedom_staff") ||
+			// Weapon names
+			StrEqual(weapon, "tf_weapon_bat") ||
+			StrEqual(weapon, "tf_weapon_bat_wood") ||
+			StrEqual(weapon, "tf_weapon_bat_fish") ||
+			StrEqual(weapon, "tf_weapon_shovel") ||
+			StrEqual(weapon, "saxxy") ||
+			StrEqual(weapon, "tf_weapon_bat_giftwrap") ||
+			StrEqual(weapon, "tf_weapon_fireaxe") ||
+			StrEqual(weapon, "tf_weapon_sword") ||
+			StrEqual(weapon, "tf_weapon_bottle") ||
+			StrEqual(weapon, "tf_weapon_stickbomb") ||
+			StrEqual(weapon, "tf_weapon_katana") ||
+			StrEqual(weapon, "tf_weapon_fists") ||
+			StrEqual(weapon, "tf_weapon_wrench") ||
+			StrEqual(weapon, "tf_weapon_robot_arm") ||
+			StrEqual(weapon, "tf_weapon_bonesaw") ||
+			StrEqual(weapon, "tf_weapon_club") ||
+			StrEqual(weapon, "tf_weapon_knife")
+			);
+	//return false;
 }
 
 stock bool:TF2_HasTheFlag(client)
 {
-	if (War3_GetGame() == Game_TF)
+	new ent = -1;
+	while ((ent = FindEntityByClassname(ent, "item_teamflag")) != -1)
 	{
-		new ent = -1;
-		while ((ent = FindEntityByClassname(ent, "item_teamflag")) != -1)
-		{
-			if (GetEntPropEnt(ent, Prop_Data, "m_hOwnerEntity")==client)
-			return true;
-		}
+		if (GetEntPropEnt(ent, Prop_Data, "m_hOwnerEntity")==client)
+		return true;
 	}
 	return false;
 }
@@ -2771,7 +2545,7 @@ stock AddColumn(Handle:DB,const String:columnname[],const String:datatype[],cons
 {
 	decl String:query[256];
 	Format(query,256,"ALTER TABLE %s ADD COLUMN %s %s DEFAULT '0'",table_name,columnname,datatype);
-	PrintToServer("[War3Source] Tried to ADD column in TABLE %s: %s",table_name,columnname);
+	PrintToServer("[War3Evo] Tried to ADD column in TABLE %s: %s",table_name,columnname);
 	SQL_FastQueryLogOnError(DB,query);
 }
 
@@ -2967,15 +2741,14 @@ stock W3MsgStoleGold(victim, attacker, gold) {
 			gold);
 	PrintHintText(attacker, "%T", "You Stole {gold} gold", attacker, gold);
 }
-stock W3MsgRevivedBM(playerrevived, savior) {
+stock W3MsgRevivedBM(playerrevived, savior, gold=0, xp=0, heal=0) {
 	new String:clientName[64];
 	GetClientName(playerrevived, clientName, sizeof(clientName));
 	new String:saviorName[64];
 	GetClientName(savior, saviorName, sizeof(saviorName));
 
-	PrintHintText(savior, "%T", "You revived {player}", savior, clientName);
-	War3_ChatMessage(playerrevived, "%T", "{player} revived you",
-			playerrevived, saviorName);
+	PrintHintText(savior, "%T", "You revived {player}. +{gold} gold +{xp} xp.", savior, clientName, gold, xp);
+	War3_ChatMessage(playerrevived, "%T", "{player} revived you. +{heal} HP bonus.", playerrevived, saviorName, heal);
 }
 stock W3MsgUsingVoodoo(client) {
 	PrintHintText(client, "%T", "Activated Voodoo!", client);
@@ -3045,8 +2818,8 @@ native W3IsBuffInvised(client); //returns true if client alpha is <50
 
 //invisible or cloaked?
 stock IsInvis(client) {
-	return (GameTF() && (TF2_IsPlayerInCondition(client, TFCond_Cloaked)
-			|| W3IsBuffInvised(client)));
+	return (TF2_IsPlayerInCondition(client, TFCond_Cloaked)
+			|| W3IsBuffInvised(client));
 }
 
 /**
@@ -3202,5 +2975,4 @@ stock CreateTimer_DEBUG(any:f=0,any:ff=0,any:fff=0,any:ffff=0) {}
 #include "W3SIncs/War3Source_L4D_Interface"
 #include "W3SIncs/stocks_misc"
 
-//SUPER HERO INDLUDE FILE, many stock requires war3 functions to be delcared first...
-#include "W3SIncs/SuperHero_Interface"
+

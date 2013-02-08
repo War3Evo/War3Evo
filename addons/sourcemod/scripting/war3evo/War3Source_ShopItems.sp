@@ -1,3 +1,4 @@
+#define PLUGIN_VERSION "0.0.0.4 (1/19/2013) 7:10AM EST"
 /**
  * File: War3Source_ShopItems.sp
  * Description: The shop items that come with War3Source.
@@ -7,7 +8,7 @@
  *-- El Diablo
  *-- www.war3evo.com
  */
- 
+
 #pragma semicolon 1
 
 #include <sourcemod>
@@ -23,7 +24,7 @@ new String:helmSound2[]="physics/metal/metal_solid_impact_bullet3.wav";
 new String:helmSound3[]="physics/metal/metal_solid_impact_bullet4.wav";
 
 //global
-new ownerOffset;
+//new ownerOffset;
 
 
 enum{
@@ -34,13 +35,9 @@ enum{
 	MASK,
 	NECKLACE,
 	FROST,
-	HEALTH,
-	TOME, 
-	RESPAWN,
+	TOME,
 	SOCK,
-	GLOVES,
 	RING,
-	MOLE,
 	OIL,
 	PLATES,
 	HELM,
@@ -52,7 +49,9 @@ enum{
 	ARMBAND,
 	ANTIWARD,
 	INSTAUBER,
-	ARMOR_PIERCING
+	ARMOR_PIERCING,
+	//DIAMOND_CONVERTER,
+	//DIAMOND_CONVERTER2
 }
 
 new shopItem[MAXITEMS];//
@@ -64,13 +63,8 @@ new Handle:MaskDeathCvar;
 new bool:bFrosted[65]; // don't frost before unfrosted
 new Handle:OrbFrostCvar;
 new Handle:TomeCvar;
-new bool:bSpawnedViaScrollRespawn[65]; // don't allow multiple scroll respawns
 new Handle:SockCvar;
-new Handle:RegenHPCSCvar;
 new Handle:RegenHPTFCvar;
-
-new Handle:MoleDeathmatchCvar;
-new String:sOldModel[65][256]; // reset model after 10 seconds
 
 new String:buyTombSound[256]; //="war3source/tomes.mp3";
 new String:masksnd[256]; //="war3source/mask.mp3";
@@ -87,7 +81,7 @@ const Float:fSecondsTillExtinguish = 3.0;
 
 
 // Offsets
-new OriginOffset,MyWeaponsOffset,AmmoOffset,Clip1Offset;
+new MyWeaponsOffset,AmmoOffset,Clip1Offset;
 
 public Plugin:myinfo = 
 {
@@ -100,8 +94,8 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
-	HookEvent("round_start",RoundStartEvent);
-	OriginOffset=FindSendPropOffs("CBaseEntity","m_vecOrigin");
+	CreateConVar("war3evo_shopmenu1",PLUGIN_VERSION,"War3evo shopmenu1",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+
 	MyWeaponsOffset=FindSendPropOffs("CBaseCombatCharacter","m_hMyWeapons");
 	
 	ActiveWeaponOffset=FindSendPropOffs("CBaseCombatCharacter","m_hActiveWeapon"); 
@@ -109,22 +103,18 @@ public OnPluginStart()
 	Clip1Offset=FindSendPropOffs("CBaseCombatWeapon","m_iClip1");
 	AmmoOffset=FindSendPropOffs("CBasePlayer","m_iAmmo");
 	BootsSpeedCvar=CreateConVar("war3_shop_boots_speed","1.2","Boots speed, 1.2 is default");
-	ClawsAttackCvar=CreateConVar("war3_shop_claws_damage",GameTF()?"10":"6","Claws of attack additional damage per bullet (CS) or per second (TF)");
+	ClawsAttackCvar=CreateConVar("war3_shop_claws_damage","10","Claws of attack additional damage per second");
 	MaskDeathCvar=CreateConVar("war3_shop_mask_percent","0.50","Percent of damage rewarded for Mask of Death, from 0.0 - 1.0");
 	OrbFrostCvar=CreateConVar("war3_shop_orb_speed","0.6","Orb of Frost speed, 1.0 is normal speed, 0.6 default for orb.");
 	TomeCvar=CreateConVar("war3_shop_tome_xp","10","Experience awarded for Tome of Experience.");
 	SockCvar=CreateConVar("war3_shop_sock_gravity","0.4","Gravity used for Sock of Feather, 0.4 is default for sock, 1.0 is normal gravity");
-	RegenHPCSCvar=CreateConVar("war3_shop_ring_hp_cs","2","How much HP is regenerated for CS.");
 	RegenHPTFCvar=CreateConVar("war3_shop_ring_hp_tf","4","How much HP is regenerated for TF.");
 
-	MoleDeathmatchCvar=CreateConVar("war3_shop_mole_dm","0","Set this to 1 if server is deathmatch");
-	
 	//RegConsoleCmd("frostme",cmdfrostme);
 
 	//CreateTimer(1.0,SecondLoop,_,TIMER_REPEAT);
 	CreateTimer(0.1,PointOneSecondLoop,_,TIMER_REPEAT);
-	CreateTimer(10.0,GrenadeLoop,_,TIMER_REPEAT);
-	
+
 	for(new i=1;i<=MaxClients;i++){
 		maskSoundDelay[i]=War3_RegisterDelayTracker();
 	}
@@ -144,11 +134,8 @@ public OnPluginStart()
 	//shield
 	ShieldRestrictionCvar=CreateConVar("war3_shop_shield_restriction","0","Set this to 1 if you want to forbid necklace+shield. 0 default");
 	LoadTranslations("w3s.item.shield.phrases");
-	if(GAMECSANY){
-		MoneyOffsetCS=FindSendPropInfo("CCSPlayer","m_iAccount");
-	}
 
-	ownerOffset = FindSendPropInfo("CBaseObject", "m_hBuilder");
+	//ownerOffset = FindSendPropInfo("CBaseObject", "m_hBuilder");
 }
 new bool:war3ready;
 public OnWar3LoadRaceOrItemOrdered(num)
@@ -158,9 +145,6 @@ public OnWar3LoadRaceOrItemOrdered(num)
 		war3ready=true;
 		for(new x=0;x<MAXITEMS;x++)
 			shopItem[x]=0;
-		if(War3_GetGame()==Game_CS) 
-			shopItem[ANKH]=War3_CreateShopItemT("ankh",3,2000);
-		
 		shopItem[BOOTS]=War3_CreateShopItemT("boot",3,2500);
 		
 		shopItem[CLAW]=War3_CreateShopItemT("claw",3,5000);
@@ -177,25 +161,11 @@ public OnWar3LoadRaceOrItemOrdered(num)
 		
 		shopItem[RING]=War3_CreateShopItemT("ring",3,1500);
 		
-		
-		if(War3_GetGame()!=Game_TF) 
-			shopItem[HEALTH]=War3_CreateShopItemT("health",3,3000);
-		
 		shopItem[TOME]=War3_CreateShopItemT("tome",10,10000);
 		War3_SetItemProperty(	shopItem[TOME], ITEM_USED_ON_BUY,true);
 	
-		if(War3_GetGame()!=Game_TF) 
-			shopItem[RESPAWN]=War3_CreateShopItemT("scroll",15,6000);
-		
 		shopItem[SOCK]=War3_CreateShopItemT("sock",2,1500);
 		
-		if(War3_GetGame()==Game_CS) 
-			shopItem[GLOVES]=War3_CreateShopItemT("glove",5,3000);
-		
-		
-		if(War3_GetGame()!=Game_TF) 
-			shopItem[MOLE]=War3_CreateShopItemT("mole",10,10000);
-
 		shopItem[OIL]=War3_CreateShopItem("Oil of Penetration","oil","Coats your weapons with ability to penetrate plates and helm.",8,3500);
 
 		shopItem[PLATES]=War3_CreateShopItem("Plates of Protection","plate","Prevents All Damage to Chest.",10,3500);
@@ -221,27 +191,21 @@ public OnWar3LoadRaceOrItemOrdered(num)
 
 		shopItem[ARMOR_PIERCING]=War3_CreateShopItem("Physical Armor Piercing","piercing",
 		"Upgrades your weapons with ability to penetrate physical armor.\nRequires Oil of Penetration",20,3500);
+
+		//shopItem[DIAMOND_CONVERTER]=War3_CreateShopItem("1000 Gold to 1 Diamond","cgold1k",
+		//"1,000 Gold to 1 Diamond",10000,3500);
+
+		//shopItem[DIAMOND_CONVERTER2]=War3_CreateShopItem("10000 Gold to 10 Diamond","cgold10k",
+		//"10,000 Gold to 10 Diamonds",10000,3500);
 	}
 }
 public OnMapStart()
 {
-	if(GAMECSGO){
-		strcopy(buyTombSound,sizeof(buyTombSound),"music/war3source/tomes.mp3");
-		strcopy(masksnd,sizeof(masksnd),"music/war3source/mask.mp3");
-	}
-	else
-	{
-		strcopy(buyTombSound,sizeof(buyTombSound),"war3source/tomes.mp3");
-		strcopy(masksnd,sizeof(masksnd),"war3source/mask.mp3");
-	}
+	strcopy(buyTombSound,sizeof(buyTombSound),"war3source/tomes.mp3");
+	strcopy(masksnd,sizeof(masksnd),"war3source/mask.mp3");
 
 	War3_PrecacheSound(buyTombSound);
 	War3_PrecacheSound(masksnd);
-	if(GAMECSGO) {
-		// Theese models aren't always precached
-		PrecacheModel("models/player/ctm_gsg9.mdl");
-		PrecacheModel("models/player/tm_leet.mdl");
-	}
 }
 
 
@@ -297,40 +261,6 @@ public doCloak() //this loop should detec weapon chnage and add a new alpha
 	//CreateTimer(1.0,Cloak);
 }
 
-//gloves giving nades
-public Action:GrenadeLoop(Handle:timer,any:data)
-{
-	if(war3ready&&War3_GetGame()==Game_CS){
-		
-		for(new x=1;x<=MaxClients;x++)
-		{
-			if(ValidPlayer(x,true)&&War3_GetOwnsItem(x,shopItem[GLOVES]))
-			{
-				new bool:has_grenade=false;
-				for(new s=0;s<10;s++)
-				{
-					new ent=War3_CachedWeapon(x,s);
-					if(ent>0 && IsValidEdict(ent))
-					{
-						decl String:wepName[64];
-						GetEdictClassname(ent,wepName,sizeof(wepName));
-						if(StrEqual(wepName,"weapon_hegrenade",false))
-						{
-							has_grenade=true;
-						}
-					}
-				}
-				if(!has_grenade)
-				{
-					GivePlayerItem(x,"weapon_hegrenade");
-					PrintHintText(x,"%T","+HEGRENADE",x);
-				}
-			}
-		}
-	}
-	//CreateTimer(10.0,Grenade);
-}
-
 public OnW3Denyable(W3DENY:event,client)
 {
 	if((event == DN_CanBuyItem1) && (W3GetVar(EventArg1) == shopItem[SHIELD]) && (War3_GetOwnsItem(client, shopItem[NECKLACE]) && GetConVarBool(ShieldRestrictionCvar)))
@@ -365,15 +295,6 @@ public OnItemPurchase(client,item)
 	if(item==shopItem[NECKLACE]) // immunity
 	{
 		War3_SetBuffItem(client,bImmunityUltimates,shopItem[NECKLACE],true);
-	}
-	if(War3_GetGame()!=Game_TF && item==shopItem[HEALTH] && IsPlayerAlive(client)) // health
-	{
-		//SetEntityHealth(client,GetClientHealth(client)+50);
-		//War3_SetMaxHP(client,War3_GetMaxHP(client)+50);
-		War3_SetBuffItem(client,iAdditionalMaxHealth,shopItem[HEALTH],50);
-		War3_SetBuffItem(client,fHPRegenDeny,shopItem[HEALTH],true);
-			
-		War3_ChatMessage(client,"%T","+50 HP",client);
 	}
 	if(item==shopItem[TOME]) // tome of xp
 	{
@@ -416,21 +337,8 @@ public OnItemPurchase(client,item)
 	}
 	if(item==shopItem[RING]) 
 	{
-		new Float:regen_hp=GetConVarFloat((War3_GetGame()==Game_CS)?RegenHPCSCvar:RegenHPTFCvar);
+		new Float:regen_hp=GetConVarFloat(RegenHPTFCvar);
 		War3_SetBuffItem(client,fHPRegen,shopItem[RING],regen_hp);
-	}
-	if(War3_GetGame()!=Game_TF && item==shopItem[RESPAWN])
-	{
-		bSpawnedViaScrollRespawn[client]=false;
-		
-		if(!IsPlayerAlive(client)&&GetClientTeam(client)>1){
-			War3_ChatMessage(client,"%T","You will be respawned",client);
-			CreateTimer(0.2,RespawnPlayerViaScrollRespawn,client);
-			//CreateTimer(0.5,Reincarnate,GetClientUserId(client));
-		}
-		else{
-			War3_ChatMessage(client,"%T","Next time you die you will respawn",client);
-		}
 	}
 	if(item==shopItem[SHIELD])
 	{
@@ -483,6 +391,40 @@ public OnItemPurchase(client,item)
 			//War3_SetBuffItem(client,fArmorPhysical,item,6.0);
 		}
 	}
+/*	if(item==shopItem[DIAMOND_CONVERTER]&&ValidPlayer(client))
+	{
+		new newgold = War3_GetGold(client) - 1000;
+		if(newgold<0)
+		{
+			War3_ChatMessage(client,"You don't have enough gold to convert to diamonds.");
+			War3_ChatMessage(client,"%i gold and %i diamonds.",War3_GetGold(client),War3_GetDiamonds(client));
+		}
+		else
+		{
+			new newdiamonds = War3_GetDiamonds(client) + 1;
+			War3_SetGold(client,newgold);
+			War3_SetDiamonds(client,newdiamonds);
+			War3_ChatMessage(client,"You now have %i gold and %i diamonds.",newgold,newdiamonds);
+		}
+		War3_SetOwnsItem(client,shopItem[DIAMOND_CONVERTER],false);
+	}
+	if(item==shopItem[DIAMOND_CONVERTER2]&&ValidPlayer(client))
+	{
+		new newgold = War3_GetGold(client) - 10000;
+		if(newgold<0)
+		{
+			War3_ChatMessage(client,"You don't have enough gold to convert to diamonds.");
+			War3_ChatMessage(client,"%i gold and %i diamonds.",War3_GetGold(client),War3_GetDiamonds(client));
+		}
+		else
+		{
+			new newdiamonds = War3_GetDiamonds(client) + 10;
+			War3_SetGold(client,newgold);
+			War3_SetDiamonds(client,newdiamonds);
+			War3_ChatMessage(client,"You now have %i gold and %i diamonds.",newgold,newdiamonds);
+		}
+		War3_SetOwnsItem(client,shopItem[DIAMOND_CONVERTER2],false);
+	} */
 }
 
 //deactivate BUFFS AND PASSIVES
@@ -490,16 +432,6 @@ public OnItemLost(client,item){ //deactivate passives , client may have disconne
 	if(item==shopItem[SOCK])
 	{
 		War3_SetBuffItem(client,fLowGravityItem,shopItem[SOCK],1.0);
-	}
-	else if(item==shopItem[HEALTH]&&ValidPlayer(client))
-	{
-		War3_SetBuffItem(client,iAdditionalMaxHealth,shopItem[HEALTH],0);
-		War3_SetBuffItem(client,fHPRegenDeny,shopItem[HEALTH],false);
-		
-		//War3_SetMaxHP(client,War3_GetMaxHP(client)-50);
-		if(GetClientHealth(client)>War3_GetMaxHP(client)){
-			SetEntityHealth(client,War3_GetMaxHP(client));
-		}
 	}
 	else if(item==shopItem[BOOTS]){
 		War3_SetBuffItem(client,fMaxSpeed,shopItem[BOOTS],1.0);
@@ -585,23 +517,9 @@ public OnWar3EventDeath(client){
 		{
 			War3_SetOwnsItem(client,shopItem[FROST],false);
 		}
-		if(War3_GetOwnsItem(client,shopItem[HEALTH]))
-		{
-			War3_SetOwnsItem(client,shopItem[HEALTH],false);
-		}
-		if(War3_GetGame()==Game_CS && War3_GetOwnsItem(client,shopItem[GLOVES])) // gloves
-		{
-			War3_SetOwnsItem(client,shopItem[GLOVES],false);
-		}
 		if(War3_GetOwnsItem(client,shopItem[RING])) // regen
 		{
 			War3_SetOwnsItem(client,shopItem[RING],false);
-			
-		}
-		//dont delete mole
-		if(War3_GetGame()!=Game_TF && War3_GetOwnsItem(client,shopItem[RESPAWN]))//&&!bSpawnedViaScrollRespawn[client])
-		{
-			CreateTimer(1.25,RespawnPlayerViaScrollRespawn,client);  ///default orc is 1.0, 1.25 so orc activates first
 			
 		}
 		if(War3_GetOwnsItem(client,shopItem[OIL]))
@@ -698,8 +616,6 @@ public Action:GivePlayerCachedDeathWeapons(Handle:t,any:client){ //not used beca
 				}
 			}
 		}
-		War3_SetCSArmor(client,100);
-		War3_SetCSArmorHasHelmet(client,true);
 	}
 }
 public Action:GivePlayerCachedDeathWPNFull(Handle:h,any:client){
@@ -740,109 +656,6 @@ public Action:GivePlayerCachedDeathWPNFull(Handle:h,any:client){
 				//}
 			}
 		}
-		War3_SetCSArmor(client,100);
-		War3_SetCSArmorHasHelmet(client,true);
-	}
-}
-
-
-
-
-
-
-
-
-
-public RoundStartEvent(Handle:event,const String:name[],bool:dontBroadcast)
-{
-	if(War3_GetGame()!=Game_TF)
-	{
-		if(!GetConVarBool(MoleDeathmatchCvar))
-		{
-			for(new x=1;x<=MaxClients;x++)
-			{
-				if(ValidPlayer(x,true)&&GetClientTeam(x)>1&&War3_GetOwnsItem(x,shopItem[MOLE]))
-				{
-					StartMole(x);
-				}
-			}
-		}
-	}
-}
-
-public StartMole(client)
-{
-	new Float:mole_time=5.0;
-	PrintHintText(client,"%T","WARNING! MOLE IN {amount} SECONDS (item)!",client,mole_time);
-	War3_ChatMessage(client,"%T","WARNING! MOLE IN {amount} SECONDS (item)!",client,mole_time);
-	CreateTimer(0.2+mole_time,DoMole,client);
-}
-public Action:DoMole(Handle:timer,any:client)
-{
-	if(ValidPlayer(client,true))
-	{
-		new team=GetClientTeam(client);
-		new searchteam=(team==2)?3:2;
-		
-		new Float:emptyspawnlist[100][3];
-		new availablelocs=0;
-		
-		new Float:playerloc[3];
-		new Float:spawnloc[3];
-		new ent=-1;
-		while((ent = FindEntityByClassname(ent,(searchteam==2)?"info_player_terrorist":"info_player_counterterrorist"))!=-1)
-		{
-			if(!IsValidEdict(ent)) continue;
-			GetEntDataVector(ent,OriginOffset,spawnloc);
-			
-			new bool:is_conflict=false;
-			for(new i=1;i<=MaxClients;i++)
-			{
-				if(ValidPlayer(i,true)){
-					GetClientAbsOrigin(i,playerloc);
-					if(GetVectorDistance(spawnloc,playerloc)<60.0)
-					{
-						is_conflict=true;
-						break;
-					}				
-				}
-			}
-			if(!is_conflict)
-			{
-				emptyspawnlist[availablelocs][0]=spawnloc[0];
-				emptyspawnlist[availablelocs][1]=spawnloc[1];
-				emptyspawnlist[availablelocs][2]=spawnloc[2];
-				availablelocs++;
-			}
-		}
-		if(availablelocs==0)
-		{
-			War3_ChatMessage(client,"%T","This map does not have enemy spawn points, can not mole!",client);
-			return;
-		}
-		GetClientModel(client,sOldModel[client],256);
-		if(War3_GetGame() == Game_CS) {
-			SetEntityModel(client,(searchteam==2)?"models/player/t_leet.mdl":"models/player/ct_urban.mdl");
-		}
-		else {
-			SetEntityModel(client,(searchteam==2)?"models/player/tm_leet.mdl":"models/player/ctm_gsg9.mdl");
-		}
-		TeleportEntity(client,emptyspawnlist[GetRandomInt(0,availablelocs-1)],NULL_VECTOR,NULL_VECTOR);
-		War3_ChatMessage(client,"%T","You have moled!",client);
-		PrintHintText(client,"%T","You have moled!",client);
-		War3_ShakeScreen(client,1.0,20.0,12.0);
-		CreateTimer(10.0,ResetModel,client);
-		
-		War3_SetOwnsItem(client,shopItem[MOLE],false) ;
-	}
-	return;
-}
-public Action:ResetModel(Handle:timer,any:client)
-{
-	if(ValidPlayer(client,true))
-	{
-		SetEntityModel(client,sOldModel[client]);
-		War3_ChatMessage(client,"%T","You are no longer disguised",client);
 	}
 }
 
@@ -853,55 +666,15 @@ public OnWar3EventSpawn(client){
 		bFrosted[client]=false;
 		War3_SetBuffItem(client,fSlow,shopItem[FROST],1.0);
 	}
-	if(War3_GetGame()==Game_CS && (War3_GetOwnsItem(client,shopItem[ANKH])||W3IsDeveloper(client)) && bDidDie[client])
-	{
-		if(!bSpawnedViaScrollRespawn[client]){ //only if he didnt already respawn from the "respawn item" cuz that gives items too
-
-			CreateTimer(0.1,DoAnkhAction,client);
-		}
-		
-	}
-	if(War3_GetOwnsItem(client,shopItem[HEALTH]))
-	{
-		//SetEntityHealth(client,GetClientHealth(client)+50);
-		War3_SetBuffItem(client,iAdditionalMaxHealth,shopItem[HEALTH],50);
-		War3_SetBuffItem(client,fHPRegenDeny,shopItem[HEALTH],true);
-		//War3_SetMaxHP(client,War3_GetMaxHP(client)+50);
-		War3_ChatMessage(client,"%T","+50 HP",client);
-	}
 	if(War3_GetOwnsItem(client,shopItem[SOCK]))
 	{
 		War3_SetBuffItem(client,fLowGravityItem,shopItem[SOCK],GetConVarFloat(SockCvar));
 		//War3_SetMinGravity(client,GetConVarFloat(SockCvar),shopItem[10]);
 		War3_ChatMessage(client,"%T","You pull on your socks",client);
 	}
-	if(War3_GetGame()!=Game_TF && War3_GetOwnsItem(client,shopItem[MOLE]) && GetConVarBool(MoleDeathmatchCvar)) // deathmatch
-	{
-		StartMole(client);
-	}
 	bDidDie[client]=false;
 	
 }
-
-//
-public Action:RespawnPlayerViaScrollRespawn(Handle:h,any:client)
-{
-	if(ValidPlayer(client)&&!IsPlayerAlive(client)) //not revived from something else
-	{
-		bSpawnedViaScrollRespawn[client]=true; ///prevent ankh from activating
-		CS_RespawnPlayer(client);
-		PrintCenterText(client,"%T","RESPAWNED!",client);
-		CreateTimer(0.2,GivePlayerCachedDeathWPNFull,client);
-		bSpawnedViaScrollRespawn[client]=false;
-		War3_SetOwnsItem(client,shopItem[RESPAWN],false);
-		War3_ChatMessage(client,"%T","Respawned by Scroll of Respawning",client);
-		CreateTimer(1.0,NoLongerSpawnedViaScroll,client);
-	}
-}
-public Action:NoLongerSpawnedViaScroll(Handle:t,any:client){
-	bSpawnedViaScrollRespawn[client]=false;
-}
-
 
 // use? OnW3TakeDmgAll
 /*
@@ -920,13 +693,7 @@ same error above except with shopmenu items
 
 public OnW3TakeDmgAll(victim,attacker,Float:damage)
 {
-	//new inflictor = W3GetDamageInflictor();
-	new bool:IsSentry = false;
-	if(ValidPlayer(attacker))
-	{
-		IsSentry = IS_sentryowner(attacker,W3GetDamageInflictor());
-	}
-	if(!IsSentry&&W3GetDamageIsBullet()&&ValidPlayer(victim)&&ValidPlayer(attacker,true)&&GetClientTeam(victim)!=GetClientTeam(attacker))
+	if(!W3IsOwnerSentry(attacker)&&W3GetDamageIsBullet()&&ValidPlayer(victim)&&ValidPlayer(attacker,true)&&GetClientTeam(victim)!=GetClientTeam(attacker))
 	{
 		//DP("bullet 1 claw %d vic alive%d",War3_GetOwnsItem(attacker,shopItem[CLAW]),ValidPlayer(victim,true,true));
 		//new vteam=GetClientTeam(victim);
@@ -934,20 +701,18 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 		
 		if(!W3HasImmunity(victim,Immunity_Items)&&!Perplexed(attacker))
 		{
-			if(War3_GetOwnsItem(attacker,shopItem[CLAW])&&ValidPlayer(victim,true,true)) // claws of attack
+			if(War3_GetOwnsItem(attacker,shopItem[CLAW])&&ValidPlayer(victim,true,true)&&W3Chance(W3ChanceModifier(attacker)) && !W3HasImmunity(victim, Immunity_Items)) // claws of attack
 			{
 				new Float:dmg=GetConVarFloat(ClawsAttackCvar);
 				if(dmg<0.0) 	dmg=0.0;
 				
 				//SetEntityHealth(victim,new_hp);
-				if(GameTF()){
-					//DP("%f",W3ChanceModifier(attacker));
-					if(W3ChanceModifier(attacker)<0.99){
-					dmg*=W3ChanceModifier(attacker);
-					}
-					else{
-						dmg*=0.50;
-					}
+				//DP("%f",W3ChanceModifier(attacker));
+				if(W3Chance(W3ChanceModifier(attacker))){
+				dmg*=W3ChanceModifier(attacker);
+				}
+				else{
+					dmg*=0.50;
 				}
 			//	DP("%f",dmg);
 				if(War3_DealDamage(victim,RoundFloat(dmg),attacker,_,"claws",W3DMGORIGIN_ITEM,W3DMGTYPE_PHYSICAL,_,_,true)){ //real damage with indicator
@@ -956,9 +721,9 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 				}
 			}
 				
-			if( War3_GetOwnsItem(attacker,shopItem[FROST]) && !bFrosted[victim])
+			if( War3_GetOwnsItem(attacker,shopItem[FROST]) && !bFrosted[victim] && !W3HasImmunity(victim, Immunity_Items))
 			{
-				new chance;
+				/*new chance;
 				switch (TF2_GetPlayerClass(attacker))
 				{
 					case TFClass_Scout:
@@ -1002,7 +767,8 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 						chance = 10;
 					}
 				}
-				if(GetRandomInt(1, 100) <= chance)
+				if(GetRandomInt(1, 100) <= chance) */
+				if(W3Chance(W3ChanceModifier(attacker)) && !W3HasImmunity(victim, Immunity_Items))
 				{
 					new Float:speed_frost=GetConVarFloat(OrbFrostCvar);
 					if(speed_frost<=0.0) speed_frost=0.01; // 0.0 for override removes
@@ -1018,7 +784,7 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 			}
 	
 
-			if(War3_GetOwnsItem(attacker,shopItem[MASK])) // Mask of death
+			if(War3_GetOwnsItem(attacker,shopItem[MASK]) && W3Chance(W3ChanceModifier(attacker)) && !W3HasImmunity(victim, Immunity_Items)) // Mask of death
 			{
 				new Float:hp_percent=GetConVarFloat(MaskDeathCvar);
 				if(hp_percent<0.0)	hp_percent=0.0;
@@ -1053,7 +819,7 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 		}
 	}
 }
-
+/*
 bool:IS_sentryowner(client,pSentry)
 {
 	if(ValidPlayer(client))
@@ -1078,7 +844,7 @@ bool:IS_sentryowner(client,pSentry)
 	}
 	return false;
 }
-
+*/
 public Action:Unfrost(Handle:timer,any:client)
 {
 	bFrosted[client]=false;
@@ -1172,14 +938,11 @@ public Action:SDK_Forwarded_TraceAttack(victim, &attacker, &inflictor, &Float:da
 		}else{
 			EmitSoundToAll(helmSound3,victim);
 		}
-		if(War3_GetGame()==TF)
-		{
-			W3FlashScreen(victim,RGBA_COLOR_WHITE);
-			decl Float:pos[3];
-			GetClientEyePosition(victim, pos);
-			pos[2] += 4.0;
-			War3_TF_ParticleToClient(0, "miss_text", pos); //to the attacker at the enemy pos
-		}
+		W3FlashScreen(victim,RGBA_COLOR_WHITE);
+		decl Float:pos[3];
+		GetClientEyePosition(victim, pos);
+		pos[2] += 4.0;
+		War3_TF_ParticleToClient(0, "miss_text", pos); //to the attacker at the enemy pos
 	}
 	// helms
 	if((Owns_item!=1)&&hitgroup==1&&War3_GetOwnsItem(victim,shopItem[HELM])&&!Perplexed(victim)){
@@ -1194,13 +957,11 @@ public Action:SDK_Forwarded_TraceAttack(victim, &attacker, &inflictor, &Float:da
 		}else{
 			EmitSoundToAll(helmSound3,victim);
 		}
-		if(War3_GetGame()==TF){
-			W3FlashScreen(victim,RGBA_COLOR_BLACK);
-			decl Float:pos[3];
-			GetClientEyePosition(victim, pos);
-			pos[2] += 4.0;
-			War3_TF_ParticleToClient(0, "miss_text", pos); //to the attacker at the enemy pos
-		}
+		W3FlashScreen(victim,RGBA_COLOR_BLACK);
+		decl Float:pos[3];
+		GetClientEyePosition(victim, pos);
+		pos[2] += 4.0;
+		War3_TF_ParticleToClient(0, "miss_text", pos); //to the attacker at the enemy pos
 	}
 	return Plugin_Changed;
 }
@@ -1229,20 +990,13 @@ public OnW3TakeDmgBullet(victim,attacker,Float:damage)
 	//new String:GetWeapon1[64];
 	//GetClientWeapon( attacker, GetWeapon1 , 64);
 	//DP(GetWeapon1);
-	new inflictor = W3GetDamageInflictor();
-	new bool:IsSentry = false;
-	if(ValidPlayer(attacker))
-	{
-		IsSentry = IS_sentryowner(attacker,inflictor);
-	}
 
-
-	if (!IsSentry&&ValidPlayer(victim, true) && ValidPlayer(attacker) && victim != attacker)
+	if (!W3IsOwnerSentry(attacker)&&ValidPlayer(victim, true) && ValidPlayer(attacker) && victim != attacker)
 	{
 		if ((GetClientTeam(victim) != GetClientTeam(attacker)) && (!W3HasImmunity(victim, Immunity_Items)))
 		{
 			//new chance = RoundFloat(100.0 * W3ChanceModifier(attacker));
-			new chance;
+			/*new chance;
 			switch (TF2_GetPlayerClass(attacker))
 			{
 				case TFClass_Scout:
@@ -1286,7 +1040,9 @@ public OnW3TakeDmgBullet(victim,attacker,Float:damage)
 					chance = 10;
 				}
 			}
-			if(GetRandomInt(1, 100) <= chance)
+			*/
+			//if(GetRandomInt(1, 100) <= chance)
+			if(W3Chance(W3ChanceModifier(attacker)))
 			{
 				if(War3_GetOwnsItem(attacker, shopItem[FIREORB]) && !(TF2_IsPlayerInCondition(victim, TFCond_OnFire)) && !Perplexed(attacker))
 				{
@@ -1317,7 +1073,7 @@ public OnW3TakeDmgBullet(victim,attacker,Float:damage)
 					//DP(GetWeapon);//
 					//StrEqual( wpnstr, "weapon_knife" )
 					//if(!W3HasImmunity(attacker,Immunity_Skills)&&skilllevel_MagicArmorPassiveSkills>0&&War3_GetRace(victim)==thisRaceID&&TF2_GetPlayerClass(attacker)==TFClass_Spy&&War3_Chance(NightGuardsHelmChance[skilllevel_PassiveSkills])&&damagetype==135270528&&!Perplexed(victim)){
-					if(!WeaponIsCritial)
+					if(!WeaponIsCritial && !W3HasImmunity(victim, Immunity_Items))
 					{
 						TF2_IgnitePlayer(victim, attacker);
 						g_fExtinguishNow[victim] = GetGameTime() + fSecondsTillExtinguish;

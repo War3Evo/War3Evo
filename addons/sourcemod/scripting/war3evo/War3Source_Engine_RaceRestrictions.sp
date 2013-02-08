@@ -21,6 +21,7 @@ public OnW3Denyable(W3DENY:event,client){
 	if(event==DN_CanSelectRace)
 	{
 		new race_selected=W3GetVar(EventArg1);
+		new bool:No_Message=W3GetVar(EventArg2);
 		if(race_selected<=0)
 		{
 			ThrowError(" DN_CanSelectRace CALLED WITH INVALID RACE [%d]",race_selected);
@@ -47,7 +48,10 @@ public OnW3Denyable(W3DENY:event,client){
 		{
 			if(min_level!=0&&min_level>total_level)
 			{
-				War3_ChatMessage(client,"%T","You need {amount} more total levels to use this race",GetTrans(),min_level-total_level);
+				if(No_Message==false)
+				{
+					War3_ChatMessage(client,"%T","You need {amount} more total levels to use this race",GetTrans(),min_level-total_level);
+				}
 				return W3Deny();
 			}
 		
@@ -63,8 +67,11 @@ public OnW3Denyable(W3DENY:event,client){
 				new AdminId:admin = GetUserAdmin(client);
 				if(admin == INVALID_ADMIN_ID) //flag is required and this client is not admin
 				{
-					War3_ChatMessage(client,"%T","Restricted Job. Ask an admin on how to unlock",GetTrans());
-					PrintToConsole(client,"%T","No Admin ID found",client);
+					if(No_Message==false)
+					{
+						War3_ChatMessage(client,"%T","Restricted Job. Ask an admin on how to unlock",GetTrans());
+						PrintToConsole(client,"%T","No Admin ID found",client);
+					}
 					return W3Deny();
 				}
 				else
@@ -72,16 +79,21 @@ public OnW3Denyable(W3DENY:event,client){
 					new AdminFlag:flag;
 					if (!FindFlagByChar(requiredflagstr[0], flag)) //this gets the flag class from the string
 					{
-						War3_ChatMessage(client,"%T","ERROR on admin flag check {flag}",client,requiredflagstr);
+						if(No_Message==false)
+						{
+							War3_ChatMessage(client,"%T","ERROR on admin flag check {flag}",client,requiredflagstr);
+						}
 						return W3Deny();
 					}
 					else
 					{
 						if (!GetAdminFlag(admin, flag))
 						{
-						
-							War3_ChatMessage(client,"%T","Restricted job, ask an admin on how to unlock",GetTrans());
-							PrintToConsole(client,"%T","Admin ID found, but no required flag",client);
+							if(No_Message==false)
+							{
+								War3_ChatMessage(client,"%T","Restricted job, ask an admin on how to unlock",GetTrans());
+								PrintToConsole(client,"%T","Admin ID found, but no required flag",client);
+							}
 							return W3Deny();
 						}
 					}
@@ -96,7 +108,10 @@ public OnW3Denyable(W3DENY:event,client){
 				{
 					//if(!W3IsDeveloper(client)){
 					//	DP("racerestricitons.sp");
-					War3_ChatMessage(client,"%T","Race limit for your team has been reached, please select a different race. (MAX {amount})",GetTrans(),W3GetRaceMaxLimitTeam(race_selected,GetClientTeam(client)));
+					if(No_Message==false)
+					{
+						War3_ChatMessage(client,"%T","Job limit for your team has been reached, please select a different race. (MAX {amount})",GetTrans(),W3GetRaceMaxLimitTeam(race_selected,GetClientTeam(client)));
+					}
 				
 					new cvar=W3GetRaceMaxLimitTeamCvar(race_selected,GetClientTeam(client));
 					new String:cvarstr[64];
@@ -133,24 +148,23 @@ enum TFClassType
 	TFClass_Engineer
 };*/
 		
-			////TF CLASS CHECK
-			if(GameTF())
+			new String:classlist[][32]={"unknown","scout","sniper","soldier","demoman","medic","heavy","pyro","spy","engineer"};
+			new class=_:TF2_GetPlayerClass(client);
+			new String:classstring[32];
+			strcopy(classstring,sizeof(classstring),classlist[class]);
+
+			new cvarid=W3GetRaceCell(race_selected,ClassRestrictionCvar);
+			//DP("cvar %d %s",cvarid,cvarstring);
+			if(W3FindStringInCvar(cvarid,classstring,2))
 			{
-				new String:classlist[][32]={"unknown","scout","sniper","soldier","demoman","medic","heavy","pyro","spy","engineer"};
-				new class=_:TF2_GetPlayerClass(client);
-				new String:classstring[32];
-				strcopy(classstring,sizeof(classstring),classlist[class]);
-			
-				new cvarid=W3GetRaceCell(race_selected,ClassRestrictionCvar);
-				//DP("cvar %d %s",cvarid,cvarstring);
-				if(W3FindStringInCvar(cvarid,classstring,2))
+				//DP("deny");
+				if(No_Message==false)
 				{
-					//DP("deny");
 					War3_ChatMessage(client,"Race restricted due to class restriction: %s",classstring);
-					return W3Deny();
 				}
+				return W3Deny();
 			}
-		
+
 		//DP("passed");
 	
 		}

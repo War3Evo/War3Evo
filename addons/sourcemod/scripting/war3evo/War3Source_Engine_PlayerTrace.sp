@@ -81,7 +81,7 @@ public bool:CanHitThis(entityhit, mask, any:data)
 	{// Check if the TraceRay hit the itself.
 		return false; // Don't allow self to be hit, skip this result
 	}
-	if(ValidPlayer(entityhit)&&ValidPlayer(data)&&War3_GetGame()==Game_TF&&GetClientTeam(entityhit)==GetClientTeam(data)){
+	if(ValidPlayer(entityhit)&&ValidPlayer(data)&&GetClientTeam(entityhit)==GetClientTeam(data)){
 		return false; //skip result, prend this space is not taken cuz they on same team
 	}
 	return true; // It didn't hit itself
@@ -135,7 +135,7 @@ public Native_War3_GetTargetInViewCone(Handle:plugin,numParams)
 						result=1; // bad callback, lets return 1 to be safe
 						new String:plugin_name[256];
 						GetPluginFilename(plugin,plugin_name,sizeof(plugin_name));
-						PrintToServer("[War3Source] ERROR in plugin \"%s\" traced to War3_GetTargetInViewCone(), bad filter function provided.",plugin_name);
+						PrintToServer("[War3Evo] ERROR in plugin \"%s\" traced to War3_GetTargetInViewCone(), bad filter function provided.",plugin_name);
 					}
 					if(result==0)
 					{
@@ -209,7 +209,7 @@ public Native_War3_GetTargetInViewCone(Handle:plugin,numParams)
 								result=1; // bad callback, return 1 to be safe
 								new String:plugin_name[256];
 								GetPluginFilename(plugin,plugin_name,sizeof(plugin_name));
-								PrintToServer("[War3Source] ERROR in plugin \"%s\" traced to War3_GetTargetInViewCone(), bad filter function provided.",plugin_name);
+								PrintToServer("[War3Evo] ERROR in plugin \"%s\" traced to War3_GetTargetInViewCone(), bad filter function provided.",plugin_name);
 							}
 						}
 						if(result!=0)

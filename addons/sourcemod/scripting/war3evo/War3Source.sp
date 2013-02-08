@@ -1,19 +1,19 @@
 
 /*  This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-    
-    War3source written by PimpinJuice (anthony) and Ownz (Dark Energy)
-    All rights reserved.
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	
+	War3source written by PimpinJuice (anthony) and Ownz (Dark Energy)
+	All rights reserved.
 */	
 
 /*
@@ -109,13 +109,20 @@ And that’s the art of the test!
 #pragma semicolon 1
 
 
-#define VERSION_NUM "1.2.4.0"
-#define eVERSION_NUM "1.0.1.8 (1/5/2013)"
-#define REVISION_NUM 12321 //increment every release
+#define VERSION_NUM "1.2.4.1"
+#define eVERSION_NUM "1.0.2.7 (2/5/2013)"
+//#define REVISION_NUM 12321 //increment every release
+#define REVISION_NUM 12415 //increment every release
 
 //DO NOT REMOVE THE OFFICIAL AUTHORS. YOU SHALL NOT DEPRIVE THEM OF THE CREDIT THEY DESERVE
-#define AUTHORS "PimpinJuice and Ownz (DarkEnergy)"
-#define eAUTHORS "El Diablo and Axin"
+//#define AUTHORS "PimpinJuice and Ownz (DarkEnergy)"
+// Removed orignal since we have been sought out for creating war3source and several
+// servers claim us DDOSing their servers and we do not own War3Source.
+// We are removing all War3Source name from our servers.  We dont wish
+// the other War3Source servers to think we own War3Source
+
+#define AUTHORS "El Diablo and LORD DAGOTHUR [X]-RATED"
+//#define eAUTHORS "El Diablo|Dagothur|Axin"
 
 //used for some special things in interface
 #define WAR3MAIN
@@ -125,47 +132,38 @@ And that’s the art of the test!
 #include "W3SIncs/War3Source_Interface"
 #include "W3SIncs/War3SourceMain"
 
-
-
-
-
-
-
 public Plugin:myinfo= 
 {
 	name="War3Source",
 	author=AUTHORS,
 	description="Brings a Warcraft like gamemode to the Source engine.",
 	version=VERSION_NUM,
-	url="http://war3source.com/"
 };
-
-
 
 public APLRes:AskPluginLoad2Custom(Handle:myself,bool:late,String:error[],err_max)
 {
 	
-	PrintToServer("--------------------------AskPluginLoad2Custom----------------------\n[War3Source] Plugin loading...");
+	PrintToServer("--------------------------AskPluginLoad2Custom----------------------\n[War3Evo] Plugin loading...");
 	
-	
+
 	new String:version[64];
 	Format(version,sizeof(version),"%s by %s",VERSION_NUM,AUTHORS);
-	new String:Eversion[64];
-	Format(Eversion,sizeof(Eversion),"%s by %s",eVERSION_NUM,eAUTHORS);
-	CreateConVar("war3_version",version,"War3Source version.",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+	//new String:Eversion[64];
+	//Format(Eversion,sizeof(Eversion),"%s by %s",eVERSION_NUM,eAUTHORS);
+	CreateConVar("war3_version",version,"War3Evo version.",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	//CreateConVar("a_war3_version",version,"War3Source version.",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
-	CreateConVar("war3evo_version",Eversion,"War3Evolution version.",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
-	
-	
+	//CreateConVar("war3evo_version",Eversion,"War3Evolution version.",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+
+
 
 	if(!War3Source_InitNatives())
 	{
-		LogError("[War3Source] There was a failure in creating the native based functions, definately halting.");
+		LogError("[War3Evo] There was a failure in creating the native based functions, definately halting.");
 		return APLRes_Failure;
 	}
 	if(!War3Source_InitForwards())
 	{
-		LogError("[War3Source] There was a failure in creating the forward based functions, definately halting.");
+		LogError("[War3Evo] There was a failure in creating the forward based functions, definately halting.");
 		return APLRes_Failure;
 	}
 	
@@ -174,23 +172,23 @@ public APLRes:AskPluginLoad2Custom(Handle:myself,bool:late,String:error[],err_ma
 
 public OnPluginStart()
 {
-    
+	
 	PrintToServer("--------------------------OnPluginStart----------------------");
 	
 	if(GetExtensionFileStatus("sdkhooks.ext") < 1)
 		SetFailState("SDK Hooks is not loaded.");
 	
 	if(!War3Source_HookEvents())
-		SetFailState("[War3Source] There was a failure in initiating event hooks.");
+		SetFailState("[War3Evo] There was a failure in initiating event hooks.");
 	if(!War3Source_InitCVars()) //especially sdk hooks
-		SetFailState("[War3Source] There was a failure in initiating console variables.");
+		SetFailState("[War3Evo] There was a failure in initiating console variables.");
 
 	if(!War3Source_InitOffset())
-		SetFailState("[War3Source] There was a failure in finding the offsets required.");
+		SetFailState("[War3Evo] There was a failure in finding the offsets required.");
 
 	CreateTimer(0.1,DeciSecondLoop,_,TIMER_REPEAT);
 		
-	PrintToServer("[War3Source] Plugin finished loading.\n-------------------END OnPluginStart-------------------");
+	PrintToServer("[War3Evo] Plugin finished loading.\n-------------------END OnPluginStart-------------------");
 	
 /*	RegServerCmd("loadraces",CmdLoadRaces);
 	
@@ -203,7 +201,6 @@ public OnPluginStart()
 */
 	RegConsoleCmd("war3refresh",refreshcooldowns);
 	RegConsoleCmd("armortest",armortest);
-	RegConsoleCmd("exttest",exttest);
 /*	RegConsoleCmd("calltest",calltest);
 	RegConsoleCmd("calltest2",calltest2);
 	
@@ -215,18 +212,32 @@ public OnPluginStart()
 */
 }
 
-/*
-public Action:cmddiamonds(client,args)
+public Action:DeciSecondLoop(Handle:timer)
 {
-	if(W3IsDeveloper(client))
+	// Boy, this is going to be fun.
+	for(new client=1;client<=MaxClients;client++)
 	{
-		War3_SetDiamonds(client,1000);
+		if(ValidPlayer(client,true))
+		{
+			//for(new i=0;i<=W3GetItemsLoaded()+War3_GetRacesLoaded();i++)
+			//{
+			//	PrintToServer("denybuff val: %d iter %d", buffdebuff[client][bBuffDeny][i],i);
+			//}
+			if(!W3IsPlayerXPLoaded(client))
+			{
+				if(GetGameTime()>LastLoadingHintMsg[client]+4.0)
+				{
+					PrintHintText(client,"%T","Loading XP... Please Wait",client);
+					LastLoadingHintMsg[client]=GetGameTime();
+				}
+				continue;
+			}
+		}
 	}
 }
-public Action:cmdwhichmode(args){
-	PrintToServer("W3? %d",W3());
-	PrintToServer("SH? %d",SH());
-}
+
+/*
+
 public Action:calltest(client,args){
 	new Handle:plugins[100];
 	new Function:funcs[100];
@@ -310,19 +321,12 @@ public Action:CmdLoadRaces(args){
 }*/
 public Action:refreshcooldowns(client,args){
 	if(W3IsDeveloper(client)){
-		if(W3()){
 			new raceid=War3_GetRace(client);
 			if(raceid>0){
-				for( new skillnum=1;skillnum<=War3_GetRaceSkillCount(raceid);skillnum++){
-					War3_CooldownMGR(client,0.0,raceid,skillnum,false,false);
-				}
-			}
-		}
+	for( new skillnum=1;skillnum<=War3_GetRaceSkillCount(raceid);skillnum++){
+		War3_CooldownMGR(client,0.0,raceid,skillnum,false,false);
 	}
-}
-public Action:exttest(client,args){
-	if(W3IsDeveloper(client)){
-		PrintToConsole(client,"EXT() %d",EXT());
+			}
 	}
 }
 /*
@@ -375,13 +379,13 @@ public Action:UberTest(client,args){
 			new n1=StringToInt(buf);
 			
 			if(!War3_GetOwnsItem(client,n1)){
-							
-				W3SetVar(TheItemBoughtOrLost,n1);
-				W3CreateEvent(DoForwardClientBoughtItem,client);
+				
+	W3SetVar(TheItemBoughtOrLost,n1);
+	W3CreateEvent(DoForwardClientBoughtItem,client);
 			}
 			else{
-				ReplyToCommand(client,"Already haz item %d",n1);
-				
+	ReplyToCommand(client,"Already haz item %d",n1);
+	
 			}
 		}
 	}
@@ -411,20 +415,13 @@ public OnMapStart()
 {
 	PrintToServer("OnMapStart");
 	W3CreateEvent(UNLOADPLUGINSBYMODE,0); // not something that is considered unapprovable but make sure your defines have naming schemas like War3Event_Blah
-		
-		
-	CheckExtensionAvailable();
-	
-		
+
 	DoWar3InterfaceExecForward();
 	
 	LoadRacesAndItems();
 	
 	CreateTimer(5.0, CheckCvars, 0);
 
-	
-	
-	
 	OneTimeForwards();
 
 }
@@ -465,10 +462,9 @@ public Action:CheckCvars(Handle:timer, any:client)
 
 public Action:OnGetGameDescription(String:gameDesc[64])
 {
-// Lol @ function named W3
-	if(W3()&&GetConVarInt(hChangeGameDescCvar)>0)
+	if(GetConVarInt(hChangeGameDescCvar)>0)
 	{
-		Format(gameDesc,sizeof(gameDesc),"War3 Evolution %s",eVERSION_NUM);
+		Format(gameDesc,sizeof(gameDesc),"War3Evo %s",VERSION_NUM);
 		return Plugin_Changed;
 	}
 	return Plugin_Continue;
@@ -487,39 +483,25 @@ LoadRacesAndItems()
 	new Float:starttime=GetEngineTime();
 	//ordered loads
 	new res;
-	if(W3())
+	for(new i;i<=MAXRACES*10;i++)
 	{
-		for(new i;i<=MAXRACES*10;i++)
-		{
-			Call_StartForward(g_OnWar3PluginReadyHandle);
-			Call_PushCell(i);		
-			Call_Finish(res);
-		}
-		
-		//orderd loads 2
-		for(new i;i<=MAXRACES*10;i++)
-		{
-			Call_StartForward(g_OnWar3PluginReadyHandle2);
-			Call_PushCell(i);		
-			Call_Finish(res);
-		}
-		
-		//unorderd loads
-		Call_StartForward(g_OnWar3PluginReadyHandle3);
+		Call_StartForward(g_OnWar3PluginReadyHandle);
+		Call_PushCell(i);
 		Call_Finish(res);
 	}
-	
-	if(SH())
+
+	//orderd loads 2
+	for(new i;i<=MAXRACES*10;i++)
 	{
-		
-		//SH ordered load
-		for(new i;i<=MAXRACES*10;i++)
-		{
-			Call_StartForward(hOnSHLoadHeroOrItemOrdered);
-			Call_PushCell(i);		
-			Call_Finish(res);
-		}
+		Call_StartForward(g_OnWar3PluginReadyHandle2);
+		Call_PushCell(i);
+		Call_Finish(res);
 	}
+		
+	//unorderd loads
+	Call_StartForward(g_OnWar3PluginReadyHandle3);
+	Call_Finish(res);
+	
 
 	PrintToServer("RACE ITEM LOAD FINISHED IN %.2f seconds",GetEngineTime()-starttime);
 	
@@ -529,31 +511,16 @@ LoadRacesAndItems()
 
 DelayedWar3SourceCfgExecute()
 {
-	if(W3())
-	{
 		if(FileExists("cfg/war3source.cfg"))
 		{
 			ServerCommand("exec war3source.cfg");
-			PrintToServer("[War3Source] Executing war3source.cfg");
+			PrintToServer("[War3Evo] Executing war3source.cfg");
 		}
 		else
 		{
-			PrintToServer("[War3Source] Could not find war3source.cfg, we recommend all servers have this file");
-		}
+			PrintToServer("[War3Evo] Could not find war3source.cfg, we recommend all servers have this file");
 	}
-	
-	if(SH())
-	{
-		if(FileExists("cfg/superhero.cfg"))
-		{
-			ServerCommand("exec superhero.cfg");
-			PrintToServer("[War3Source] Executing superhero.cfg");
-		}
-		else
-		{
-			PrintToServer("[War3Source] Could not find superhero.cfg, we recommend all servers have this file");
-		}
-	}
+
 }
 
 public OnClientPutInServer(client)
@@ -566,4 +533,3 @@ public OnClientDisconnect(client)
 {
 	//DatabaseSaveXP now handles clearing of vars and triggering retrieval
 }
-

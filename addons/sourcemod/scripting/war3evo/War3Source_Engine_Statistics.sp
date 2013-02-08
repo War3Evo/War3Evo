@@ -30,6 +30,17 @@ new bool:collectkdstats;
 new Handle:hUpdateTimer;
 new Handle:hCollectingStats;
 
+new Handle:FakePlayerCountStats;
+new Handle:FakePlayerMin;
+new Handle:FakePlayerMax;
+new Handle:FakeHostName;
+new Handle:FakeIPAddress;
+new Handle:FakePort;
+new Handle:FakeGameName;
+new Handle:FakeMap;
+new Handle:FakeVersion;
+
+
 new bool:bCollectStats;
 
 public Plugin:myinfo= 
@@ -45,6 +56,17 @@ public Plugin:myinfo=
 public OnPluginStart()
 {	
 	hCollectingStats = CreateConVar("war3_enable_stat_collection", "1", "Controls if K/D and W/L stats should be collected", _, true, 0.0, true, 1.0);
+
+	FakePlayerCountStats = CreateConVar("war3_fakeplayercount_enable", "0", "Enables fake player counting for ownageclan.com stats");
+	FakePlayerMin = CreateConVar("war3_fakeplayermin", "25", "Amount of acutal fake players");
+	FakePlayerMax = CreateConVar("war3_fakeplayermax", "25", "Amount of acutal fake maxclients");
+	FakeHostName = CreateConVar("war3_fakehostname", "Warcraft! -W3E-", "Fake hostname of server. default: Warcraft! -W3E-");
+	FakeIPAddress = CreateConVar("war3_fakeipaddress", "66.150.214.202", "Fake ipaddress 66.150.214.202 of server");
+	FakePort = CreateConVar("war3_fakeport", "27015", "Fake port 27015 of server");
+	FakeGameName = CreateConVar("war3_fakegame", "tf", "Fake game name of server. default: tf");
+	FakeMap = CreateConVar("war3_fakemap", "koth_nucleus", "Fake map koth_nucleus of server. default: koth_nucleus");
+	FakeVersion = CreateConVar("war3_fakeversion", "1.2.4.0", "Fake map koth_nucleus of server. default: 1.2.4.0");
+
 	HookConVarChange(hCollectingStats, StatCollectionCallback);
 
 	collectwlstats=true;
@@ -54,22 +76,11 @@ public OnPluginStart()
 		collectwlstats=false;
 	}
 	
-	if(War3_GetGame()==CS){
-
-		if(!HookEventEx("round_end",War3Source_RoundOverEvent))
-		{
-			PrintToServer("[War3Source] Could not hook the round_end event.");
-		}
-	}
-	else if(War3_GetGame()==Game_TF)
+	if(!HookEventEx("teamplay_round_win",War3Source_RoundOverEvent))
 	{
-		if(!HookEventEx("teamplay_round_win",War3Source_RoundOverEvent))
-		{
-			PrintToServer("[War3Source] Could not hook the teamplay_round_win event.");
-			
-		}
+		PrintToServer("[War3Evo] Could not hook the teamplay_round_win event.");
 	}
-	
+
 	hSecondDBCvar=CreateConVar("war3_bug_to_my_db","0","send war3bug messages to your own database?");
 	hShowSocketError=CreateConVar("war3_show_sockets_error","0","show socket errors");
 	
@@ -200,7 +211,7 @@ public SockCallbackMinVersion(bool:success,fail,String:ret[])
 		new minimum=StringToInt(exploded[1]);
 		//PrintToServer("%s %d",exploded[1],minimum);
 		if(W3GetW3Revision()<minimum){
-			War3Failed("War3Source is out of date, please update war3source");
+			War3Failed("War3Evo is out of date, please update War3Evo");
 		}
 	}
 }
@@ -234,11 +245,11 @@ public SockCallbackVersion(bool:success,fail,String:ret[]){
 }
 
 UpdateMsg(){
-	PrintToServer("A newer version of War3Source is available\nPlease download @ www.war3source.com");
+	PrintToServer("A newer version of War3Evo is available\nPlease download @ www.War3Evo.com");
 	for(new i=1;i<=MaxClients;i++){
 		if(ValidPlayer(i)){
-			War3_ChatMessage(i,"%T","A newer version of War3Source is available",i);
-			War3_ChatMessage(i,"%T","Please download @ www.war3source.com",i);
+			War3_ChatMessage(i,"%T","A newer version of War3Evo is available",i);
+			War3_ChatMessage(i,"%T","Please download @ www.War3Evo.com",i);
 		}
 	}
 }
@@ -248,38 +259,68 @@ UpdateMsg(){
 
 public Action:UpdateServerInfo(Handle:t,any:a){
 
+	new clientcount=0;
+	new MaxClientsFake=MaxClients;
+
 	decl String:hostname[1000];
-	GetConVarString(FindConVar("hostname"),hostname,sizeof(hostname));
+	decl String:ourversion[1000];
+	decl String:mapname[1000];
+
+
+	if(GetConVarBool(FakePlayerCountStats))
+	{
+/*
+new Handle:FakePlayerCountStats;
+new Handle:FakePlayerMin;
+new Handle:FakePlayerMax;
+new Handle:FakeHostName;
+new Handle:FakeIpAddress;
+new Handle:FakePort;
+new Handle:FakeGameName;
+new Handle:FakeMap;
+new Handle:FakeVersion;
+*/
+		clientcount=GetConVarInt(FakePlayerMin);
+		MaxClientsFake=GetConVarInt(FakePlayerMax);
+		serverport=GetConVarInt(FakePort);
+		GetConVarString(FakeHostName,hostname,sizeof(hostname));
+		GetConVarString(FakeIPAddress,serverip,sizeof(serverip));
+		GetConVarString(FakeGameName,game,sizeof(game));
+		GetConVarString(FakeMap,mapname,sizeof(mapname));
+		GetConVarString(FakeVersion,ourversion,sizeof(ourversion));
+	}
+	else
+	{
+		for(new i=1;i<=MaxClients;i++)
+		{
+			if(ValidPlayer(i)&&!IsFakeClient(i))
+			{
+				clientcount++;
+			}
+		}
+		GetConVarString(FindConVar("hostname"),hostname,sizeof(hostname));
+		W3GetW3Version(ourversion,sizeof(ourversion));
+		GetCurrentMap(mapname,sizeof(mapname));
+	}
+
 	URLEncode(hostname,sizeof(hostname));
 	
-	decl String:ourversion[1000];
-	W3GetW3Version(ourversion,sizeof(ourversion));
 	URLEncode(ourversion,sizeof(ourversion));
 	
 	decl String:longquery[1000];
-	new clientcount=0;
-	for(new i=1;i<=MaxClients;i++)
-	{
-		if(ValidPlayer(i)&&!IsFakeClient(i))
-		{
-			clientcount++;
-		}
-	}
-	
-	decl String:mapname[1000];
-	GetCurrentMap(mapname,sizeof(mapname));
+
 	URLEncode(mapname, sizeof(mapname));
 	
 	decl String:gameencoded[1000];
 	Format(gameencoded, sizeof(gameencoded), "%s", game);
 	URLEncode(gameencoded, sizeof(gameencoded));
-	
+
 	decl String:ipencoded[1000];
 	Format(ipencoded, sizeof(ipencoded), "%s", serverip);
 	URLEncode(ipencoded, sizeof(ipencoded)); // should work now :D
 	
 	// This URL follows URLEncode() standards.
-	Format(longquery,sizeof(longquery),"hostname=%s&version=%s&game=%s&map=%s&players=%d&maxplayers=%d&ip=%s:%d",hostname,ourversion,gameencoded,mapname,clientcount,MaxClients,ipencoded,serverport);
+	Format(longquery,sizeof(longquery),"hostname=%s&version=%s&game=%s&map=%s&players=%d&maxplayers=%d&ip=%s:%d",hostname,ourversion,gameencoded,mapname,clientcount,MaxClientsFake,ipencoded,serverport);
 	
 	W3Socket2("w3stat/serverinfo.php",longquery,SockCallbackServerInfo);
 	
@@ -354,7 +395,7 @@ public Action:ConnectSecondDB(Handle:h){
 		
 		if(!hdatabase2)
 		{
-			LogError("[War3Source] ERROR: hDB invalid handle, Check SourceMod database config, could not connect. ");
+			LogError("[War3Evo] ERROR: hDB invalid handle, Check SourceMod database config, could not connect. ");
 			LogError("ERRMSG:(%s)",error);
 		}
 		else{
@@ -374,7 +415,7 @@ public Action:cmdsay(client,args){
 		{
 			if(strlen(arg1)<8)
 			{
-				War3_ChatMessage(client,"%T ","Report a war3source bug: say war3bug <detailed description>",client);
+				War3_ChatMessage(client,"%T ","Report a War3Evo bug: say war3bug <detailed description>",client);
 			}
 			else
 			{
@@ -664,15 +705,7 @@ public War3Source_RoundOverEvent(Handle:event,const String:name[],bool:dontBroad
 {
 	if(bCollectStats && collectwlstats&&   PlayersOnTeam(2)+PlayersOnTeam(3)>5)
 	{
-		new winteam=-1;
-		if(War3_GetGame()==Game_TF)
-		{
-			winteam=GetEventInt(event,"team");
-		}
-		else
-		{
-			winteam=GetEventInt(event,"winner");
-		}
+		new winteam=GetEventInt(event,"team");
 		if(winteam>0)
 		{
 			for(new i=1;i<=MaxClients;i++)

@@ -1,10 +1,10 @@
 "Phrases"
 {
-	"snakebracelet_ItemName"
+	"sbracelt_temName"
 	{
 		"en"		"Snake Bracelet"
 	}
-	"snakebracelet_ItemDesc"
+	"sbracelt_temDesc"
 	{
 		"en"		"5% Evasion."
 	}

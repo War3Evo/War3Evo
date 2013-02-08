@@ -8,7 +8,7 @@
 #pragma semicolon 1
 
 #include <sourcemod>
-#include <sdkhooks>
+#include "W3SIncs/sdkhooks"
 #include "W3SIncs/War3Source_Interface"
 
 
@@ -43,39 +43,21 @@ public bool:InitNativesForwards()
 {
 
 	CreateNative("W3ReapplySpeed",NW3ReapplySpeed);//for races
-	if(GameTF())
-	{
-		m_OffsetSpeed=FindSendPropOffs("CTFPlayer","m_flMaxspeed");
-	}
-	else{
-		m_OffsetSpeed=FindSendPropOffs("CBasePlayer","m_flLaggedMovementValue");
-	}
+	m_OffsetSpeed=FindSendPropOffs("CTFPlayer","m_flMaxspeed");
 	if(m_OffsetSpeed==-1)
 	{
-		PrintToServer("[War3Source] Error finding speed offset.");
+		PrintToServer("[War3Evo] Error finding speed offset.");
 	}
 	
 	m_OffsetClrRender=FindSendPropOffs("CBaseAnimating","m_clrRender");
 	if(m_OffsetClrRender==-1)
 	{
-		PrintToServer("[War3Source] Error finding render color offset.");
+		PrintToServer("[War3Evo] Error finding render color offset.");
 	}
 	
 	CreateNative("W3IsBuffInvised",NW3IsBuffInvised);
 	CreateNative("W3GetSpeedMulti",NW3GetSpeedMulti);
 	return true;
-}
-public OnClientPutInServer(client)
-{
-    SDKHook(client, SDKHook_PostThinkPost, PostThinkPost);
-}
-public PostThinkPost(client){
-	new ValveGameEnum:war3Game = War3_GetGame();
-	if(war3Game==Game_CS || war3Game==Game_CSGO){
-		if(invisWeaponAttachments[client]){
-			SetEntProp(client, Prop_Send, "m_iAddonBits",0);
-		}
-	}
 }
 
 public NW3ReapplySpeed(Handle:plugin,numParams)
@@ -236,7 +218,7 @@ public Action:DeciSecondTimer(Handle:timer)
 					
 				}
 				
-				if(GameTF()&&skipcheckingwearables[client]<=0){
+				if(skipcheckingwearables[client]<=0){
 					new ent=-1;
 					//DP("check");
 					while ((ent = FindEntityByClassname(ent, "tf_wearable")) != -1){
@@ -313,126 +295,92 @@ public Action:DeciSecondTimer(Handle:timer)
 
 public OnGameFrame()
 {
-
-		for(new client=1;client<=MaxClients;client++)
+	for(new client=1;client<=MaxClients;client++)
+	{
+		if(ValidPlayer(client,true))//&&!bIgnoreTrackGF[client])
 		{
-			if(ValidPlayer(client,true))//&&!bIgnoreTrackGF[client])
+			new Float:currentmaxspeed=GetEntDataFloat(client,m_OffsetSpeed);
+			//DP("speed %f, speedbefore %f , we set %f",currentmaxspeed,speedBefore[client],speedWeSet[client]);
+			if(currentmaxspeed!=speedWeSet[client]) ///SO DID engien set a new speed? copy that!! //TFIsDefaultMaxSpeed(client,currentmaxspeed)){ //ONLY IF NOT SET YET
 			{
-				
-				
-				new Float:currentmaxspeed=GetEntDataFloat(client,m_OffsetSpeed);
-				//DP("speed %f, speedbefore %f , we set %f",currentmaxspeed,speedBefore[client],speedWeSet[client]);
-				if(currentmaxspeed!=speedWeSet[client]) ///SO DID engien set a new speed? copy that!! //TFIsDefaultMaxSpeed(client,currentmaxspeed)){ //ONLY IF NOT SET YET
-				{	
-					//DP("detected newspeed %f was %f",currentmaxspeed,speedWeSet[client]);
-					speedBefore[client]=currentmaxspeed;
-					reapplyspeed[client]++;
-				}
-				
-				
-				
-				//PrintToChat(client,"speed %f %s",currentmaxspeed, TFIsDefaultMaxSpeed(client,currentmaxspeed)?"T":"F");
-				if(reapplyspeed[client]>0)
-				{
-			//	DP("reapply");
-					reapplyspeed[client]=0;
-					///player frame tracking, if client speed is not what we set, we reapply speed
-					
-					//PrintToChatAll("1");
-					if(War3_GetGame()==Game_TF){
-						
-						
-						
-					//	if(true||	speedBefore[client]>3.0){ //reapply speed, using previous cached base speed, make sure the cache isnt' zero lol 
-							new Float:speedmulti=1.0;
-	
-							//DP("before");
-							//new Float:speedadd=1.0;
-							if(!W3GetBuffHasTrue(client,bBuffDenyAll)){
-								speedmulti=W3GetBuffMaxFloat(client,fMaxSpeed)+W3GetBuffMaxFloat(client,fMaxSpeed2)-1.0;
-								
-							}
-							if(W3GetBuffHasTrue(client,bStunned)||W3GetBuffHasTrue(client,bBashed)){
-							//DP("stunned or bashed");
-								speedmulti=0.0;
-							}
-							if(!W3GetBuffHasTrue(client,bSlowImmunity)){
-								speedmulti=FloatMul(speedmulti,W3GetBuffStackedFloat(client,fSlow)); 
-								speedmulti=FloatMul(speedmulti,W3GetBuffStackedFloat(client,fSlow2)); 
-							}
-							//PrintToConsole(client,"speedmulti should be 1.0 %f %f",speedmulti,speedadd);
-							gspeedmulti[client]=speedmulti;
-							new Float:newmaxspeed=FloatMul(speedBefore[client],speedmulti);
-							if(newmaxspeed<0.1){
-								newmaxspeed=0.1;
-							}
-							speedWeSet[client]=newmaxspeed;
-							SetEntDataFloat(client,m_OffsetSpeed,newmaxspeed,true);
-							
-							//DP("%f",newmaxspeed);
-					//	}
-					}
-					else{ //cs?
-											
-						new Float:speedmulti=1.0;
-						
-						//new Float:speedadd=1.0;
-						if(!W3GetBuffHasTrue(client,bBuffDenyAll)){
-							speedmulti=W3GetBuffMaxFloat(client,fMaxSpeed)+W3GetBuffMaxFloat(client,fMaxSpeed2)-1.0;
-						}
-						if(W3GetBuffHasTrue(client,bStunned)||W3GetBuffHasTrue(client,bBashed)){
-							speedmulti=0.0;
-						}
-						if(!W3GetBuffHasTrue(client,bSlowImmunity)){
-							speedmulti=FloatMul(speedmulti,W3GetBuffStackedFloat(client,fSlow)); 
-							speedmulti=FloatMul(speedmulti,W3GetBuffStackedFloat(client,fSlow2)); 
-						}
-						
-						if(GetEntDataFloat(client,m_OffsetSpeed)!=speedmulti){
-							SetEntDataFloat(client,m_OffsetSpeed,speedmulti);
-						}
-					}
-				}
-				
-				
-				
-				new MoveType:currentmovetype=GetEntityMoveType(client);
-				new MoveType:shouldmoveas=MOVETYPE_WALK;
-				if(W3GetBuffHasTrue(client,bNoMoveMode)){
-					shouldmoveas=MOVETYPE_NONE;
-				}
-				if(W3GetBuffHasTrue(client,bNoClipMode)){
-					shouldmoveas=MOVETYPE_NOCLIP;
-				}
-				else if(W3GetBuffHasTrue(client,bFlyMode)&&!W3GetBuffHasTrue(client,bFlyModeDeny)){
-					shouldmoveas=MOVETYPE_FLY;
-				}
-				
-				/* Glider (290611): 
-				 * 		I have implemented a extremly dirty way to prevent some
-				 *      shit that goes wrong in L4D2.
-				 *         
-				 *      If a tank tries to climb a object, he changes his
-				 *      move type. This code prevented them from ever
-				 *      climbing anything.
-				 *         
-				 *      Players also change their move type when they get
-				 *      hit so hard they stagger into a direction, making
-				 *      them move slower. This code made them stagger much
-				 *      faster, resulting in crossing a much larger distance
-				 *      (usually right into some pit).
-				 *         
-				 *      TODO: Fix properly ;)
-				 */
-				
-				if(currentmovetype!=shouldmoveas && !War3_IsL4DEngine()){
-					SetEntityMoveType(client,shouldmoveas);
-				}
-				//PrintToChatAll("end");
+				//DP("detected newspeed %f was %f",currentmaxspeed,speedWeSet[client]);
+				speedBefore[client]=currentmaxspeed;
+				reapplyspeed[client]++;
 			}
+
+				//PrintToChat(client,"speed %f %s",currentmaxspeed, TFIsDefaultMaxSpeed(client,currentmaxspeed)?"T":"F");
+			if(reapplyspeed[client]>0)
+			{
+				//	DP("reapply");
+				reapplyspeed[client]=0;
+				///player frame tracking, if client speed is not what we set, we reapply speed
+					//PrintToChatAll("1");
+
+				//	if(true||	speedBefore[client]>3.0){ //reapply speed, using previous cached base speed, make sure the cache isnt' zero lol
+				new Float:speedmulti=1.0;
+					//DP("before");
+				//new Float:speedadd=1.0;
+				if(!W3GetBuffHasTrue(client,bBuffDenyAll)){
+					speedmulti=W3GetBuffMaxFloat(client,fMaxSpeed)+W3GetBuffMaxFloat(client,fMaxSpeed2)-1.0;
+					}
+				if(W3GetBuffHasTrue(client,bStunned)||W3GetBuffHasTrue(client,bBashed)){
+				//DP("stunned or bashed");
+					speedmulti=0.0;
+				}
+				if(!W3GetBuffHasTrue(client,bSlowImmunity)){
+					speedmulti=FloatMul(speedmulti,W3GetBuffStackedFloat(client,fSlow));
+					speedmulti=FloatMul(speedmulti,W3GetBuffStackedFloat(client,fSlow2));
+				}
+				//PrintToConsole(client,"speedmulti should be 1.0 %f %f",speedmulti,speedadd);
+				gspeedmulti[client]=speedmulti;
+				new Float:newmaxspeed=FloatMul(speedBefore[client],speedmulti);
+				if(newmaxspeed<0.1){
+					newmaxspeed=0.1;
+				}
+				speedWeSet[client]=newmaxspeed;
+				SetEntDataFloat(client,m_OffsetSpeed,newmaxspeed,true);
+					//DP("%f",newmaxspeed);
+				//	}
+			}
+//				}
+
+			new MoveType:currentmovetype=GetEntityMoveType(client);
+			new MoveType:shouldmoveas=MOVETYPE_WALK;
+			if(W3GetBuffHasTrue(client,bNoMoveMode)){
+				shouldmoveas=MOVETYPE_NONE;
+			}
+			if(W3GetBuffHasTrue(client,bNoClipMode)){
+				shouldmoveas=MOVETYPE_NOCLIP;
+			}
+			else if(W3GetBuffHasTrue(client,bFlyMode)&&!W3GetBuffHasTrue(client,bFlyModeDeny)){
+				shouldmoveas=MOVETYPE_FLY;
+			}
+
+			/* Glider (290611):
+			 * 		I have implemented a extremly dirty way to prevent some
+			 *      shit that goes wrong in L4D2.
+			 *
+			 *      If a tank tries to climb a object, he changes his
+			 *      move type. This code prevented them from ever
+			 *      climbing anything.
+			 *
+			 *      Players also change their move type when they get
+			 *      hit so hard they stagger into a direction, making
+			 *      them move slower. This code made them stagger much
+			 *      faster, resulting in crossing a much larger distance
+			 *      (usually right into some pit).
+			 *
+			 *      TODO: Fix properly ;)
+			 */
+
+			if(currentmovetype!=shouldmoveas && !War3_IsL4DEngine()){
+				SetEntityMoveType(client,shouldmoveas);
+			}
+			//PrintToChatAll("end");
 		}
-	
+	}
 }
+
 public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3], &weapon)
 {
 	if(ValidPlayer(client,true)){ //block attack
