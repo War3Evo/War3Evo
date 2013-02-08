@@ -113,7 +113,7 @@ public War3Source_PointCapturedEvent(Handle:event,const String:name[],bool:dontB
 
 					new String:captureaward[64];
 					Format(captureaward,sizeof(captureaward),"%T","being on the capturing team",i);
-					W3GiveXPGold(i,XPAwardByPointCap,addxp,0,captureaward,1);
+					W3GiveXPGold(i,XPAwardByPointCap,addxp,0,captureaward);
 				}
 			}
 		}
@@ -134,7 +134,7 @@ public War3Source_PointCapBlockedEvent(Handle:event,const String:name[],bool:don
 
 			new String:pointcaptureaward[64];
 			Format(pointcaptureaward,sizeof(pointcaptureaward),"%T","blocking point capture",client);
-			W3GiveXPGold(client,XPAwardByPointCapBlock,addxp,0,pointcaptureaward,1);
+			W3GiveXPGold(client,XPAwardByPointCapBlock,addxp,0,pointcaptureaward);
 
 		}
 	}
@@ -157,7 +157,7 @@ public War3Source_FlagEvent(Handle:event,const String:name[],bool:dontBroadcast)
 
 				new String:pointcaptureaward[64];
 				Format(pointcaptureaward,sizeof(pointcaptureaward),"%T","blocking point capture",client);
-				W3GiveXPGold(client,XPAwardByFlagCap,addxp,0,pointcaptureaward,1);
+				W3GiveXPGold(client,XPAwardByFlagCap,addxp,0,pointcaptureaward);
 			}
 		}
 	}
