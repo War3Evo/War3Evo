@@ -604,6 +604,8 @@ bool:IsShortTerm(){
 
 public OnWar3Event(W3EVENT:event,client){
 	if(event==DoLevelCheck){
+		if(W3GetVar(EventArg1)==10666)
+			ShowSkillsMenuToClientOnSpawn[client]=true;
 		LevelCheck(client);
 	}
 }
