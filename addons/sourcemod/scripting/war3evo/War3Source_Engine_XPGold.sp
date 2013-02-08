@@ -17,6 +17,7 @@ public Plugin:myinfo=
 
 new String:levelupSound[]="war3source/levelupcaster.mp3";
 
+new mySwitch=1;
 
 ///MAXLEVELXPDEFINED is in constants
 new XPLongTermREQXP[MAXLEVELXPDEFINED+1]; //one extra for even if u reached max level
@@ -132,7 +133,13 @@ public NW3GiveXPGold(Handle:plugin,args){
 	new xp=GetNativeCell(3);
 	new gold=GetNativeCell(4);
 	new String:strreason[64];
+
 	GetNativeString(5,strreason,sizeof(strreason));
+	new temp=GetNativeCell(6);
+	
+	if (temp)
+		mySwitch = 0;
+	
 	TryToGiveXPGold(client,awardby,xp,gold,strreason);
 	
 }
@@ -564,6 +571,7 @@ GiveKillXPCreds(client,playerkilled,bool:headshot,bool:melee)
 		
 		new String:killaward[64];
 		Format(killaward,sizeof(killaward),"%T","a kill",client);
+		mySwitch=0;
 		W3GiveXPGold(client,XPAwardByKill,addxp,W3GetKillGold(),killaward);
 	}
 }
@@ -575,6 +583,7 @@ public GiveAssistKillXP(client)
 	
 	new String:helpkillaward[64];
 	Format(helpkillaward,sizeof(helpkillaward),"%T","assisting a kill",client);
+	mySwitch=0;
 	W3GiveXPGold(client,XPAwardByAssist,addxp,W3GetAssistGold(),helpkillaward);
 }
 
@@ -690,9 +699,15 @@ LevelCheck(client){
 		// some reason you can only level for every time you type spendskills..
 		// doesnt level  you up on spawn.
 		if(W3GetLevelsSpent(client,race)<War3_GetLevel(client,race)){
-			W3CreateEvent(DoShowSpendskillsMenu,client);
+			if(!(IsPlayerAlive(client)))
+				mySwitch=1;
+			DP("%i",mySwitch);
+			if (mySwitch)
+				W3CreateEvent(DoShowSpendskillsMenu,client);
+			
 		}
 	}
+	mySwitch=1;
 }
 
 

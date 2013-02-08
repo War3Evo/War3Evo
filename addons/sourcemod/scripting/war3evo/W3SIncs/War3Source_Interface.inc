@@ -1591,7 +1591,7 @@ native any:W3GetPlayerProp(client,W3PlayerProp:property);
 
 //nothing happens if you give 0 xp 0 gold
 //automatically prints gained or lost xp/gold
-native W3GiveXPGold(client,W3XPAwardedBy:awardreason=XPAwardByGeneric,xpamount=0,goldamount=0,String:awardstringreason[]);
+native W3GiveXPGold(client,W3XPAwardedBy:awardreason=XPAwardByGeneric,xpamount=0,goldamount=0,String:awardstringreason[],temp=0);
 
 //TKV = trie key value , a abstract data storage, emulates cvars for war3
 ///Creates internal war3 cvars. returns a id to your cvar, store it!
