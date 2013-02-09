@@ -121,7 +121,7 @@ And that’s the art of the test!
 // We are removing all War3Source name from our servers.  We dont wish
 // the other War3Source servers to think we own War3Source
 
-#define AUTHORS "El Diablo and LORD DAGOTHUR [X]-RATED"
+#define AUTHORS "Juanthescout and El Diablo"
 //#define eAUTHORS "El Diablo|Dagothur|Axin"
 
 //used for some special things in interface
