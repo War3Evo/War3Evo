@@ -529,7 +529,11 @@ bool:Internal_War3Source_SayCommand(client,String:arg1[256])
 		{
 			new race=War3_GetRace(client);
 			if(W3GetLevelsSpent(client,race)<War3_GetLevel(client,race))
-			W3CreateEvent(DoShowSpendskillsMenu,client);
+			{
+				W3SetVar(EventArg1,10666);
+				W3CreateEvent(DoLevelCheck, client);
+			//W3CreateEvent(DoShowSpendskillsMenu,client);
+			}
 			else
 			War3_ChatMessage(client,"%T","You do not have any skill points to spend, if you want to reset your skills use resetskills",client);
 			return returnblocking;

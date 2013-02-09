@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "0.0.0.1"
+#define PLUGIN_VERSION "0.0.0.2 (2/8/2013)"
 
 #pragma semicolon 1    ///WE RECOMMEND THE SEMICOLON
 #pragma tabsize 0     // doesn't mess with how you format your lines
@@ -15,8 +15,9 @@ public Plugin:myinfo=
 	url="http://war3source.com/"
 };
 
-new String:levelupSound[]="war3source/levelupcaster.mp3";
+new bool:ShowSkillsMenuToClientOnSpawn[MAXPLAYERSCUSTOM];
 
+new String:levelupSound[]="war3source/levelupcaster.mp3";
 
 ///MAXLEVELXPDEFINED is in constants
 new XPLongTermREQXP[MAXLEVELXPDEFINED+1]; //one extra for even if u reached max level
@@ -132,7 +133,9 @@ public NW3GiveXPGold(Handle:plugin,args){
 	new xp=GetNativeCell(3);
 	new gold=GetNativeCell(4);
 	new String:strreason[64];
+
 	GetNativeString(5,strreason,sizeof(strreason));
+
 	TryToGiveXPGold(client,awardby,xp,gold,strreason);
 	
 }
@@ -438,6 +441,7 @@ public OnWar3EventDeath(victim,attacker){
 			GiveKillXPCreds(attacker,victim,is_hs,is_melee);
 		}
 	}
+	ShowSkillsMenuToClientOnSpawn[victim]=true;
 	
 }
 public War3Source_RoundOverEvent(Handle:event,const String:name[],bool:dontBroadcast)
@@ -564,6 +568,7 @@ GiveKillXPCreds(client,playerkilled,bool:headshot,bool:melee)
 		
 		new String:killaward[64];
 		Format(killaward,sizeof(killaward),"%T","a kill",client);
+
 		W3GiveXPGold(client,XPAwardByKill,addxp,W3GetKillGold(),killaward);
 	}
 }
@@ -575,6 +580,7 @@ public GiveAssistKillXP(client)
 	
 	new String:helpkillaward[64];
 	Format(helpkillaward,sizeof(helpkillaward),"%T","assisting a kill",client);
+
 	W3GiveXPGold(client,XPAwardByAssist,addxp,W3GetAssistGold(),helpkillaward);
 }
 
@@ -598,10 +604,13 @@ bool:IsShortTerm(){
 
 public OnWar3Event(W3EVENT:event,client){
 	if(event==DoLevelCheck){
+		if(W3GetVar(EventArg1)==10666)
+			ShowSkillsMenuToClientOnSpawn[client]=true;
+		else
+			ShowSkillsMenuToClientOnSpawn[client]=false;
 		LevelCheck(client);
 	}
 }
-
 
 LevelCheck(client){
 	new race=War3_GetRace(client);
@@ -657,6 +666,7 @@ LevelCheck(client){
 					//PrintToChatAll("LEVEL %d xp %d reqxp=%d",curlevel,War3_GetXP(client,race),ReqLevelXP(curlevel+1));
 					
 					War3_ChatMessage(client,"%T","You are now level {amount}",client,War3_GetLevel(client,race)+1);
+					War3_ChatMessage(client,"Type spendskills to Level Up your skills or wait till death.");
 					
 					new newxp=War3_GetXP(client,race)-W3GetReqXP(curlevel+1);
 					War3_SetXP(client,race,newxp); //set xp first, else infinite level!!! else u set level xp is same and it tries to use that xp again
@@ -690,7 +700,14 @@ LevelCheck(client){
 		// some reason you can only level for every time you type spendskills..
 		// doesnt level  you up on spawn.
 		if(W3GetLevelsSpent(client,race)<War3_GetLevel(client,race)){
-			W3CreateEvent(DoShowSpendskillsMenu,client);
+			if(ShowSkillsMenuToClientOnSpawn[client]==true)
+			{
+				W3CreateEvent(DoShowSpendskillsMenu,client);
+			}
+		}
+		else
+		{
+			ShowSkillsMenuToClientOnSpawn[client]=false;
 		}
 	}
 }

@@ -110,7 +110,7 @@ And that’s the art of the test!
 
 
 #define VERSION_NUM "1.2.4.1"
-#define eVERSION_NUM "1.0.2.7 (2/5/2013)"
+#define eVERSION_NUM "1.0.2.8 (2/8/2013)"
 //#define REVISION_NUM 12321 //increment every release
 #define REVISION_NUM 12415 //increment every release
 
@@ -121,7 +121,7 @@ And that’s the art of the test!
 // We are removing all War3Source name from our servers.  We dont wish
 // the other War3Source servers to think we own War3Source
 
-#define AUTHORS "El Diablo and LORD DAGOTHUR [X]-RATED"
+#define AUTHORS "Juanthescout and El Diablo"
 //#define eAUTHORS "El Diablo|Dagothur|Axin"
 
 //used for some special things in interface

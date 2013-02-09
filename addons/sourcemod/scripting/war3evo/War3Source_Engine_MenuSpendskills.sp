@@ -211,6 +211,7 @@ public War3Source_SMenu_Selected(Handle:menu,MenuAction:action,client,selection)
 						War3_ChatMessage(client,"%T","You can not choose a skill without gaining another level",client);
 					}
 				}
+				W3SetVar(EventArg1,10666);
 				W3DoLevelCheck(client);
 			}
 			
