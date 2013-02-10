@@ -32,6 +32,9 @@ public OnWar3Event(W3EVENT:event,client) {
 		else
 		ShowMenuShop(client);
 	}
+	if(event==DoShowDropShopMenu) {
+		ShowMenuShop(client,"",true);
+	}
 	if(event==DoTriedToBuyItem) { //via say?
 		War3_TriedToBuyItem(client,W3GetVar(EventArg1),W3GetVar(EventArg2)); ///ALWAYS SET ARG2 before calling this event
 	}
@@ -89,15 +92,20 @@ ShowMenuShopCategory(client)
 	DisplayMenu(shopMenu,client,20);
 }
 
-ShowMenuShop(client, const String:category[]="") {
+ShowMenuShop(client, const String:category[]="", bool:dropitem=false) {
 	SetTrans(client);
 	new Handle:shopMenu=CreateMenu(War3Source_ShopMenu_Selected);
 	SetMenuExitButton(shopMenu,true);
 
 	new gold=War3_GetGold(client);
 
+	new String:selectioninfo[32];
+
 	new String:title[300];
-	Format(title,sizeof(title),"%T\n","[War3Evo] Select an item to buy. You have {amount}/{amount} items",GetTrans(),GetClientItemsOwned(client),GetMaxShopitemsPerPlayer());
+	if(dropitem==true)
+		Format(title,sizeof(title),"%T\n","[War3Evo] Select an item to drop. You have {amount}/{amount} items.\nYou will not get gold back.",GetTrans(),GetClientItemsOwned(client),GetMaxShopitemsPerPlayer());
+	else
+		Format(title,sizeof(title),"%T\n","[War3Evo] Select an item to buy. You have {amount}/{amount} items.",GetTrans(),GetClientItemsOwned(client),GetMaxShopitemsPerPlayer());
 	if(W3BuyUseCSMoney()) {
 		Format(title,sizeof(title),"%s \n",title);
 	}
@@ -106,57 +114,55 @@ ShowMenuShop(client, const String:category[]="") {
 	}
 	SetMenuTitle(shopMenu,title);
 	decl String:itemname[64];
-	decl String:itembuf[4];
-	decl String:linestr[96];
+	//decl String:itembuf[4];
+	new String:linestr[96];
+
 	decl String:itemcategory[64];
 	decl cost;
 	new ItemsLoaded = W3GetItemsLoaded();
 	new bool:SteamGroupRequired=false;
 	new bool:useCategory = GetConVarBool(hUseCategorysCvar);
-	//new BackButton=0;
 	if (useCategory)
 	{
-		AddMenuItem(shopMenu,"-1","[Return to Categories]");
+		if(dropitem==true)
+			AddMenuItem(shopMenu,"-1,dropitem,0","[Buy from Shopmenu]");
+		else
+			AddMenuItem(shopMenu,"-1,dropitem,0","[Return to Categories]");
 	}
 
 	for(new x=1;x<=ItemsLoaded;x++)
 	{
-//		BackButton++;
-
-/*		if (useCategory)
-		{
-			if(BackButton==1)
-				{
-					AddMenuItem(shopMenu,"-1","[Return to Categories]");
-					ItemsLoaded=ItemsLoaded-1;
-					//BackButton=0;
-					continue;
-				}
-		}*/
-
-		//if(W3RaceHasFlag(x,"hidden")){   //
-		//	PrintToServer("hidden %d",x);
-		//}
-		//War3_TFIsItemClass has a internal GAMETF Checking.. if not GAMETF it auto returns true.
-		// Create a back button every 7 items
 		if(!W3IsItemDisabledGlobal(x)&&!W3ItemHasFlag(x,"hidden")&&War3_TFIsItemClass(x,TF2_GetPlayerClass(client)))
 		{
 			W3GetItemCategory(x, itemcategory, sizeof(itemcategory));
 
 			if ((!StrEqual(category, "") && StrEqual(category, itemcategory)) || (StrEqual(category, "")))
 			{
-				Format(itembuf,sizeof(itembuf),"%d",x);
+				if(dropitem==true)
+					Format(selectioninfo,sizeof(selectioninfo),"%d,dropitem,%d",x,1);
+				else
+					Format(selectioninfo,sizeof(selectioninfo),"%d,dropitem,%d",x,0);
+
 				W3GetItemName(x,itemname,sizeof(itemname));
 				cost=W3GetItemCost(x,W3BuyUseCSMoney());
-				if(War3_GetOwnsItem(client,x)) {
-					if(W3BuyUseCSMoney()) {
-						Format(linestr,sizeof(linestr),"%T",">{itemname} - ${amount}",client,itemname,cost);
-					}
-					else {
-						Format(linestr,sizeof(linestr),"%T",">{itemname} - {amount} Gold",client,itemname,cost);
-					}
+				if(War3_GetOwnsItem(client,x) && dropitem==true)
+				{
+					Format(linestr,sizeof(linestr),"%T","{itemname}",client,itemname);
+					AddMenuItem(shopMenu,selectioninfo,linestr,ITEMDRAW_DEFAULT);
 				}
-				else {
+				else if(War3_GetOwnsItem(client,x) && dropitem==false)
+				{
+					if(W3BuyUseCSMoney())
+						{
+							Format(linestr,sizeof(linestr),"%T",">{itemname} - ${amount}",client,itemname,cost);
+						}
+						else
+						{
+							Format(linestr,sizeof(linestr),"%T",">{itemname} - {amount} Gold",client,itemname,cost);
+						}
+				}
+				else if(!War3_GetOwnsItem(client,x) && dropitem==false)
+				{
 					if(W3BuyUseCSMoney()) {
 						Format(linestr,sizeof(linestr),"%T","{itemname} - ${amount}",client,itemname,cost);
 					}
@@ -164,10 +170,10 @@ ShowMenuShop(client, const String:category[]="") {
 						Format(linestr,sizeof(linestr),"%T","{itemname} - {amount} Gold",client,itemname,cost);
 					}
 				}
-				if(!War3_IsInSteamGroup(client)&&W3ItemHasFlag(x,"steamgroup"))
+				if(!War3_IsInSteamGroup(client)&&W3ItemHasFlag(x,"steamgroup")&&dropitem==false)
 				{
 					Format(linestr,sizeof(linestr),"%s *War3Evo Steam Group Required*",linestr);
-					AddMenuItem(shopMenu,itembuf,linestr,ITEMDRAW_DISABLED);
+					AddMenuItem(shopMenu,selectioninfo,linestr,ITEMDRAW_DISABLED);
 					SteamGroupRequired=true;
 					//War3_ChatMessage(client,"Item %s requires you join our Steam Group:\nhttp://steamcommunity.com/groups/war3evo",itemname);
 					//War3_ChatMessage("Sometimes we lose connection to the steam group, so please be patient.");
@@ -175,23 +181,29 @@ ShowMenuShop(client, const String:category[]="") {
 				else
 				{
 					//AddMenuItem(crMenu,rbuf,rdisp,(minlevel<=W3GetTotalLevels(client)||StrEqual(steamid,"STEAM_0:1:35173666",false)?ITEMDRAW_DEFAULT:ITEMDRAW_DISABLED);
-					if(W3ItemHasFlag(x,"steamgroup"))
+					if(W3ItemHasFlag(x,"steamgroup")&&dropitem==false)
 					{
 						Format(linestr,sizeof(linestr),"%s <Steam Group Enabled>",linestr);
+						AddMenuItem(shopMenu,selectioninfo,linestr,(W3IsItemDisabledForRace(War3_GetRace(client),x) || W3IsItemDisabledGlobal(x) || War3_GetOwnsItem(client,x))?ITEMDRAW_DISABLED:ITEMDRAW_DEFAULT);
+					} else if(!W3ItemHasFlag(x,"steamgroup")&&dropitem==false)
+					{
+						AddMenuItem(shopMenu,selectioninfo,linestr,(W3IsItemDisabledForRace(War3_GetRace(client),x) || W3IsItemDisabledGlobal(x) || War3_GetOwnsItem(client,x))?ITEMDRAW_DISABLED:ITEMDRAW_DEFAULT);
 					}
-					AddMenuItem(shopMenu,itembuf,linestr,(W3IsItemDisabledForRace(War3_GetRace(client),x) || W3IsItemDisabledGlobal(x) || War3_GetOwnsItem(client,x))?ITEMDRAW_DISABLED:ITEMDRAW_DEFAULT);
 				}
 //				AddMenuItem(shopMenu,itembuf,linestr,(W3IsItemDisabledForRace(War3_GetRace(client),x) || W3IsItemDisabledGlobal(x) || War3_GetOwnsItem(client,x))?ITEMDRAW_DISABLED:ITEMDRAW_DEFAULT);
 			}
 		}//
 	}
-	if(SteamGroupRequired)
+	if(SteamGroupRequired&&dropitem==false)
 	{
 		War3_ChatMessage(client,"Steam Group: http://steamcommunity.com/groups/war3evo");
 	}
 	if (useCategory)
 	{
-		AddMenuItem(shopMenu,"-1","[Return to Categories]");
+		if(dropitem==true)
+			AddMenuItem(shopMenu,"-1,dropitem,0","[Buy from Shopmenu]");
+		else
+			AddMenuItem(shopMenu,"-1,dropitem,0","[Return to Categories]");
 	}
 	DisplayMenu(shopMenu,client,20);
 }
@@ -202,21 +214,34 @@ public War3Source_ShopMenu_Selected(Handle:menu,MenuAction:action,client,selecti
 	{
 		if(ValidPlayer(client))
 		{
-			decl String:SelectionInfo[4];
+			new String:exploded[3][32];
+
+			decl String:SelectionInfo[32];
 			decl String:SelectionDispText[256];
 			new SelectionStyle;
 			GetMenuItem(menu,selection,SelectionInfo,sizeof(SelectionInfo),SelectionStyle, SelectionDispText,sizeof(SelectionDispText));
-			new item=StringToInt(SelectionInfo);
-			new bool:useCategory = GetConVarBool(hUseCategorysCvar);
-			if(item==-1&&useCategory)
-			{
-				ShowMenuShopCategory(client);
-			}
-			else
-			{
-				War3_TriedToBuyItem(client,item,true);
-			}
 
+			ExplodeString(SelectionInfo, ",", exploded, 3, 32);
+
+			if(StrEqual(exploded[1],"dropitem")){
+				new item=StringToInt(exploded[0]);
+				if(StrEqual(exploded[2],"1")) //drop item
+				{
+					War3_DropItem(client,item,true);
+				}
+				else
+				{
+					new bool:useCategory = GetConVarBool(hUseCategorysCvar);
+					if(item==-1&&useCategory)
+					{
+						ShowMenuShopCategory(client);
+					}
+					else
+					{
+						War3_TriedToBuyItem(client,item,true);
+					}
+				}
+			}
 		}
 	}
 	if(action==MenuAction_End)
@@ -242,6 +267,22 @@ public War3Source_ShopMenuCategory_Sel(Handle:menu, MenuAction:action, client, s
 	if(action==MenuAction_End)
 	{
 		CloseHandle(menu);
+	}
+}
+
+War3_DropItem(client,item,bool:reshowmenu=true) {
+	if(item>0&&item<=W3GetItemsLoaded())
+	{
+		//SetTrans(client);
+
+		decl String:itemName[64];
+		W3GetItemName(item,itemName,sizeof(itemName));
+
+		War3_SetOwnsItem(client,item,false);
+		War3_ChatMessage(client,"Item Discarded: {green}%s{default}",itemName);
+	}
+	if(reshowmenu&&GetClientItemsOwned(client)>0) {
+		ShowMenuShop(client,"",true);
 	}
 }
 

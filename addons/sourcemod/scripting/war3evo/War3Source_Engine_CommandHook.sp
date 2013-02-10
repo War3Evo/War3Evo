@@ -543,6 +543,11 @@ bool:Internal_War3Source_SayCommand(client,String:arg1[256])
 			W3CreateEvent(DoShowShopMenu,client);
 			return returnblocking;
 		}
+		else if(CommandCheck(arg1,"dropmenu")||CommandCheck(arg1,"dropitem"))
+		{
+			W3CreateEvent(DoShowDropShopMenu,client);
+			return returnblocking;
+		}
 		else if(CommandCheck(arg1,"shopmenu2")||CommandCheck(arg1,"sh2"))
 		{
 			W3CreateEvent(DoShowShopMenu2,client);
