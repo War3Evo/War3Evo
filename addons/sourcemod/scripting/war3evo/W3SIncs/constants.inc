@@ -150,6 +150,9 @@ enum W3EVENT
 	OnBuffChanged, //a buff has changed
 	OnAuraCalculationFinished, //this is after all the OnW3PlayerAuraStateChanged have been sent
 	DoShowPlayerItemsOwnTarget, ///EventArg1 = target = the person whos items is shown, client=SHOW TO
+
+	// shopmenu drop items menu option
+	DoShowDropShopMenu,
 }
 enum W3DENY{
 	DN_ShowChangeRace, //can show the menu
