@@ -13,6 +13,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	
 	War3source written by PimpinJuice (anthony) and Ownz (Dark Energy)
+	War3Evo derived from War3Source written by El Diablo
 	All rights reserved.
 */	
 
@@ -24,105 +25,46 @@
 * If you don't like it, read through the whole thing yourself and prove yourself wrong.
 */
 
-/*
-Line by line, coding it together
-Unit tests, cutting out the errors bit by bit
-Making sure to run it almost nightly
-It’s parsing and works in SIT
-Always gotta keep in mind when tracing
-Making sure the code correctly spacing
-I’m coding them together.
-
--
-
-Class by class fussing on the details
-IE9, don’t you know a better browser saves you time?
-Making sure it works for the compiler
-Even though I’m coding while tired
-Gotta mind those intimate details
-Even though the test might fail
-It’s another new test
-
--
-
-Programming’s easy, for my API’s don’t stink
-Pointers make me queasy
-Extend methods and functions
-Do you think it breaks easy?
-
--
-
-System crash, perhaps site fetching
-Curse and sigh, this just makes me want to die
-Making sure it doesn’t deadlock the set
-Don’t forget the data in the test
-Even though my job relies on this task
-I won’t get it done fast
-I’m coding Unit tests
-
--
-
-File by file, line by line
-Public void, is the shit
-Class by class, to impress
-Working hard, never stressed
-
-And that’s the art of the test!
-
-*/
-// 
-// Dear maintainer:
-// 
-// Once you are done trying to 'optimize' this routine,
-// and have realized what a terrible mistake that was,
-// please increment the following counter as a warning
-// to the next guy:
-// 
-// total_hours_wasted_here = 39
-// 
-/**
-* For the brave souls who get this far: You are the chosen ones,
-* the valiant knights of programming who toil away, without rest,
-* fixing our most awful code. To you, true saviors, kings of men,
-* I say this: never gonna give you up, never gonna let you down,
-* never gonna run around and desert you. Never gonna make you cry,
-* never gonna say goodbye. Never gonna tell a lie and hurt you.
-*/
-
-//When I wrote this, only God and I understood what I was doing
-//Now, God only knows
-
-// sometimes I believe compiler ignores all my comments
-
-/*
- * You may think you know what the following code does.
- * But you dont. Trust me.
- * Fiddle with it, and you'll spend many a sleepless
- * night cursing the moment you thought youd be clever
- * enough to "optimize" the code below.
- * Now close this file and go play with something else.
- */ 
- 
-//Dear future me. Please forgive me. 
-//I can't even begin to express how sorry I am.  
-
 #pragma semicolon 1
 
 
 #define VERSION_NUM "1.2.4.1"
-#define eVERSION_NUM "1.0.2.8 (2/8/2013)"
+#define eVERSION_NUM "1.0.2.9 (2/10/2013)"
 //#define REVISION_NUM 12321 //increment every release
 #define REVISION_NUM 12415 //increment every release
 
-//DO NOT REMOVE THE OFFICIAL AUTHORS. YOU SHALL NOT DEPRIVE THEM OF THE CREDIT THEY DESERVE
-//#define AUTHORS "PimpinJuice and Ownz (DarkEnergy)"
-// Removed orignal since we have been sought out for creating war3source and several
-// servers claim us DDOSing their servers and we do not own War3Source.
-// We are removing all War3Source name from our servers.  We dont wish
-// the other War3Source servers to think we own War3Source
-
-#define AUTHORS "Juanthescout and El Diablo"
-//#define eAUTHORS "El Diablo|Dagothur|Axin"
+/*DO NOT REMOVE THE OFFICIAL AUTHORS. YOU SHALL NOT DEPRIVE THEM OF THE CREDIT THEY DESERVE
+** The orignal author of War3Source I have never known: PimpinJuice
+** I, El Diablo, has done a great deal of rework to the source code,
+** so I am giving myself the credit.  War3Evo is to be fast and clean for Team Fortress 2 only.
+**
+** The extensions for War3Source have been removed and is not needed.
+** You may still need other extensions, but you will not need anything that starts
+** with War3 as an extension.
+**
+** Unlike War3Source, War3evo's Shopmenu2 requires no War3 extensions to work,
+** because I have rewritten it to work without the extentions.
+** Since Ownz did not want to remove shopmenu2 extention,
+** I am therefore removing his name from authors because Ownz would
+** most definetly not approve of this mod.
+**
+** I believe I have rewritten this work almost entirely.
+** I have removed just about all code relates to War3Source to the players,
+** removed references to all other games other than Team Fortress 2,
+** but there is still alot more that needs to be done.
+**
+** War3Evo was meant for Team Fortress 2 only.  The War3Source stuff has been
+** optimized for Team Fortress 2.  It is meant to run super clean and highly
+** optimized.  The code has been rewritten for speed and less downtime of the
+** Team Fortress 2 server.  A lot of cool features is within War3Evo.
+*
+** Dagothur has added a great deal to the mod and has helped code new code
+** for a few of the jobs.
+*
+** Axin has helped us test the code from the very beginning and has been
+** with us all the way to the end.  He has helped us create new jobs for War3Evo.
+*/
+#define AUTHORS "El Diablo, Dagothur, and Axin"
 
 //used for some special things in interface
 #define WAR3MAIN
@@ -134,7 +76,7 @@ And that’s the art of the test!
 
 public Plugin:myinfo= 
 {
-	name="War3Source",
+	name="War3Evo",
 	author=AUTHORS,
 	description="Brings a Warcraft like gamemode to the Source engine.",
 	version=VERSION_NUM,
@@ -148,11 +90,11 @@ public APLRes:AskPluginLoad2Custom(Handle:myself,bool:late,String:error[],err_ma
 
 	new String:version[64];
 	Format(version,sizeof(version),"%s by %s",VERSION_NUM,AUTHORS);
-	//new String:Eversion[64];
-	//Format(Eversion,sizeof(Eversion),"%s by %s",eVERSION_NUM,eAUTHORS);
+	new String:Eversion[64];
+	Format(Eversion,sizeof(Eversion),"%s by %s",eVERSION_NUM,AUTHORS);
 	CreateConVar("war3_version",version,"War3Evo version.",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
-	//CreateConVar("a_war3_version",version,"War3Source version.",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
-	//CreateConVar("war3evo_version",Eversion,"War3Evolution version.",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+	CreateConVar("a_war3_version",version,"War3Source version.",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+	CreateConVar("war3evo_version",Eversion,"War3Evolution version.",FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 
 
 
