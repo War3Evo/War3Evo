@@ -67,7 +67,7 @@ You will probably not get any support from war3source.com.   To make this run, y
 
 The extensions included are for linux, you may need to search for windows extensions from www.sourcemod.net
 
-You will have to modifiy the War3Sourc_Engine_CommandHook.sp:
+You will have to modifiy the War3Source_Engine_CommandHook.sp:
 - line 185 and line 279 above OWNER put your own STEAMID in there, else you will not be able to chat in game as root.
 
 War3Evo_Addon_SteamTools_Allow_Job_Group_Checker.sp
