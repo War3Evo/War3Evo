@@ -29,7 +29,7 @@
 
 
 #define VERSION_NUM "1.2.4.1"
-#define eVERSION_NUM "1.0.2.9 (2/10/2013)"
+#define eVERSION_NUM "1.0.2.9" //(2/10/2013)
 //#define REVISION_NUM 12321 //increment every release
 #define REVISION_NUM 12415 //increment every release
 
