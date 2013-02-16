@@ -56,3 +56,45 @@ We are giving this as open source code and that maybe someone else can continue
 the War3Evo tradition.
 
 - El Diablo (16th Feb 2013)
+
+
+
+
+About the installation...
+
+You will need nearly the same extensions required for War3Source to run, except the War3Source exclusive extensions that start with War3.
+You will probably not get any support from war3source.com.   To make this run, your knowledge on how sourcemod runs and how war3source runs will help you alot on getting this to run.
+
+The extensions included are for linux, you may need to search for windows extensions from www.sourcemod.net
+
+You will have to modifiy the War3Sourc_Engine_CommandHook.sp:
+- line 185 and line 279 above OWNER put your own STEAMID in there, else you will not be able to chat in game as root.
+
+War3Evo_Addon_SteamTools_Allow_Job_Group_Checker.sp
+- modify line 35 with your steamgroup ID
+
+War3Evo_Addon_W3E_ClanTagBonusXP.sp
+- modify line 39 with your clan tag
+
+Do not compile these files for your server
+(If you want to use them.. then modify them to suit your needs before you include):
+These files are for examples or other uses that are not common for normal operation.
+
+War3evo_Addon_NewPlayerOnly_Join_Sound.sp
+War3evo_Addon_Weapon_Blocker.sp
+War3evo_Addon_Gifts.sp
+War3evo_Addon_GPS_RACE_map_location.sp
+War3evo_KDRsystem.sp
+War3evo_Gamemode_Singularity.sp
+War3evo_Engine_Statistics.sp
+War3evo_ShopItems2_MVM.sp
+War3evo_CustomJob_ROBOT_MotherBot.sp
+
+Include for MVM ONLY:
+
+War3Evo_CustomJob_Transmutation_Sorcerer.sp
+War3evo_ShopItems2_MVM.sp
+
+Do not include in MVM:
+
+War3evo_ShopItems2.sp
