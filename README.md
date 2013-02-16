@@ -13,7 +13,7 @@ with "War3" as an extension.
 
 Unlike War3Source, War3evo's Shopmenu2 requires no War3 extensions to work,
 because I have rewritten it to work without the extensions.
-Since Ownz did not want to remove shopmenu2 extention,
+Since Ownz did not want to remove shopmenu2 extension,
 I am therefore removing his name from authors because Ownz would
 most definetly not approve of this mod.
 
@@ -35,7 +35,13 @@ please create a new branch for it and remove all Team Fortress 2 code.
 The War3Source stuff has been optimized for Team Fortress 2.
 It is meant to run super clean and highly optimized.
 The code has been rewritten for speed and less downtime of the
-Team Fortress 2 server.  A lot of cool features is within War3Evo.
+Team Fortress 2 server.
+
+We recommand you use Dev-2.0 if you wish to use the latest of the coolest features
+that War3Evo has the offer.  Just beware that this version maybe unstable as we was still
+in the process of debugging it.
+
+War3Evo Master branch is the most Stable version of War3Evo.
 
 Dagothur has added a great deal to the mod and has helped code new code
 for a few of the jobs.
