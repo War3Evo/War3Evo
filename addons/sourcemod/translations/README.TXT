@@ -1,0 +1,1 @@
+If you ever have a problem with having no errors in any log files, but you seem to be unable to run War3Evo... You may have a translation problem.

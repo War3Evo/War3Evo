@@ -1,0 +1,15 @@
+"Phrases"
+{
+	"feet_ItemName"
+	{
+		"en"		"Cat's Feet"
+	}
+	"antiward_ItemDesc"
+	{
+		"en"		"Silence your footsteps while running"
+	}
+	"Your footsteps are silent."
+	{
+		"en"		"Your footsteps are silent."
+	}
+}
