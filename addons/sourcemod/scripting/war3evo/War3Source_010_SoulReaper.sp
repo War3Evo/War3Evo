@@ -22,15 +22,15 @@ new SKILL_JUDGE, SKILL_PRESENCE,SKILL_INHUMAN, ULT_EXECUTE;
 
 
 // Chance/Data Arrays
-new JudgementAmount[5]={0,10,20,30,40};
+new JudgementAmount[5]={0,10,15,20,25};
 new Float:JudgementCooldownTime=10.0;
-new Float:JudgementRange=200.0;
+new Float:JudgementRange=300.0;
 
 new Float:PresenseAmount[5]={0.0,0.5,1.0,1.5,2.0}; 
-new Float:PresenceRange=400.0;
+new Float:PresenceRange=300.0;
 
 new InhumanAmount[5]={0,5,10,15,20};
-new Float:InhumanRange=400.0;
+new Float:InhumanRange=300.0;
 
 new Float:ultRange=300.0;
 new Float:ultiDamageMulti[5]={0.0,0.4,0.6,0.8,1.0};
@@ -142,6 +142,8 @@ public OnUltimateCommand(client,race,bool:pressed)
 					new hpmissing=War3_GetMaxHP(target)-GetClientHealth(target);
 					
 					new dmg=RoundFloat(FloatMul(float(hpmissing),ultiDamageMulti[skill]));
+					if(dmg>45)
+						dmg=45;
 					
 					if(War3_DealDamage(target,dmg,client,_,"demonicexecution"))
 					{

@@ -42,7 +42,7 @@
 	}
 	"undead_skill_SuicideBomber_desc"
 	{
-		"en"		"You explode when you die, can be manually activated via +ultimate\nBlast radius: 200-333 \nBlast damage: 266 (CS) 300 (TF2) divided by distance"
+		"en"		"You explode when you die, can be manually activated via +ultimate\nBlast radius: 500-666 \nBlasting Damage of 100 divided by distance"
 	}
 
 	"Suicide bomber BUILDING damage: {amount} at distance {amount}"

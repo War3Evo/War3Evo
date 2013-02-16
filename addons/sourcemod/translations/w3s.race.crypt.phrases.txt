@@ -42,7 +42,7 @@
 	}
 	"crypt_skill_CarrionBeetles_desc"
 	{
-		"en"		"Chance of dealing extra damage"
+		"en"		"Up to 10% chance of dealing extra damage"
 	}
 
 	"crypt_skill_LocustSwarm"

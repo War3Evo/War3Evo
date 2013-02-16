@@ -2219,21 +2219,31 @@ stock bool:CvarEmpty(Handle:sourcemod_convar) {
 stock bool:W3HasImmunity(client,War3Immunity:immunityindex) {
 										 //Immunity_Ability
 	//add magic immunity etc later
-	if(immunityindex==Immunity_Abilities) {
-		return W3GetBuffHasTrue(client,bImmunityAbilities);
+	if(GetRandomFloat(0.0,1.0)<=0.10)
+	{
+		if(immunityindex==Immunity_Abilities) {
+			PrintToConsole(client,"Immunity to Abilities Activated.");
+			return W3GetBuffHasTrue(client,bImmunityAbilities);
+		}
+		if(immunityindex==Immunity_Items) {
+			PrintToConsole(client,"Immunity to Items Activated.");
+			return W3GetBuffHasTrue(client,bImmunityItems);
+		}
+		if(immunityindex==Immunity_Skills) {
+			PrintToConsole(client,"Immunity to Skills Activated.");
+			return W3GetBuffHasTrue(client,bImmunitySkills);
+		}
+		if(immunityindex==Immunity_Ultimates) {
+			PrintToConsole(client,"Immunity to Ultimates Activated.");
+			return W3GetBuffHasTrue(client,bImmunityUltimates);
+		}
 	}
-	if(immunityindex==Immunity_Items) {
-		return W3GetBuffHasTrue(client,bImmunityItems);
-	}
-	if(immunityindex==Immunity_Skills) {
-		return W3GetBuffHasTrue(client,bImmunitySkills);
-	}
-	if(immunityindex==Immunity_Ultimates) {
-		return W3GetBuffHasTrue(client,bImmunityUltimates);
-	}
-	if(immunityindex==Immunity_Wards) {
-		//return W3GetBuffHasTrue(client,bImmunityWards)||W3GetBuffHasTrue(client,bImmunitySkills);
-		return W3GetBuffHasTrue(client,bImmunityWards);
+	if(GetRandomFloat(0.0,1.0)<=0.25)
+	{
+		if(immunityindex==Immunity_Wards) {
+			PrintToConsole(client,"Immunity to Wards Activated.");
+			return W3GetBuffHasTrue(client,bImmunityWards);
+		}
 	}
 
 	return false;

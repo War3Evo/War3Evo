@@ -24,7 +24,7 @@
 	}
 	"chronos_skill_Rewind_desc"
 	{
-		"en"		"Chance to regain the damage you took"
+		"en"		"2-10% Chance per hit to regain the damage you took"
 	}
 
 	"chronos_skill_TimeLock"
@@ -33,7 +33,7 @@
 	}
 	"chronos_skill_TimeLock_desc"
 	{
-		"en"		"Chance to stun your enemy"
+		"en"		" 1-4% Chance per hit to stun your enemy"
 	}
 
 	"chronos_skill_Chronosphere"

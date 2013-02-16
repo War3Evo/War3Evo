@@ -61,9 +61,9 @@ new ActiveWeaponOffset;
 new Handle:ClawsAttackCvar;
 new Handle:MaskDeathCvar;
 new bool:bFrosted[65]; // don't frost before unfrosted
-new Handle:OrbFrostCvar;
+new OrbFrostCvar=0.9;
 new Handle:TomeCvar;
-new Handle:SockCvar;
+new SockCvar=0.5;
 new Handle:RegenHPTFCvar;
 
 new String:buyTombSound[256]; //="war3source/tomes.mp3";
@@ -105,9 +105,9 @@ public OnPluginStart()
 	BootsSpeedCvar=CreateConVar("war3_shop_boots_speed","1.2","Boots speed, 1.2 is default");
 	ClawsAttackCvar=CreateConVar("war3_shop_claws_damage","10","Claws of attack additional damage per second");
 	MaskDeathCvar=CreateConVar("war3_shop_mask_percent","0.50","Percent of damage rewarded for Mask of Death, from 0.0 - 1.0");
-	OrbFrostCvar=CreateConVar("war3_shop_orb_speed","0.6","Orb of Frost speed, 1.0 is normal speed, 0.6 default for orb.");
+	//OrbFrostCvar=CreateConVar("war3_shop_orb_speed","0.6","Orb of Frost speed, 1.0 is normal speed, 0.6 default for orb.");
 	TomeCvar=CreateConVar("war3_shop_tome_xp","10","Experience awarded for Tome of Experience.");
-	SockCvar=CreateConVar("war3_shop_sock_gravity","0.4","Gravity used for Sock of Feather, 0.4 is default for sock, 1.0 is normal gravity");
+	//SockCvar=CreateConVar("war3_shop_sock_gravity","0.4","Gravity used for Sock of Feather, 0.4 is default for sock, 1.0 is normal gravity");
 	RegenHPTFCvar=CreateConVar("war3_shop_ring_hp_tf","4","How much HP is regenerated for TF.");
 
 	//RegConsoleCmd("frostme",cmdfrostme);
@@ -287,8 +287,7 @@ public OnItemPurchase(client,item)
 	}
 	if(item==shopItem[SOCK])
 	{
-		War3_SetBuffItem(client,fLowGravityItem,shopItem[SOCK],GetConVarFloat(SockCvar));
-		//War3_SetMinGravity(client,GetConVarFloat(SockCvar),shopItem[10]);
+		War3_SetBuffItem(client,fLowGravityItem,shopItem[SOCK],SockCvar);
 		if(IsPlayerAlive(client))
 			War3_ChatMessage(client,"%T","You pull on your socks",client);
 	}
@@ -433,10 +432,10 @@ public OnItemLost(client,item){ //deactivate passives , client may have disconne
 	{
 		War3_SetBuffItem(client,fLowGravityItem,shopItem[SOCK],1.0);
 	}
-	else if(item==shopItem[BOOTS]){
+	if(item==shopItem[BOOTS]){
 		War3_SetBuffItem(client,fMaxSpeed,shopItem[BOOTS],1.0);
 	}
-	else if(item==shopItem[CLOAK])
+	if(item==shopItem[CLOAK])
 	{
 		War3_SetBuffItem(client,fInvisibilityItem,shopItem[CLOAK],1.0);
 	}
@@ -504,6 +503,7 @@ public OnWar3EventDeath(client){
 		{
 			War3_SetOwnsItem(client,shopItem[CLOAK],false); // cloak
 			War3_SetBuffItem(client,fInvisibilityItem,shopItem[CLOAK],1.0);
+			War3_ChatMessage("Your cloak vanishes, you no longer own a cloak.")
 		}
 		if(War3_GetOwnsItem(client,shopItem[MASK]))
 		{
@@ -512,6 +512,7 @@ public OnWar3EventDeath(client){
 		if(War3_GetOwnsItem(client,shopItem[NECKLACE])) // immunity
 		{
 			War3_SetOwnsItem(client,shopItem[NECKLACE],false);
+			War3_ChatMessage("You lost your necklace.")
 		}
 		if(War3_GetOwnsItem(client,shopItem[FROST])) // orb of frost
 		{
@@ -520,7 +521,7 @@ public OnWar3EventDeath(client){
 		if(War3_GetOwnsItem(client,shopItem[RING])) // regen
 		{
 			War3_SetOwnsItem(client,shopItem[RING],false);
-			
+			War3_ChatMessage("Your ring breaks, you no longer own a ring.")
 		}
 		if(War3_GetOwnsItem(client,shopItem[OIL]))
 		{
@@ -668,8 +669,7 @@ public OnWar3EventSpawn(client){
 	}
 	if(War3_GetOwnsItem(client,shopItem[SOCK]))
 	{
-		War3_SetBuffItem(client,fLowGravityItem,shopItem[SOCK],GetConVarFloat(SockCvar));
-		//War3_SetMinGravity(client,GetConVarFloat(SockCvar),shopItem[10]);
+		War3_SetBuffItem(client,fLowGravityItem,shopItem[SOCK],SockCvar);
 		War3_ChatMessage(client,"%T","You pull on your socks",client);
 	}
 	bDidDie[client]=false;
@@ -703,21 +703,10 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 		{
 			if(War3_GetOwnsItem(attacker,shopItem[CLAW])&&ValidPlayer(victim,true,true)&&W3Chance(W3ChanceModifier(attacker)) && !W3HasImmunity(victim, Immunity_Items)) // claws of attack
 			{
-				new Float:dmg=GetConVarFloat(ClawsAttackCvar);
-				if(dmg<0.0) 	dmg=0.0;
-				
-				//SetEntityHealth(victim,new_hp);
-				//DP("%f",W3ChanceModifier(attacker));
 				if(W3Chance(W3ChanceModifier(attacker))){
-				dmg*=W3ChanceModifier(attacker);
-				}
-				else{
-					dmg*=0.50;
-				}
-			//	DP("%f",dmg);
-				if(War3_DealDamage(victim,RoundFloat(dmg),attacker,_,"claws",W3DMGORIGIN_ITEM,W3DMGTYPE_PHYSICAL,_,_,true)){ //real damage with indicator
-				
-					PrintToConsole(attacker,"%T","+{amount} Claws Damage",attacker,War3_GetWar3DamageDealt());
+					if(War3_DealDamage(victim,1,attacker,_,"claws",W3DMGORIGIN_ITEM,W3DMGTYPE_PHYSICAL,_,_,true)){ //real damage with indicator
+						//PrintToConsole(attacker,"%T","+{amount} Claws Damage",attacker,War3_GetWar3DamageDealt());
+					}
 				}
 			}
 				
@@ -770,7 +759,7 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 				if(GetRandomInt(1, 100) <= chance) */
 				if(W3Chance(W3ChanceModifier(attacker)) && !W3HasImmunity(victim, Immunity_Items))
 				{
-					new Float:speed_frost=GetConVarFloat(OrbFrostCvar);
+					new Float:speed_frost=OrbFrostCvar;
 					if(speed_frost<=0.0) speed_frost=0.01; // 0.0 for override removes
 					if(speed_frost>1.0)	speed_frost=1.0;
 					War3_SetBuffItem(victim,fSlow,shopItem[FROST],speed_frost);

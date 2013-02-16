@@ -35,7 +35,7 @@ new bool:Can_Player_Revive[MAXPLAYERSCUSTOM+1];
  
 //skill 2
 new Float:BanishChance[MAXPLAYERSCUSTOM];
-new Float:BanishChancesArr[5]={0.00,0.05,0.10,0.15,0.20};
+new Float:BanishChancesArr[5]={0.00,0.02,0.05,0.07,0.10};
 
 //for TF only:
 new Float:CreditStealChanceTF[]={0.00,0.02,0.04,0.06,0.08};   //what are the chances of stealing
@@ -46,7 +46,7 @@ new Float:CreditStealChanceTF[]={0.00,0.02,0.04,0.06,0.08};   //what are the cha
 new Float:ultCooldownCvar=20.0;
 new Handle:hrevivalDelayCvar;
 
-new Float:UltimateMaxDistance[]={0.0,500.0,500.0,500.0,500.0}; //max distance u can target your ultimate
+new Float:UltimateMaxDistance[]={0.0,300.0,400.0,500.0,600.0}; //max distance u can target your ultimate
 new UltimateDamageDuration[]={0,4,6,8,10}; ///how many times damage is taken (like pyro's fire)
 
 new BurnsRemaining[MAXPLAYERSCUSTOM]; //burn count for victims
@@ -90,9 +90,9 @@ public OnWar3LoadRaceOrItemOrdered(num)
 	{
 		thisRaceID=War3_CreateNewRaceT("mage");
 		SKILL_REVIVE=War3_AddRaceSkillT(thisRaceID,"Phoenix",false,4,"20-50%","2-8%");
-		SKILL_BANISH=War3_AddRaceSkillT(thisRaceID,"Banish",false,4,"20%","0.2");
+		SKILL_BANISH=War3_AddRaceSkillT(thisRaceID,"Banish",false,4,"10%","0.2");
 		SKILL_MONEYSTEAL=War3_AddRaceSkillT(thisRaceID,"SiphonMana",false,4,"8%","gold","damage");
-		ULT_FLAMESTRIKE=War3_AddRaceSkillT(thisRaceID,"FlameStrike",true,4,"10", "4-10", "500");
+		ULT_FLAMESTRIKE=War3_AddRaceSkillT(thisRaceID,"FlameStrike",true,4,"10", "4-10", "300/400/500/600");
 		War3_CreateRaceEnd(thisRaceID);
 	}
 	

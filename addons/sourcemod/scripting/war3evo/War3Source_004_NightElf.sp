@@ -24,11 +24,11 @@ new SKILL_EVADE, SKILL_THORNS, SKILL_TRUESHOT, ULT_ENTANGLE;
 
 // Chance/Data Arrays
 //new Float:EvadeChance[5]={0.0,0.05,0.07,0.13,0.15};
-new Float:EvadeChance[5]={0.0,0.04,0.06,0.08,0.10};
-new Float:ThornsReturnDamage[5]={0.0,0.05,0.10,0.15,0.20};
-new Float:TrueshotDamagePercent[5]={0.0,0.05,0.10,0.15,0.20};
-new Float:EntangleDistance=600.0;
-new Float:EntangleDuration[5]={0.0,1.25,1.5,1.75,2.0};
+new Float:EvadeChance[5]={0.0,0.02,0.03,0.04,0.05};
+new Float:ThornsReturnDamage[5]={0.0,0.01,0.2,0.3,0.4};
+new Float:TrueshotDamagePercent[5]={0.0,0.01,0.2,0.3,0.4};
+new Float:EntangleDistance=300.0; //600.0
+new Float:EntangleDuration[5]={0.0,0.50,0.75,1.0,1.25};  //nerfed
 
 new String:entangleSound[]="war3source/entanglingrootsdecay1.mp3";
 //new String:entangleSound[256]; //="war3source/entanglingrootsdecay1.mp3";

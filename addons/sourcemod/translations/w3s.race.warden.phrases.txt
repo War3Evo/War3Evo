@@ -24,7 +24,7 @@
 	}
 	"warden_skill_FanOfKnivesTF_desc"
 	{
-		"en"		"A chance of damaging people around you when attacked"
+		"en"		"Up to a 10% chance of damaging people around you when attacked"
 	}
 
 	"warden_skill_Immunity"
@@ -33,7 +33,7 @@
 	}
 	"warden_skill_Immunity_desc"
 	{
-		"en"		"Immunity from ultimates"
+		"en"		"Up to 20% chance to have immunity from ultimates"
 	}
 
 	"warden_skill_ShadowStrike"

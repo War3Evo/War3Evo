@@ -16,12 +16,12 @@ public W3ONLY(){} //unload this?
 new thisRaceID;
 
 //skill 1
-new Float:FanOfKnivesTFChanceArr[]={0.0,0.05,0.1,0.15,0.2};
-new const KnivesTFDamage = 50; 
-new const Float:KnivesTFRadius = 300.0;
+new Float:FanOfKnivesTFChanceArr[]={0.0,0.02,0.05,0.07,0.1};
+new const KnivesTFDamage = 10;
+new const Float:KnivesTFRadius = 400.0;
  
 //skill 2
-new Float:BlinkChanceArr[]={0.00,0.25,0.5,0.75,1.00};
+new Float:BlinkChanceArr[]={0.00,0.05,0.10,0.15,0.20};
 
 //skill 3
 new const ShadowStrikeInitialDamage=20;
@@ -122,6 +122,9 @@ public OnUltimateCommand(client,race,bool:pressed)
 					new maxhp=War3_GetMaxHP(client);
 				
 					new heal=RoundToCeil(float(maxhp)*VengenceTFHealHPPercent[ult_level]);
+					// No more than 100 points minus skills/abilities
+					if(heal>50)
+						heal=50;
 					War3_HealToBuffHP(client,heal);
 					W3FlashScreen(client,{0,255,0,20},0.5,_,FFADE_OUT);
 					

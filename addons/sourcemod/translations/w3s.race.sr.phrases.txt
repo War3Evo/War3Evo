@@ -15,7 +15,7 @@
 	}
 	"sr_skill_Judgement_desc"
 	{
-		"en"		"[+ability] Heals teammates around you, damages enemies around you"
+		"en"		"[+ability] Heals teammates around you, damages enemies around you\nup to 25 points"
 	}
 
 	"sr_skill_WitheringPresence"
@@ -33,7 +33,7 @@
 	}
 	"sr_skill_InhumanNature_desc"
 	{
-		"en"		"You heal when anyone around you dies"
+		"en"		"You heal up to 20 points when anyone around you dies"
 	}
 
 	"sr_skill_DemonicExecution"
@@ -42,7 +42,7 @@
 	}
 	"sr_skill_DemonicExecution_desc"
 	{
-		"en"		"Deals a large amount of damage based on how much of the enemy's health is missing"
+		"en"		"Deals up to 45 damage based on how much of the enemy's health is missing"
 	}
 
 	"+/- {amount} HP"

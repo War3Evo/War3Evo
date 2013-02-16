@@ -19,15 +19,15 @@ new thisRaceID;
 new SKILL_IMPALE,SKILL_SPIKE,SKILL_BEETLES,ULT_LOCUST;
 
 //skill 1
-new Float:ImpaleChanceArr[]={0.0,0.05,0.09,0.12,0.15}; 
+new Float:ImpaleChanceArr[]={0.0,0.02,0.05,0.07,0.10};
 
 //skill 2
-new Float:SpikeDamageRecieve[]={1.0,0.95,0.9,0.85,0.80}; //TEST
-new Float:SpikeReturnDmgArr[]={0.0,0.05,0.10,0.15,0.2};
+new Float:SpikeDamageRecieve[]={1.0,0.98,0.96,0.94,0.92}; //TEST
+new Float:SpikeReturnDmgArr[]={0.0,0.02,0.05,0.07,0.10};
 
 //skill 3
-new const BeetleDamage=10;
-new Float:BeetleChanceArr[]={0.0,0.05,0.1,0.15,0.20};
+new const BeetleDamage=5;
+new Float:BeetleChanceArr[]={0.0,0.02,0.05,0.07,0.10};
 
 //ultimate
 new Float:ultCooldownCvar=20.0;
@@ -118,7 +118,8 @@ public OnUltimateCommand(client,race,bool:pressed)
 					new damage=RoundFloat(float(War3_GetMaxHP(bestTarget))*LocustDamagePercent[ult_level]);
 					if(damage>0)
 					{
-						
+						if(damage>75)
+							damage=75;
 						if(War3_DealDamage(bestTarget,damage,client,DMG_BULLET,"locust")) //default magic
 						{
 							W3PrintSkillDmgHintConsole(bestTarget,client,War3_GetWar3DamageDealt(),ULT_LOCUST);
@@ -166,7 +167,7 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 				if(!W3HasImmunity(attacker,Immunity_Skills))
 				{
 					new returndmg=RoundFloat(FloatMul(SpikeReturnDmgArr[skill_level],damage));
-					returndmg=returndmg<40?returndmg:40;
+					returndmg=returndmg<20?returndmg:20;
 					if(War3_DealDamage(attacker,returndmg,victim,_,"spiked_carapace",W3DMGORIGIN_SKILL,W3DMGTYPE_PHYSICAL))
 						{
 							W3PrintSkillDmgConsole(attacker,victim,War3_GetWar3DamageDealt(),SKILL_SPIKE);
@@ -185,7 +186,7 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 				}
 				else
 				{
-					War3_ShakeScreen(attacker,2.0,50.0,40.0);
+					War3_ShakeScreen(attacker,1.0,50.0,40.0);
 					PrintHintText(victim,"%T","Impaled enemy",victim);
 					PrintHintText(attacker,"%T","You got impaled by enemy",attacker);
 					W3FlashScreen(attacker,{0,0,128,80});
@@ -220,7 +221,7 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage)
 				}
 				else
 				{
-					War3_ShakeScreen(victim,2.0,50.0,40.0);
+					War3_ShakeScreen(victim,1.0,50.0,40.0);
 					PrintHintText(victim,"%T","You got impaled by enemy",victim);
 					PrintHintText(attacker,"%T","Impaled enemy",attacker);
 					W3FlashScreen(victim,{0,0,128,80});

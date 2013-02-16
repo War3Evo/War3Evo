@@ -27,15 +27,15 @@ new Float:leapPower[5]={0.0,350.0,400.0,450.0,500.0};
 new Float:leapPowerTF[5]={0.0,500.0,550.0,600.0,650.0};
 
 //rewind
-new Float:RewindChance[5]={0.0,0.1,0.15,0.2,0.25}; 
+new Float:RewindChance[5]={0.0,0.02,0.04,0.06,0.10};
 new RewindHPAmount[MAXPLAYERSCUSTOM];
 
 //bash
-new Float:TimeLockChance[5]={0.0,0.1,0.15,0.2,0.25};
+new Float:TimeLockChance[5]={0.0,0.01,0.02,0.03,0.04};
 
 //sphere
 new Float:ultRange=200.0;
-new Handle:ultCooldownCvar;
+//new Handle:ultCooldownCvar;
 new Float:SphereTime[5]={0.0,3.0,3.5,4.0,4.5};
 
 new String:leapsnd[256]; //="war3source/chronos/timeleap.mp3";
@@ -65,7 +65,7 @@ public Plugin:myinfo =
 
 public OnPluginStart()
 {
-	ultCooldownCvar=CreateConVar("war3_chronos_ult_cooldown","20");
+	//ultCooldownCvar=CreateConVar("war3_chronos_ult_cooldown","20");
 	
 	m_vecVelocity_0 = FindSendPropOffs("CBasePlayer","m_vecVelocity[0]");
 	m_vecVelocity_1 = FindSendPropOffs("CBasePlayer","m_vecVelocity[1]");
@@ -280,7 +280,7 @@ public OnUltimateCommand(client,race,bool:pressed)
 				
 				TE_SetupGlowSprite(endpos,glowsprite,life,3.57,255);
 				TE_SendToAll();
-				War3_CooldownMGR(client,GetConVarFloat(ultCooldownCvar),thisRaceID,ULT_SPHERE,_,_);
+				War3_CooldownMGR(client,20.0,thisRaceID,ULT_SPHERE,_,_);
 			}
 		}
 		else
@@ -377,8 +377,10 @@ IsInOwnSphere(client){
 	}
 	return false;
 }
-public OnWar3EventPostHurt(victim,attacker,dmgamount)
+//public OnWar3EventPostHurt(victim,attacker,dmgamount)
+public OnW3TakeDmgAll(victim,attacker,Float:damage)
 {
+	new dmgamount=RoundFloat(damage);
 	if(ValidPlayer(victim,true)&&ValidPlayer(attacker,true))
 	{	
 		
@@ -395,7 +397,7 @@ public OnWar3EventPostHurt(victim,attacker,dmgamount)
 		
 		new race_attacker=War3_GetRace(attacker);
 		skilllevel=War3_GetSkillLevel(attacker,thisRaceID,SKILL_TIMELOCK);
-		if(race_attacker==thisRaceID && skilllevel > 0 && victim!=attacker)
+		if(!W3IsOwnerSentry(attacker)&&race_attacker==thisRaceID && skilllevel > 0 && victim!=attacker)
 		{
 			if(War3_Chance(TimeLockChance[skilllevel])&& !W3HasImmunity(victim,Immunity_Skills) && !Stunned(victim)&&!Hexed(attacker))
 			{

@@ -441,8 +441,8 @@ public OnWar3EventDeath(victim,attacker){
 			GiveKillXPCreds(attacker,victim,is_hs,is_melee);
 		}
 	}
-	ShowSkillsMenuToClientOnSpawn[victim]=true;
-	
+	W3SetVar(EventArg1,10666);
+	W3DoLevelCheck(victim);
 }
 public War3Source_RoundOverEvent(Handle:event,const String:name[],bool:dontBroadcast)
 {

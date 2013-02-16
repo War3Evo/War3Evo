@@ -21,15 +21,15 @@ public W3ONLY(){} //unload this?
 
 //Skills Settings
  
-new Float:HPPercentHealPerKill[5] = { 0.0,0.05,  0.10,  0.15,  0.20 }; //SKILL_INFEST settings
+new Float:HPPercentHealPerKill[5] = { 0.0,0.04,  0.06,  0.08,  0.10 }; //SKILL_INFEST settings
 //Skill 1_1 really has 5 settings, so it's not a mistake
 new HPIncrease[5]       = { 0, 10, 20, 30, 40 };     //Increases Maximum health
 
 new Float:feastPercent[5] = { 0.0, 0.04,  0.06,  0.08,  0.10 };   //Feast ratio (leech based on current victim hp
 
 
-new Float:RageAttackSpeed[5] = {1.0, 1.15,  1.25,  1.3334,  1.4001 };   //Rage Attack Rate
-new Float:RageDuration[5] = {0.0, 3.0,  4.0,   5.0,  6.0 };   //Rage duration
+new Float:RageAttackSpeed[5] = {1.0, 1.04,  1.06,  1.08,  1.10 };   //Rage Attack Rate
+new Float:RageDuration[5] = {0.0, 4.0,  6.0,   8.0,  10.0 };   //Rage duration
 
 new bool:bDucking[MAXPLAYERSCUSTOM];
 //End of skill Settings
@@ -74,10 +74,10 @@ public OnWar3LoadRaceOrItemOrdered(num)
 		thisRaceID=War3_CreateNewRaceT("naix");
 
 
-		SKILL_INFEST = War3_AddRaceSkillT(thisRaceID, "Infest", false,4,"5-20%");
+		SKILL_INFEST = War3_AddRaceSkillT(thisRaceID, "Infest", false,4,"4-10%");
 		SKILL_BLOODBATH = War3_AddRaceSkillT(thisRaceID, "BloodBath", false,4,"10-40");
 		SKILL_FEAST = War3_AddRaceSkillT(thisRaceID, "Feast", false,4,"4-10%");
-		ULT_RAGE = War3_AddRaceSkillT(thisRaceID, "Rage", true,4,"15-40%","3-6");
+		ULT_RAGE = War3_AddRaceSkillT(thisRaceID, "Rage", true,4,"4-10%","4-10");
 		
 		War3_CreateRaceEnd(thisRaceID);
 	}
@@ -85,23 +85,25 @@ public OnWar3LoadRaceOrItemOrdered(num)
 
 stock bool:IsOurRace(client) {
 
-  return War3_GetRace(client)==thisRaceID;
+	return War3_GetRace(client)==thisRaceID;
 }
 
 
 public OnMapStart() { //some precaches
-  //PrecacheSound("npc/zombie/zombie_pain2.wav");
+	//PrecacheSound("npc/zombie/zombie_pain2.wav");
 	War3_PrecacheSound(skill1snd);
 	War3_PrecacheSound(ultsnd);
 }
 
-public OnWar3EventPostHurt(victim,attacker,amount){
+public OnWar3EventPostHurt(victim,attacker){
 	if(ValidPlayer(victim)&&W3Chance(W3ChanceModifier(attacker))&&ValidPlayer(attacker)&&IsOurRace(attacker)&&victim!=attacker){
 		new level = War3_GetSkillLevel(attacker, thisRaceID, SKILL_FEAST);
 		if(level>0&&!Hexed(attacker,false)&&W3Chance(W3ChanceModifier(attacker))){
 			if(!W3HasImmunity(victim,Immunity_Skills)){	
-				new targetHp = GetClientHealth(victim)+amount;
+				new targetHp = GetClientHealth(victim);
 				new restore = RoundToNearest( float(targetHp) * feastPercent[level] );
+				if(restore>25)
+					restore=25;
 
 				War3HealToHP(attacker,restore,War3_GetMaxHP(attacker)+HPIncrease[War3_GetSkillLevel(attacker,thisRaceID,SKILL_BLOODBATH)]);
 			

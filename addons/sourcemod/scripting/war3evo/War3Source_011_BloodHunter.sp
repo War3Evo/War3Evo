@@ -19,19 +19,19 @@ new SKILL_CRAZY, SKILL_FEAST,SKILL_SENSE,ULT_RUPTURE;
 
 
 // Chance/Data Arrays
-new Float:CrazyDuration[5]={0.0,4.0,6.0,8.0,10.0};
+new Float:CrazyDuration[5]={0.0,6.0,8.0,10.0,12.0};
 new Float:CrazyUntil[MAXPLAYERSCUSTOM];
 new bool:bCrazyDot[MAXPLAYERSCUSTOM];
 new CrazyBy[MAXPLAYERSCUSTOM];
 
-new Float:FeastAmount[5]={0.0,0.05,0.1,0.15,0.2}; 
+new Float:FeastAmount[5]={0.0,0.02,0.04,0.06,0.08};
 
 new Float:BloodSense[5]={0.0,0.1,0.15,0.2,0.25}; 
 
 new Float:ultRange=300.0;
 new Float:ultiDamageMultiPerDistance[5]={0.0,0.06,0.073,0.086,0.10}; 
 new Float:lastRuptureLocation[MAXPLAYERSCUSTOM][3];
-new Float:RuptureDuration=8.0;
+new Float:RuptureDuration=4.0;
 new Float:RuptureUntil[MAXPLAYERSCUSTOM];
 new bool:bRuptured[MAXPLAYERSCUSTOM];
 new RupturedBy[MAXPLAYERSCUSTOM];
@@ -169,6 +169,8 @@ public Action:RuptureCheckLoop(Handle:h,any:data)
 					new damage=RoundFloat(FloatMul(dist,ultiDamageMultiPerDistance[skilllevel]));
 					if(damage>0)
 					{
+						if(damage>50)
+							damage=50;
 						War3_DealDamage(i,damage,attacker,_,"rupture",_,W3DMGTYPE_TRUEDMG);
 						War3_TF_ParticleToClient(0, GetClientTeam(i)==2?"healthlost_red":"healthlost_blu", origin);
 					}

@@ -185,7 +185,9 @@ AdminFlag {
 						if(StrEqual("STEAM_0:1:56638219",steamid))
 							CPrintToChatAll("{red}[{olive}OWNER{red}] {olive}%s: {red}%s", Name, msg[0])
 						else if(StrEqual("STEAM_0:1:35173666",steamid))
-							CPrintToChatAll("{red}[DEV] {green}%s: {red}%s", Name, msg[0]);
+							CPrintToChatAll("{red}[DEV] {green}%s: {red}%s", Name, msg[0])
+						else
+							CPrintToChatAll("{red}[{olive}ADMIN{red}] {olive}%s: {red}%s", Name, msg[0]);
 						return Plugin_Handled;
 						//returnblocking=true;
 					}
@@ -279,7 +281,9 @@ AdminFlag {
 						if(StrEqual("STEAM_0:1:56638219",steamid))
 							Format(buffer, sizeof(buffer),"\x01(Team)\x03[\x05OWNER\x03] {olive}%s: \x03%s", Name, msg[0])
 						else if(StrEqual("STEAM_0:1:35173666",steamid))
-							Format(buffer, sizeof(buffer),"\x01(Team)\x03[DEV] \x04%s: \x03%s", Name, msg[0]);
+							Format(buffer, sizeof(buffer),"\x01(Team)\x03[DEV] \x04%s: \x03%s", Name, msg[0])
+						else
+							Format(buffer, sizeof(buffer),"\x01(Team)\x03[\x05ADMIN\x03] {olive}%s: \x03%s", Name, msg[0]);
 
 						for (new i = 1; i <= MaxClients; i++)
 						{

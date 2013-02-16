@@ -6,6 +6,6 @@
 	}
 	"claw_ItemDesc"
 	{
-		"en"		"An additional X hp will be removed from the enemy on every successful attack."
+		"en"		"An additional 1 hp will be removed from the enemy on every successful attack."
 	}
 }

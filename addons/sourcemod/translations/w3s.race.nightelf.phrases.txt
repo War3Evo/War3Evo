@@ -15,7 +15,7 @@
 	}
 	"nightelf_skill_Evasion_desc"
 	{
-		"en"		"5/10/15/20 percent chance of evading a shot"
+		"en"		"2/3/4/5 percent chance of evading a shot"
 	}
 
 	"nightelf_skill_ThornsAura"
@@ -24,7 +24,7 @@
 	}
 	"nightelf_skill_ThornsAura_desc"
 	{
-		"en"		"You deal 5/10/15/20 percent of damage recieved to your attacker"
+		"en"		"You deal 1/2/3/4 percent of damage recieved to your attacker"
 	}
 
 	"nightelf_skill_TrueshotAura"
@@ -33,7 +33,7 @@
 	}
 	"nightelf_skill_TrueshotAura_desc"
 	{
-		"en"		"Your attacks deal 5/10/15/20 percent more damage"
+		"en"		"Your attacks deal 1/2/3/4 percent more damage"
 	}
 
 	"nightelf_skill_EntanglingRoots"
@@ -42,6 +42,6 @@
 	}
 	"nightelf_skill_EntanglingRoots_desc"
 	{
-		"en"		"Bind enemies to the ground, rendering them immobile for 1.25/1.5/1.75/2 seconds"
+		"en"		"Bind enemies to the ground, rendering them immobile for 0.50/0.75/1.0/1.25 seconds"
 	}
 }

@@ -23,21 +23,21 @@ new SKILL_TIDE, SKILL_CONDUIT, SKILL_STATIC, ULT_OVERLOAD;
 
 
 // Chance/Data Arrays
-new ElectricTideMaxDamage[5]={0,40,60,100,140};
+new ElectricTideMaxDamage[5]={0,10,15,20,25};
 new Float:ElectricTideRadius=375.0;
-new Float:AbilityCooldownTime=15.0;
+new Float:AbilityCooldownTime=10.0;
 
-new ConduitPerHit[5]={0,1,1,2,2};
-new ConduitDuration=10;
-new ConduitCooldown=15;
-new ConduitMaxHeal[5]={0,4,6,8,10};
+new ConduitPerHit[5]={0,1,2,3,4};
+new ConduitDuration=3;
+new ConduitCooldown=20;
+new ConduitMaxHeal[5]={0,1,2,3,5};
 
 new Float:StaticHealPercent[5]={0.0,0.15,0.30,0.45,0.60};
 new StaticHealRadius=800;
 
 new OverloadDuration=60; //HIT TIMES, DURATION DEPENDS ON TIMER
 new OverloadRadius=350;
-new OverloadDamagePerHit[5]={0,3,6,8,10};
+new OverloadDamagePerHit[5]={0,1,2,3,5};
 new Float:OverloadDamageIncrease[5]={1.0,1.01,1.015,1.020,1.025};
 ////
 
@@ -428,6 +428,8 @@ public PlayerHurtEvent(Handle:event,const String:name[],bool:dontBroadcast)
 			if(skill>0){
 				if(!Hexed(victim,false)&&GetRandomFloat(0.0,1.0)<0.5){
 					new heal=RoundFloat(StaticHealPercent[skill]*dmg);
+					if(heal>25)
+						heal=25;
 					new team=GetClientTeam(victim);
 					
 					new Float:pos[3];

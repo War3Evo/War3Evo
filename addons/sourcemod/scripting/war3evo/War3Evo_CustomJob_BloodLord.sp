@@ -1,4 +1,4 @@
-#define PLUGIN_VERSION "0.0.0.6 (2/4/2013) 5:20AM EST"
+#define PLUGIN_VERSION "0.0.0.7 (2/9/2013) 9:20AM EST"
 /**
 * File: War3Source_BloodMage.sp
 * Description: The Blood Mage race for War3Source.
@@ -24,8 +24,8 @@ new thisRaceID;
 new SKILL_REVIVE, SKILL_BANISH, SKILL_MONEYSTEAL,ULT_FLAMESTRIKE,SKILL_IMPROVEDBM,SKILL_JUDGE;
 
 new JudgementAmount[5]={0,10,20,30,40};
-new Float:JudgementCooldownTime=5.0;
-new JudgementRange=200;
+new Float:JudgementCooldownTime=10.0;
+new JudgementRange=100;
 new String:judgesnd[]="war3source/sr/judgement.mp3";
 
 //skill 1
@@ -33,8 +33,8 @@ new Float:MaxRevivalChance[MAXPLAYERSCUSTOM]; //chance for first attempt at revi
 new Float:CurrentRevivalChance[MAXPLAYERSCUSTOM]; //decays by half per revival attempt, will stay at minimum of 10% after decays
 new reviveCount[MAXPLAYERSCUSTOM+1];
 new Float:RevivalChancesArr[]={0.00,0.2,0.3,0.4,0.5};
-new Float:flameStrikeRadius[5]={0.0,75.0,100.0,125.0,150.0}; //250.0,290.0,310.0,333.0 
-new Float:flameStrikeRadiusDamage[5]={0.0,12.5,15.0,22.5,25.0}; //133.0,175.0,250.0,300.0
+new Float:flameStrikeRadius[5]={0.0,20.0,30.0,50.0,60.0}; //250.0,290.0,310.0,333.0
+new Float:flameStrikeRadiusDamage[5]={0.0,6.0,8.0,10.0,12.0}; //133.0,175.0,250.0,300.0
 
 new RevivedBy[MAXPLAYERSCUSTOM];
 new bool:bRevived[MAXPLAYERSCUSTOM];
@@ -56,7 +56,7 @@ new improvedBMMultiplier[]={0,1,2,3,4};
 new Float:ultCooldownCvar=20.0;
 new Handle:hrevivalDelayCvar;
 
-new Float:UltimateMaxDistance[]={0.0,750.0,750.0,750.0,750.0}; //max distance u can target your ultimate
+new Float:UltimateMaxDistance[]={0.0,200.0,300.0,400.0,500.0}; //max distance u can target your ultimate
 new UltimateDamageDuration[]={0,4,6,8,10}; ///how many times damage is taken (like pyro's fire)
 
 new BurnsRemaining[MAXPLAYERSCUSTOM]; //burn count for victims
@@ -107,7 +107,7 @@ public OnWar3LoadRaceOrItemOrdered(num)
 		SKILL_MONEYSTEAL=War3_AddRaceSkillT(thisRaceID,"SiphonMana",false,4,"8%","gold","damage");
 		SKILL_IMPROVEDBM=War3_AddRaceSkillT(thisRaceID,"ImprovedBM",false,4);
 		SKILL_JUDGE=War3_AddRaceSkillT(thisRaceID,"BloodSacrifice",false,4);
-		ULT_FLAMESTRIKE=War3_AddRaceSkillT(thisRaceID,"FlameStrike",true,4,"10", "4-10", "500");
+		ULT_FLAMESTRIKE=War3_AddRaceSkillT(thisRaceID,"FlameStrike",true,4,"10", "4-10", "200/300/400/500");
 		War3_CreateRaceEnd(thisRaceID);
 	}
 	
@@ -198,9 +198,9 @@ public OnUltimateCommand(client,race,bool:pressed)
 						new Float:effect_vec[3];
 						GetClientAbsOrigin(target,effect_vec);
 						new leftOver;
-						if (reviveCount[client] > 20) {
-							leftOver = reviveCount[client] - 20;
-							reviveCount[client] = 20;
+						if (reviveCount[client] > 5) {
+							leftOver = reviveCount[client] - 5;
+							reviveCount[client] = 5;
 						} 
 						else 
 						{
@@ -211,10 +211,10 @@ public OnUltimateCommand(client,race,bool:pressed)
 						PrintHintText(client,"Flame Strike! %i blood consumed.",reviveCount[client]);
 						War3_ChatMessage(client,"(Flame Strike) Activated on %s! %i blood consumed!",saviorName,reviveCount[client]);
 
-						new Float:thisRadius = flameStrikeRadiusDamage[ult_level] * reviveCount[client];
-						if (thisRadius > 500)
-							thisRadius=500.0;
-						War3_SuicideBomber(client, effect_vec, thisRadius, -1, flameStrikeRadius[ult_level] * reviveCount[client]);
+						new Float:thisDamage = flameStrikeRadiusDamage[ult_level] * reviveCount[client];
+						if (thisDamage > 75)
+							thisDamage=75.0;
+						War3_SuicideBomber(client, effect_vec, thisDamage, -1, flameStrikeRadius[ult_level] * reviveCount[client]);
 						effect_vec[2]+=150.0;
 						TE_SetupGlowSprite(effect_vec, FireSprite, 2.0, 4.0, 255);
 						TE_SendToAll();
@@ -305,7 +305,7 @@ public OnAbilityCommand(client,ability,bool:pressed)
 						}
 					}
 					
-					PrintHintText(client,"+ %i HP. %i range. -1 blood.",amount,newRange/10);
+					PrintHintText(client,"+ %i HP. %i range. -1 blood.",amount,newRange);
 					reviveCount[client]--;
 					War3_ChatMessage(client,"(Blood Sacrifice) -1 blood.");
 					War3_ChatMessage(client,"Blood=%i",reviveCount[client]);

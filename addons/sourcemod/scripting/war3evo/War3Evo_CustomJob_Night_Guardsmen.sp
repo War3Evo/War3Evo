@@ -55,7 +55,7 @@ new WardOwner[MAXWARDS];
 // Effects
 new BeamSprite,HaloSprite; //BloodSpray,BloodDrop; //
 
-new bool:flashedscreen[MAXPLAYERSCUSTOM];
+//new bool:flashedscreen[MAXPLAYERSCUSTOM];
 
 // skill 1
 //"Have a 15/25/45/65 percent of Physical and Magical resistance.\nAlso reduces your speed by 60/50/40/30 percent.",false,4);
@@ -623,9 +623,9 @@ public RemoveWards(client)
 
 public Action:CalcWards(Handle:timer,any:userid)
 {
-	for(new i=0;i<=MaxClients;i++){
-		flashedscreen[i]=false;
-	}
+	//for(new i=0;i<=MaxClients;i++){
+//		flashedscreen[i]=false;
+	//}
 	new client;
 	for(new i=0;i<MAXWARDS;i++)
 	{

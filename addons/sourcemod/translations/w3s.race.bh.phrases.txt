@@ -15,7 +15,7 @@
 	}
 	"bh_skill_BloodCrazy_desc"
 	{
-		"en"		"Those damaged by you will bleed for 2 HP per second for 4 - 10 seconds"
+		"en"		"Those damaged by you will bleed for 2 HP per second for 6 - 12 seconds"
 	}
 
 	"bh_skill_Feast"
@@ -24,7 +24,7 @@
 	}
 	"bh_skill_Feast_desc"
 	{
-		"en"		"Heal 5-20 percent of the victim's max HP on kill"
+		"en"		"Heal 2-8 percent of the victim's max HP on kill"
 	}
 
 	"bh_skill_BloodSense"

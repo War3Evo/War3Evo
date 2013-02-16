@@ -21,6 +21,11 @@ public W3ONLY(){} //unload this?
 new thisRaceID, SKILL_HEADHUNTER, SKILL_TOTEM, SKILL_ASSAULT, ULT_TRANSFORM;
 new m_iAccount = -1, m_vecVelocity_0, m_vecVelocity_1, m_vecBaseVelocity; //offsets
 
+new Float:TransSpeed[5] = {1.0, 1.05,  1.10,  1.15,  1.20 };
+new Float:TransGravity[5] = {1.0, 1.04,  1.06,  1.08,  1.10 };
+
+new Float:HeadHunter[5] = {0.0, 0.02,  0.04,  0.08,  0.10 };
+
 
 //new bool:hurt_flag = true;
 new bool:m_IsULT_TRANSFORMformed[MAXPLAYERSCUSTOM];
@@ -31,9 +36,9 @@ new ValveGameEnum:g_GameType;
 new Laser;
 
 new bool:lastframewasground[MAXPLAYERSCUSTOM];
-new Handle:ultCooldownCvar;
+//new Handle:ultCooldownCvar;
 
-new Float:assaultcooldown=10.0;
+//new Float:assaultcooldown=10.0;
 
 public Plugin:myinfo = 
 {
@@ -58,7 +63,7 @@ public OnWar3LoadRaceOrItemOrdered(num)
 	{
 		thisRaceID=War3_CreateNewRaceT("succubus");
 		
-		SKILL_HEADHUNTER = War3_AddRaceSkillT(thisRaceID, "HeadHunter", false,_,"0-20%");	
+		SKILL_HEADHUNTER = War3_AddRaceSkillT(thisRaceID, "HeadHunter", false,_,"2-10%");
 		SKILL_TOTEM = War3_AddRaceSkillT(thisRaceID, "TIncantation", false);	
 		SKILL_ASSAULT = War3_AddRaceSkillT(thisRaceID, "ATackle", false);
 		ULT_TRANSFORM = War3_AddRaceSkillT(thisRaceID, "DTransformation", true);
@@ -77,7 +82,7 @@ public OnPluginStart()
 	AddCommandListener(SayCommand, "say");
 	AddCommandListener(SayCommand, "say_team");
 	
-	ultCooldownCvar=CreateConVar("war3_succ_ult_cooldown","20","Cooldown for succubus ultimate");
+	//ultCooldownCvar=CreateConVar("war3_succ_ult_cooldown","20","Cooldown for succubus ultimate");
 	
 	LoadTranslations("w3s.race.succubus.phrases");
 }
@@ -197,11 +202,11 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage){
 	if(W3GetDamageIsBullet()&&ValidPlayer(victim,true,true)&&ValidPlayer(attacker,true)&&victim!=attacker){
 		//DP("bullet succ vic alive %d",ValidPlayer(victim,true));
 		new skilllevelheadhunter = War3_GetSkillLevel(attacker,thisRaceID,SKILL_HEADHUNTER);
-		if (skilllevelheadhunter > 0 && !W3HasImmunity(victim,Immunity_Skills)&&!Hexed(attacker))
+		if (skilllevelheadhunter>0 && !W3HasImmunity(victim,Immunity_Skills)&&!Hexed(attacker))
 		{
 			//DP("health %d",GetClientHealth(victim));
 			//new xdamage= RoundFloat(0.2*float(damage) * skulls[attacker]/20 );
-			new xdamage= RoundFloat(0.2*damage * skulls[attacker]/20 );
+			new xdamage= RoundFloat(HeadHunter[skilllevelheadhunter]*damage * skulls[attacker]/20 );
 			War3_DealDamage(victim,xdamage,attacker,_,"headhunter",W3DMGORIGIN_SKILL,W3DMGTYPE_PHYSICAL);
 			
 			W3PrintSkillDmgConsole(victim,attacker,War3_GetWar3DamageDealt(),SKILL_HEADHUNTER);
@@ -210,104 +215,9 @@ public OnW3TakeDmgAll(victim,attacker,Float:damage){
 		
 	}
 }
-/*
-public PlayerHurtEvent(Handle:event,const String:name[],bool:dontBroadcast)
-{
-	if (hurt_flag == false)
-	{
-		hurt_flag=true; //for skipping your own damage?
-		return;
-	}
-	
-	new victim = GetClientOfUserId(GetEventInt(event,"userid"));
-	new attacker = GetClientOfUserId(GetEventInt(event,"attacker"));
-	if (victim && attacker && victim!=attacker) // &&hurt_flag==true)
-	{
-	
-		new race=War3_GetRace(attacker);
-		if (race==thisRaceID)
-		{
-			new dmgamount;
-			switch (g_GameType)
-			{
-				case Game_CS: dmgamount = GetEventInt(event,"dmg_health");
-				case Game_TF: dmgamount = GetEventInt(event,"damageamount");
-				case Game_DOD: dmgamount = GetEventInt(event,"damage");
-			}
-			
-			new totaldamage = dmgamount;
-			
-			// Head Hunter
-			new skilllevelheadhunter = War3_GetSkillLevel(attacker,race,SKILL_HEADHUNTER);
-			if (skilllevelheadhunter > 0 && dmgamount > 0 && !W3HasImmunity(victim,Immunity_Skills)&&!Hexed(attacker))
-			{
-				decl String: weapon[MAX_NAME_LENGTH+1];
-				new bool:is_equipment=GetWeapon(event,attacker,weapon,sizeof(weapon));
-				new bool:is_melee=IsMelee(weapon, is_equipment, attacker, victim);
-				
-				new damage;
-				if (is_melee)
-				{
-					new Float:percent;
-					switch(skilllevelheadhunter)
-					{
-						case 1:
-						percent=0.50;
-						case 2:
-						percent=0.75;
-						case 3:
-						percent=0.90;
-						case 4:
-						percent=1.00;
-					}
-					damage= RoundFloat(float(dmgamount) * percent);
-					totaldamage += damage;
-					
-					new Float:vec[3];
-					GetClientAbsOrigin(attacker,vec);
-					vec[2]+=50.0;
-					TE_SetupGlowSprite(vec, BeamSprite, 2.0, 10.0, 5);
-					TE_SendToAll();
-					W3PrintSkillDmgConsole(victim,attacker,damage,SKILL_HEADHUNTER);
-					//PrintToConsole(attacker,"%T","[Daemonic Knife] You inflicted +{amount} Damage",attacker,0x04,0x01,damage);
-				}
-				else
-				{
-					new percent;
-					switch (skilllevelheadhunter)
-					{
-						case 1:
-						percent=10;
-						case 2:
-						percent=15;
-						case 3:
-						percent=20;
-						case 4:
-						percent=30;
-					}
-					if(GetRandomInt(1,100)<=percent)
-					{
-						damage= RoundFloat(dmgamount * GetRandomFloat(0.20,0.40)); // 1.20-1.00,1.40-1.00
-						totaldamage += damage;
-						W3PrintSkillDmgConsole(victim,attacker,damage,SKILL_HEADHUNTER);
-						//PrintToConsole(attacker,"%T","[Head Hunter] You inflicted +{amount} Damage",attacker,0x04,0x01,damage);
-					}
-				}
-				
-				if (damage>0)
-				{
-					
-					hurt_flag = false;
-					War3_DealDamage(victim,damage,attacker,_,"headhunter",W3DMGORIGIN_SKILL,W3DMGTYPE_PHYSICAL);
-				}
-			}
-		}
-	}
-}
-*/
 public OnWar3EventDeath(victim,attacker){
 	new skilllevelheadhunter=War3_GetSkillLevel(attacker,thisRaceID,SKILL_HEADHUNTER);
-	if (skilllevelheadhunter &&!Hexed(attacker)&&victim!=attacker)
+	if (skilllevelheadhunter>0 &&!Hexed(attacker)&&victim!=attacker)
 	{
 		if (skulls[attacker]<(5*skilllevelheadhunter))
 		{
@@ -322,117 +232,13 @@ public OnWar3EventDeath(victim,attacker){
 		Gib(Origin, Direction, "models/gibs/hgibs.mdl");
 	}
 }
-/*
-public PlayerDeathEvent(Handle:event,const String:name[],bool:dontBroadcast)
-{
-DP("death");
-//W3GetVar(SmEvent)
-	#define DF_FEIGNDEATH   32
-	#define DMG_CRITS       1048576    //crits = DAMAGE_ACID
-	
-	static const String:tf2_decap_weapons[][] = { "sword",   "club",      "axtinguisher",
-	"fireaxe", "battleaxe", "tribalkukri"};
-	
-	new victim = GetClientOfUserId(GetEventInt(event,"userid"));
-	
-	if (victim > 0)
-	{
-		//if (War3_GetRace(victim) == thisRaceID){
-		//	if(skulls[victim]>0){
-		//		skulls[victim]--;
-		//		PrintToConsole(victim,"You lost your own skull");
-		//	}
-		//}
-
-		new client = GetClientOfUserId(GetEventInt(event,"attacker"));
-		if (client > 0 && client != victim)
-		{
-			if (War3_GetRace(client) == thisRaceID )
-			{
-				new bool:headshot;
-				switch (g_GameType)
-				{
-					case Game_CS:
-					{
-						headshot = GetEventBool(event, "headshot");
-					}
-					case Game_TF:
-					{
-						// Don't count dead ringer fake deaths
-						if ((GetEventInt(event, "death_flags") & DF_FEIGNDEATH) == 0)
-						{
-							// Check for headshot or backstab
-							new customkill = GetEventInt(event, "customkill");
-							headshot = (customkill == 1 || customkill == 2);
-						}
-					}
-					case Game_DOD:
-					{
-						headshot = false;
-					}
-				}
-				
-				// Head Hunter
-				new skilllevelheadhunter=War3_GetSkillLevel(client,thisRaceID,SKILL_HEADHUNTER);
-				if (skilllevelheadhunter &&!Hexed(client))
-				{
-					new bool:decap = false;
-					if (g_GameType == Game_TF)
-					{
-						decl String:weapon[128];
-						GetEventString(event, "weapon", weapon, sizeof(weapon));
-						
-						for (new i = 0; i < sizeof(tf2_decap_weapons); i++)
-						{
-							if (StrEqual(weapon,tf2_decap_weapons[i],false))
-							{
-								decap = ((GetEventInt(event, "damagebits") & DMG_CRITS) != 0);
-								break;
-							}
-						}
-					}
-					else
-					decap = false;
-					
-					if(!decap&&!headshot){
-						decl String:weapon[128];
-						GetEventString(event, "weapon", weapon, sizeof(weapon));
-						if(StrEqual(weapon,"headhunter",false)){
-							decap=true;
-						}
-					}
-					
-					///FORCE ALWAYS GET SKULL
-					headshot=true;
-					
-					if (headshot || decap )
-					{
-						if (skulls[client]<(5*skilllevelheadhunter))
-						{
-							skulls[client]++;
-							War3_ChatMessage(client,"%T","You gained a SKULL [{amount}/{amount}]",client,skulls[client],(5*skilllevelheadhunter));
-						}							
-						decl Float:Origin[3], Float:Direction[3];
-						GetClientAbsOrigin(victim, Origin);
-						Direction[0] = GetRandomFloat(-100.0, 100.0);
-						Direction[1] = GetRandomFloat(-100.0, 100.0);
-						Direction[2] = 300.0;
-						Gib(Origin, Direction, "models/gibs/hgibs.mdl");
-					}
-				}
-			}
-		}
-	}
-}
-*/
 public PlayerJumpEvent(Handle:event,const String:name[],bool:dontBroadcast)
 {
 	new client=GetClientOfUserId(GetEventInt(event,"userid"));
-	new race=War3_GetRace(client);
-	if (race==thisRaceID)
+	if (War3_GetRace(client)==thisRaceID)
 	{
 		
-		new skill_SKILL_ASSAULT=War3_GetSkillLevel(client,race,SKILL_ASSAULT);
+		new skill_SKILL_ASSAULT=War3_GetSkillLevel(client,thisRaceID,SKILL_ASSAULT);
 		
 		if (skill_SKILL_ASSAULT){
 			//assaultskip[client]--;
@@ -443,8 +249,9 @@ public PlayerJumpEvent(Handle:event,const String:name[],bool:dontBroadcast)
 				new Float:velocity[3]={0.0,0.0,0.0};
 				velocity[0]= GetEntDataFloat(client,m_vecVelocity_0);
 				velocity[1]= GetEntDataFloat(client,m_vecVelocity_1);
-				velocity[0]*=float(skill_SKILL_ASSAULT)*0.25;
-				velocity[1]*=float(skill_SKILL_ASSAULT)*0.25;
+				// reduced 2/10/2012
+				velocity[0]*=float(skill_SKILL_ASSAULT)*0.125;  //was 0.25
+				velocity[1]*=float(skill_SKILL_ASSAULT)*0.125;  //was 0.25
 				
 				//new Float:len=GetVectorLength(velocity,false);
 				//if(len>100.0){
@@ -457,7 +264,7 @@ public PlayerJumpEvent(Handle:event,const String:name[],bool:dontBroadcast)
 				*/
 				
 				SetEntDataVector(client,m_vecBaseVelocity,velocity,true);
-				War3_CooldownMGR(client,assaultcooldown,thisRaceID,SKILL_ASSAULT,_,_);
+				War3_CooldownMGR(client,10.0,thisRaceID,SKILL_ASSAULT,_,_);
 				
 				new String:wpnstr[32];
 				GetClientWeapon(client, wpnstr, 32);
@@ -498,7 +305,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 		if (War3_GetRace(client) == thisRaceID)
 		{
 			new skill_SKILL_ASSAULT=War3_GetSkillLevel(client,thisRaceID,SKILL_ASSAULT);
-			if (skill_SKILL_ASSAULT)
+			if (skill_SKILL_ASSAULT>0)
 			{
 				//assaultskip[client]--;
 				//if(assaultskip[client]<1&&
@@ -541,7 +348,9 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 					velocity[2]=0.0; //zero z
 					new Float:len=GetVectorLength(velocity);
 					if(len>3.0){
-						new Float:amt = 1.2 + (float(skill_SKILL_ASSAULT)*0.20);
+						// reduced 2/10/2012
+						//new Float:amt = 1.2 + (float(skill_SKILL_ASSAULT)*0.20);
+						new Float:amt = 1.0 + (float(skill_SKILL_ASSAULT)*0.10);
 						velocity[0]*=amt;
 						velocity[1]*=amt;
 						//ScaleVector(velocity,700.0/len);
@@ -559,7 +368,7 @@ public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:ang
 					//velocity[1]*=amt;
 					//TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, velocity);
 					
-					War3_CooldownMGR(client,assaultcooldown,thisRaceID,SKILL_ASSAULT,_,_);
+					War3_CooldownMGR(client,10.0,thisRaceID,SKILL_ASSAULT,_,_);
 					//new color[4] = {255,127,0,255};
 					
 					
@@ -630,15 +439,15 @@ public OnUltimateCommand(client,race,bool:pressed)
 					m_IsULT_TRANSFORMformed[client]=true;
 					
 					
-					War3_SetBuff(client,fMaxSpeed,thisRaceID,float(skill_trans)/5.00+1.00);
-					War3_SetBuff(client,fLowGravitySkill,thisRaceID,1.00-float(skill_trans)/5.00);
+					War3_SetBuff(client,fMaxSpeed,thisRaceID,TransSpeed[skill_trans]);
+					War3_SetBuff(client,fLowGravitySkill,thisRaceID,TransGravity[skill_trans]);
 					
 					new old_health=GetClientHealth(client);
 					SetEntityHealth(client,old_health+skill_trans*10);
 					
 					PrintToChat(client,"%T","[Daemonic transformation] Your daemonic powers boost your strength",client,0x04,0x01);
 					CreateTimer(10.0,Finishtrans,client);
-					War3_CooldownMGR(client,GetConVarFloat(ultCooldownCvar),thisRaceID,ULT_TRANSFORM,_,_);
+					War3_CooldownMGR(client,20.0,thisRaceID,ULT_TRANSFORM,_,_);
 				}
 			}
 		}
@@ -784,7 +593,7 @@ public Action:SayCommand(client, const String:command[], argc)
 		if (StrEqual(arg[0],"skulls",false))
 		{
 			new skilllevelheadhunter = (War3_GetRace(client)==thisRaceID) ? War3_GetSkillLevel(client,thisRaceID,SKILL_HEADHUNTER) : 0;
-			if (skilllevelheadhunter)
+			if (skilllevelheadhunter>0)
 				War3_ChatMessage(client,"%T","You have ({amount}/{amount}) SKULLs",client,skulls[client],(5*skilllevelheadhunter),0x04,0x01);
 			else
 			War3_ChatMessage(client,"%T","You have {amount} SKULLs",client,skulls[client],0x04,0x01);
@@ -821,33 +630,17 @@ String:buffer[], buffersize)
 
 stock bool:IsEquipmentMelee(const String:weapon[])
 {
-	switch (g_GameType)
-	{
-		case Game_CS:
-		{
-			return StrEqual(weapon,"weapon_knife");
-		}
-		case Game_DOD:
-		{
-			return (StrEqual(weapon,"weapon_amerknife") ||
-			StrEqual(weapon,"weapon_spade"));
-		}
-		case Game_TF:
-		{
-			return (StrEqual(weapon,"tf_weapon_knife") ||
-			StrEqual(weapon,"tf_weapon_shovel") ||
-			StrEqual(weapon,"tf_weapon_wrench") ||
-			StrEqual(weapon,"tf_weapon_bat") ||
-			StrEqual(weapon,"tf_weapon_bat_wood") ||
-			StrEqual(weapon,"tf_weapon_bonesaw") ||
-			StrEqual(weapon,"tf_weapon_bottle") ||
-			StrEqual(weapon,"tf_weapon_club") ||
-			StrEqual(weapon,"tf_weapon_fireaxe") ||
-			StrEqual(weapon,"tf_weapon_fists") ||
-			StrEqual(weapon,"tf_weapon_sword"));
-		}
-	}
-	return false;
+	return (StrEqual(weapon,"tf_weapon_knife") ||
+	StrEqual(weapon,"tf_weapon_shovel") ||
+	StrEqual(weapon,"tf_weapon_wrench") ||
+	StrEqual(weapon,"tf_weapon_bat") ||
+	StrEqual(weapon,"tf_weapon_bat_wood") ||
+	StrEqual(weapon,"tf_weapon_bonesaw") ||
+	StrEqual(weapon,"tf_weapon_bottle") ||
+	StrEqual(weapon,"tf_weapon_club") ||
+	StrEqual(weapon,"tf_weapon_fireaxe") ||
+	StrEqual(weapon,"tf_weapon_fists") ||
+	StrEqual(weapon,"tf_weapon_sword"));
 }
 
 
