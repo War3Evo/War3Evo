@@ -1,6 +1,8 @@
 The orignal author of War3Source I have never known: PimpinJuice
+
 The other author of War3Source: Ownz currently operates www.war3source.com
 
+Updated only the single line below on 3/12/2023:
 War3Source Evolution: https://github.com/War3Evo/War3Source-EVO
 
 I, El Diablo, has done a great deal of rework to the source code,
